@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "sdlutils.h"
 
 //------------------------------------------------------------------------------
@@ -17,12 +18,19 @@ bool SDLUtils::init()
    }
 
    // Intialize SDL_image
-   int flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP;
+   int flags = IMG_INIT_PNG;
    if ((IMG_Init(flags) & flags) != flags)
    {
       std::cerr << "SDL_image could not initialize! IMG_GetError: " << IMG_GetError() << std::endl;
       return false;
    }
+
+   // Initialize SDL_ttf
+    if (TTF_Init() == -1)
+    {
+        std::cerr << "SDL_ttf could not initialize! TTF_GetError: " << TTF_GetError() << std::endl;
+        return 1;
+    }
 
    // Initialize joystick
    INHIBIT(std::cout << "SDL_NumJoysticks: '" << SDL_NumJoysticks() << "'" << std::endl;)
@@ -70,10 +78,6 @@ void SDLUtils::close()
 {
    INHIBIT(std::cout << "SDLUtils::close()" << std::endl;)
 
-   // Textures
-   for (std::map<T_TEXTURE_ID, SDL_Texture*>::iterator it = g_textures.begin(); it != g_textures.end(); ++it)
-      SDL_DestroyTexture(it->second);
-
    // Renderer
    if (g_renderer != NULL)
    {
@@ -94,6 +98,9 @@ void SDLUtils::close()
       SDL_JoystickClose(g_joystick);
       g_joystick = NULL;
    }
+
+   // SDL_ttf
+   TTF_Quit();
 
    // SDL_image
    IMG_Quit();
@@ -117,12 +124,21 @@ SDL_Texture* SDLUtils::loadTexture(const std::string &p_path)
    }
    texture = SDL_CreateTextureFromSurface(g_renderer, surface);
    if (texture == NULL)
-   {
       std::cerr << "Unable to create texture from '" << p_path << "'! SDL_Error: " << SDL_GetError() << std::endl;
-      return NULL;
-   }
    SDL_FreeSurface(surface);
    return texture;
+}
+
+//------------------------------------------------------------------------------
+
+// Load a TTF font
+TTF_Font *SDLUtils::loadFont(const std::string &p_path, const int p_size)
+{
+   INHIBIT(std::cout << "SDLutils::loadFont(" << p_path << ", " << p_size << ")" << std::endl;)
+   TTF_Font *font = TTF_OpenFont(p_path.c_str(), p_size);
+   if (font == NULL)
+      std::cerr << "Unable to load font " << p_path << ": " << SDL_GetError() << std::endl;
+   return font;
 }
 
 //------------------------------------------------------------------------------
@@ -147,4 +163,24 @@ void SDLUtils::renderTexture(SDL_Texture * p_texture)
    destRect.x = (SCREEN_WIDTH - destRect.w) / 2;
    destRect.y = (SCREEN_HEIGHT - destRect.h) / 2;
    SDL_RenderCopy(g_renderer, p_texture, NULL, &destRect);
+}
+
+//------------------------------------------------------------------------------
+
+// Render text and return the resulting texture
+SDL_Texture* SDLUtils::renderText(const std::string &p_text, const SDL_Color &p_fg, const SDL_Color &p_bg)
+{
+   // Create surface
+   SDL_Surface *surface = TTF_RenderUTF8_Shaded(g_font, p_text.c_str(), p_fg, p_bg);
+   if (surface == NULL)
+   {
+      std::cerr << "TTF_RenderUTF8_Shaded: " << SDL_GetError() << std::endl;
+      return NULL;
+   }
+   // Create texture from surface
+   SDL_Texture *texture = SDL_CreateTextureFromSurface(g_renderer, surface);
+   if (texture == NULL)
+      std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
+   SDL_FreeSurface(surface);
+   return texture;
 }
