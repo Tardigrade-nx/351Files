@@ -58,15 +58,12 @@ bool SDLUtils::init()
    }
 
    // Create renderer
-   g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+   g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
    if (g_renderer == NULL)
    {
       std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
       return false;
    }
-
-   // Set renderer's alpha mode
-   //~ SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND);
 
    return true;
 }

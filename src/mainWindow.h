@@ -2,7 +2,9 @@
 #define _MAINWINDOW_H_
 
 #include <string>
+#include <SDL.h>
 #include "window.h"
+#include "fileLister.h"
 
 class MainWindow : public IWindow
 {
@@ -23,6 +25,20 @@ class MainWindow : public IWindow
    // Forbidden
    MainWindow(const MainWindow &p_source);
    const MainWindow &operator =(const MainWindow &p_source);
+
+   // File lister
+   CFileLister m_fileLister;
+
+   // Number of visible lines
+   unsigned int m_nbVisibleLines;
+
+   // Index of the first displayed line
+   unsigned int m_camera;
+
+   // Textures for icons
+   SDL_Texture *m_iconFile;
+   SDL_Texture *m_iconDir;
+   SDL_Texture *m_iconUp;
 
 };
 

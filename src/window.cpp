@@ -1,6 +1,7 @@
 #include "window.h"
 #include "def.h"
 #include "sdlutils.h"
+#include <iostream>
 
 // Destructor
 IWindow::~IWindow(void)
@@ -13,6 +14,7 @@ IWindow::~IWindow(void)
       SDL_DestroyTexture(m_titleTexture);
       m_titleTexture = NULL;
    }
+   g_hasChanged = true;
 }
 
 //------------------------------------------------------------------------------
@@ -49,6 +51,7 @@ void IWindow::setTitle(const std::string &p_title)
       m_titleTexture = NULL;
    }
    m_titleTexture = SDLUtils::renderText(p_title, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG});
+   g_hasChanged = true;
 }
 
 //------------------------------------------------------------------------------
@@ -57,9 +60,12 @@ void IWindow::setTitle(const std::string &p_title)
 int IWindow::execute(void)
 {
    // Main loop
+   Uint32 l_time(0);
    SDL_Event event;
    while (1)
    {
+      l_time = SDL_GetTicks();
+
       // Handle events
       while (SDL_PollEvent(&event) != 0 )
       {
@@ -67,9 +73,19 @@ int IWindow::execute(void)
          if (event.type == SDL_QUIT)
             return 0;
       }
-      // Render all windows
-      renderAll();
-      SDL_RenderPresent(g_renderer);
+
+      // Render windows if necessary
+      if (g_hasChanged)
+      {
+         renderAll();
+         SDL_RenderPresent(g_renderer);
+         g_hasChanged = false;
+      }
+
+      // Cap the framerate
+      l_time = MS_PER_FRAME - (SDL_GetTicks() - l_time);
+      if (l_time <= MS_PER_FRAME)
+         SDL_Delay(l_time);
    }
    return 0;
 }
@@ -79,6 +95,7 @@ int IWindow::execute(void)
 // Render all windows
 void IWindow::renderAll(void)
 {
+   std::cout << "renderAll()\n";
    if (g_windows.empty())
       return;
    // First window to draw is the last that is fullscreen

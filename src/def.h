@@ -1,7 +1,6 @@
 #ifndef _DEF_H_
 #define _DEF_H_
 
-#include <map>
 #include <vector>
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -18,7 +17,8 @@
    #define RES_PATH        "./res"
    #define FONT_NAME       "NotoSans-Regular.ttf"
    #define FONT_SIZE       14
-   #define LINE_HEIGHT     32
+   #define LINE_HEIGHT     28
+   #define ICON_SIZE       24
 #elif defined(DEVICE_RG351V)
    #define SCREEN_WIDTH    640
    #define SCREEN_HEIGHT   480
@@ -26,7 +26,8 @@
    #define RES_PATH        "./res"
    #define FONT_NAME       "NotoSans-Regular.ttf"
    #define FONT_SIZE       14
-   #define LINE_HEIGHT     32
+   #define LINE_HEIGHT     28
+   #define ICON_SIZE       24
 #else
    #define SCREEN_WIDTH    640
    #define SCREEN_HEIGHT   480
@@ -34,7 +35,8 @@
    #define RES_PATH        "./res"
    #define FONT_NAME       "NotoSans-Regular.ttf"
    #define FONT_SIZE       14
-   #define LINE_HEIGHT     32
+   #define LINE_HEIGHT     28
+   #define ICON_SIZE       24
 #endif
 
 // Colors
@@ -45,6 +47,9 @@
 // Margins
 #define MARGIN_X           8
 
+// Framerate = 30fps
+#define MS_PER_FRAME       16
+
 // Texture ID
 typedef enum {
    UNDEFINED = 0
@@ -54,7 +59,6 @@ typedef enum {
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern SDL_Joystick* g_joystick;
-extern std::map<T_TEXTURE_ID, SDL_Texture*> g_textures;
 extern TTF_Font *g_font;
 class IWindow;
 extern std::vector<IWindow *> g_windows;
