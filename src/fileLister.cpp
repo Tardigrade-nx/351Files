@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <string.h>
+#include <sstream>
 #include "fileLister.h"
 
 bool compareNoCase(const T_FILE& p_s1, const T_FILE& p_s2)
@@ -69,10 +70,23 @@ const bool CFileLister::list(const std::string &p_path)
     // Add "..", always at the first place
     m_listDirs.insert(m_listDirs.begin(), T_FILE("..", 0));
     // Render textures
+    std::ostringstream oss;
     for (std::vector<T_FILE>::iterator l_it = m_listDirs.begin(); l_it != m_listDirs.end(); ++l_it)
-        l_it->m_textureNormal = SDLUtils::renderText(l_it->m_name, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG});
+    {
+        l_it->m_textureFileNameNormal = SDLUtils::renderText(l_it->m_name, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG});
+        oss << l_it->m_size;
+        l_it->m_textureFileSizeNormal = SDLUtils::renderText(oss.str(), {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG});
+        oss.str("");
+        oss.clear();
+    }
     for (std::vector<T_FILE>::iterator l_it = m_listFiles.begin(); l_it != m_listFiles.end(); ++l_it)
-        l_it->m_textureNormal = SDLUtils::renderText(l_it->m_name, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG});
+    {
+        l_it->m_textureFileNameNormal = SDLUtils::renderText(l_it->m_name, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG});
+        oss << l_it->m_size;
+        l_it->m_textureFileSizeNormal = SDLUtils::renderText(oss.str(), {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG});
+        oss.str("");
+        oss.clear();
+    }
     return true;
 }
 

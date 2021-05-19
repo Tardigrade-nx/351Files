@@ -13,21 +13,24 @@ struct T_FILE
     T_FILE(void):
         m_name(""),
         m_size(0),
-        m_textureNormal(NULL)
+        m_textureFileNameNormal(NULL),
+        m_textureFileSizeNormal(NULL)
     {}
 
     // Constructor
     T_FILE(const std::string &p_name, const unsigned long int &p_size):
         m_name(p_name),
         m_size(p_size),
-        m_textureNormal(NULL)
+        m_textureFileNameNormal(NULL),
+        m_textureFileSizeNormal(NULL)
     {}
 
     // Copy constructor
     T_FILE(const T_FILE &p_source):
         m_name(p_source.m_name),
         m_size(p_source.m_size),
-        m_textureNormal(NULL)
+        m_textureFileNameNormal(NULL),
+        m_textureFileSizeNormal(NULL)
     {}
 
     // Operator =
@@ -35,24 +38,24 @@ struct T_FILE
     {
         m_name = p_source.m_name;
         m_size = p_source.m_size;
-        m_textureNormal = NULL;
+        m_textureFileNameNormal = NULL;
+        m_textureFileSizeNormal = NULL;
         return *this;
     }
 
     // Destructor
     ~T_FILE(void)
     {
-        if (m_textureNormal != NULL)
-        {
-            SDL_DestroyTexture(m_textureNormal);
-            m_textureNormal = NULL;
-        }
+        // Destroy textures
+        if (m_textureFileNameNormal != NULL) { SDL_DestroyTexture(m_textureFileNameNormal); m_textureFileNameNormal = NULL; }
+        if (m_textureFileSizeNormal != NULL) { SDL_DestroyTexture(m_textureFileSizeNormal); m_textureFileSizeNormal = NULL; }
     }
 
     // File attributes
     std::string m_name;
     unsigned long int m_size;
-    SDL_Texture *m_textureNormal;
+    SDL_Texture *m_textureFileNameNormal;
+    SDL_Texture *m_textureFileSizeNormal;
 };
 
 class CFileLister
