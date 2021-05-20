@@ -40,9 +40,11 @@
 #endif
 
 // Colors
-#define COLOR_TITLE_BG         68,  68,  68
-#define COLOR_TEXT_NORMAL     255, 255, 255
-#define COLOR_BODY_BG          45,  45,  45
+#define COLOR_TITLE_BG           68,  68,  68
+#define COLOR_TEXT_NORMAL        255, 255, 255
+#define COLOR_BODY_BG            45,  45,  45
+#define COLOR_CURSOR_FOCUS       21,  83,  158
+#define COLOR_CURSOR_NO_FOCUS    80,  80,  80
 
 // Margins
 #define MARGIN_X           8

@@ -36,10 +36,12 @@ class IWindow
 
    // Window title
    std::string m_title;
-   SDL_Texture *m_titleTexture;
 
    // Windows has changed or not
    static bool g_hasChanged;
+
+   // Index of the highlighted line
+   unsigned int m_highlightedLine;
 
    private:
 

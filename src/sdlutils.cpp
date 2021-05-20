@@ -164,20 +164,54 @@ void SDLUtils::renderTexture(SDL_Texture * p_texture)
 
 //------------------------------------------------------------------------------
 
-// Render text and return the resulting texture
-SDL_Texture* SDLUtils::renderText(const std::string &p_text, const SDL_Color &p_fg, const SDL_Color &p_bg)
+// Render text on the screen
+void SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_TEXT_ALIGN_H p_textAlignH, const T_TEXT_ALIGN_V p_textAlignV)
 {
    // Create surface
    SDL_Surface *surface = TTF_RenderUTF8_Shaded(g_font, p_text.c_str(), p_fg, p_bg);
    if (surface == NULL)
    {
       std::cerr << "TTF_RenderUTF8_Shaded: " << SDL_GetError() << std::endl;
-      return NULL;
+      return;
    }
    // Create texture from surface
    SDL_Texture *texture = SDL_CreateTextureFromSurface(g_renderer, surface);
-   if (texture == NULL)
-      std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
    SDL_FreeSurface(surface);
-   return texture;
+   if (texture == NULL)
+   {
+      std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
+      return;
+   }
+   // Compute coordinates depending on the requested alignment
+   int x = p_x;
+   int y = p_y;
+   int w = 0;
+   int h = 0;
+   SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+   switch (p_textAlignH)
+   {
+      case T_TEXT_ALIGN_RIGHT:
+         x -= w;
+         break;
+      case T_TEXT_ALIGN_CENTER:
+         x -= w / 2;
+         break;
+      default:
+         break;
+   }
+   switch (p_textAlignV)
+   {
+      case T_TEXT_ALIGN_BOTTOM:
+         y -= h;
+         break;
+      case T_TEXT_ALIGN_MIDDLE:
+         y -= h / 2;
+         break;
+      default:
+         break;
+   }
+   // Render texture on screen
+   renderTexture(texture, x, y);
+   // Free texture
+   SDL_DestroyTexture(texture);
 }

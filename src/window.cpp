@@ -8,12 +8,6 @@ IWindow::~IWindow(void)
 {
    // Remove last window
    g_windows.pop_back();
-   // Clean up texture
-   if (m_titleTexture != NULL)
-   {
-      SDL_DestroyTexture(m_titleTexture);
-      m_titleTexture = NULL;
-   }
    g_hasChanged = true;
 }
 
@@ -23,7 +17,7 @@ IWindow::~IWindow(void)
 IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
    m_fullscreen(p_fullscreen),
    m_title(""),
-   m_titleTexture(NULL)
+   m_highlightedLine(0)
 {
    // Add window to the list
    g_windows.push_back(this);
@@ -45,12 +39,6 @@ bool IWindow::isFullScreen(void) const
 void IWindow::setTitle(const std::string &p_title)
 {
    m_title = p_title;
-   if (m_titleTexture != NULL)
-   {
-      SDL_DestroyTexture(m_titleTexture);
-      m_titleTexture = NULL;
-   }
-   m_titleTexture = SDLUtils::renderText(p_title, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG});
    g_hasChanged = true;
 }
 

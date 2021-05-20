@@ -27,8 +27,22 @@ namespace SDLUtils
    // Render a texture at the center of the screen
    void renderTexture(SDL_Texture * p_texture);
 
-   // Render text and return the resulting texture
-   SDL_Texture* renderText(const std::string &p_text, const SDL_Color &p_fg, const SDL_Color &p_bg);
+   // Text horizontal alignment
+   typedef enum T_TEXT_ALIGN_H {
+      T_TEXT_ALIGN_LEFT = 0,
+      T_TEXT_ALIGN_RIGHT,
+      T_TEXT_ALIGN_CENTER
+   } T_TEXT_ALIGN_H;
+
+   // Text vertical alignment
+   typedef enum T_TEXT_ALIGN_V {
+      T_TEXT_ALIGN_TOP = 0,
+      T_TEXT_ALIGN_BOTTOM,
+      T_TEXT_ALIGN_MIDDLE
+   } T_TEXT_ALIGN_V;
+
+   // Render text on the screen
+   void renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_TEXT_ALIGN_H p_textAlignH, const T_TEXT_ALIGN_V p_textAlignV);
 
 }
 
