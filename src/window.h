@@ -31,6 +31,10 @@ class IWindow
    // Constructor
    IWindow(const bool p_fullscreen, const std::string &p_title);
 
+   // Move cursor up or down
+   void moveCursorUp(const unsigned int p_step, bool p_loop);
+   void moveCursorDown(const unsigned int p_step, bool p_loop);
+
    // Window is fullscreen or not
    bool m_fullscreen;
 
@@ -42,6 +46,19 @@ class IWindow
 
    // Index of the highlighted line
    unsigned int m_highlightedLine;
+
+   // Loop or not when moving cursor
+   bool m_cursorLoop;
+
+   // Number of items
+   unsigned int m_nbItems;
+
+   // Number of visible items
+   unsigned int m_nbVisibleItems;
+
+   // Timer for key hold
+   unsigned int m_timer;
+   int m_lastPressed;
 
    private:
 

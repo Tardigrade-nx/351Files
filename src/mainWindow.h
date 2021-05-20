@@ -29,9 +29,6 @@ class MainWindow : public IWindow
    // File lister
    CFileLister m_fileLister;
 
-   // Number of visible lines
-   unsigned int m_nbVisibleLines;
-
    // Index of the first displayed line
    unsigned int m_camera;
 

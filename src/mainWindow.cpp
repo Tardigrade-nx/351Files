@@ -17,12 +17,12 @@ MainWindow::~MainWindow(void)
 MainWindow::MainWindow(const std::string &p_title):
    IWindow(true, p_title),
    m_fileLister(),
-   m_nbVisibleLines((SCREEN_HEIGHT - LINE_HEIGHT - LINE_HEIGHT) / LINE_HEIGHT),
    m_camera(0),
    m_iconFile(NULL),
    m_iconDir(NULL),
    m_iconUp(NULL)
 {
+   m_nbVisibleItems = (SCREEN_HEIGHT - LINE_HEIGHT - LINE_HEIGHT) / LINE_HEIGHT;
    // Load textures
    m_iconFile = SDLUtils::loadTexture(std::string(RES_PATH) + "/file.png");
    m_iconDir = SDLUtils::loadTexture(std::string(RES_PATH) + "/folder.png");
@@ -34,7 +34,9 @@ MainWindow::MainWindow(const std::string &p_title):
       setTitle("/");
       m_fileLister.list(m_title);
    }
+   m_nbItems = m_fileLister.getNbTotal();
    INHIBIT(std::cout << "Path: " << m_title << "\n";)
+   INHIBIT(std::cout << "Nb items: " << m_nbItems << "\n";)
 }
 
 // Draw window
@@ -67,9 +69,8 @@ void MainWindow::render(const bool p_focus)
    // Render file list
    std::ostringstream oss;
    l_y += LINE_HEIGHT;
-   unsigned int l_nbTotal = m_fileLister.getNbTotal();
    SDL_Color l_bgColor = {COLOR_BODY_BG};
-   for (unsigned int l_i = m_camera; l_i < m_camera + m_nbVisibleLines && l_i < l_nbTotal; ++l_i)
+   for (unsigned int l_i = m_camera; l_i < m_camera + m_nbVisibleItems && l_i < m_nbItems; ++l_i)
    {
       // Background color for the line
       if (m_highlightedLine == l_i)
