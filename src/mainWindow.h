@@ -26,6 +26,13 @@ class MainWindow : public IWindow
    MainWindow(const MainWindow &p_source);
    const MainWindow &operator =(const MainWindow &p_source);
 
+   // Key pressed
+   virtual void keyPressedValidate(void);
+   virtual void keyPressedBack(void);
+
+   // Open highlighted dir
+   void openHighlightedDir(void);
+
    // File lister
    CFileLister m_fileLister;
 

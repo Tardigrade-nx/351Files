@@ -13,6 +13,8 @@ MainWindow::~MainWindow(void)
    if (m_iconUp != NULL) { SDL_DestroyTexture(m_iconUp); m_iconUp = NULL; }
 }
 
+//------------------------------------------------------------------------------
+
 // Constructor
 MainWindow::MainWindow(const std::string &p_title):
    IWindow(true, p_title),
@@ -22,7 +24,8 @@ MainWindow::MainWindow(const std::string &p_title):
    m_iconDir(NULL),
    m_iconUp(NULL)
 {
-   m_nbVisibleItems = (SCREEN_HEIGHT - LINE_HEIGHT - LINE_HEIGHT) / LINE_HEIGHT;
+   m_nbVisibleItems = (SCREEN_HEIGHT - LINE_HEIGHT) / LINE_HEIGHT;
+   INHIBIT(std::cout << "Nb visible items: " << m_nbVisibleItems << "\n";)
    // Load textures
    m_iconFile = SDLUtils::loadTexture(std::string(RES_PATH) + "/file.png");
    m_iconDir = SDLUtils::loadTexture(std::string(RES_PATH) + "/folder.png");
@@ -31,13 +34,14 @@ MainWindow::MainWindow(const std::string &p_title):
    if (! m_fileLister.list(m_title))
    {
       // Path is wrong, fallback to '/'
-      setTitle("/");
+      m_title = "/";
       m_fileLister.list(m_title);
    }
    m_nbItems = m_fileLister.getNbTotal();
-   INHIBIT(std::cout << "Path: " << m_title << "\n";)
-   INHIBIT(std::cout << "Nb items: " << m_nbItems << "\n";)
+   INHIBIT(std::cout << "Path: " << m_title << " (" << m_nbItems << ") items\n";)
 }
+
+//------------------------------------------------------------------------------
 
 // Draw window
 void MainWindow::render(const bool p_focus)
@@ -107,4 +111,71 @@ void MainWindow::render(const bool p_focus)
       l_y += LINE_HEIGHT;
    }
 
+}
+
+//------------------------------------------------------------------------------
+
+// Key pressed: validate
+void MainWindow::keyPressedValidate(void)
+{
+   // If a file is highlighted, do nothing
+   if (! m_fileLister.isDirectory(m_highlightedLine))
+      return;
+   // Open highlighted dir
+   openHighlightedDir();
+}
+
+//------------------------------------------------------------------------------
+
+// Key pressed: back
+void MainWindow::keyPressedBack(void)
+{
+   // If we're already at '/, do nothing
+   if (m_title == "/")
+      return;
+   // Select and open ".."
+   m_highlightedLine = 0;
+   openHighlightedDir();
+}
+
+//------------------------------------------------------------------------------
+
+// Open highlighted dir
+void MainWindow::openHighlightedDir(void)
+{
+   // Build new path
+   std::string l_newDir("");
+   std::string l_oldDir("");
+   if (m_fileLister[m_highlightedLine].m_name == "..")
+   {
+      // New path = parent
+      size_t l_pos = m_title.rfind('/');
+      l_newDir = m_title.substr(0, l_pos);
+      if (l_newDir.empty())
+         l_newDir = "/";
+      l_oldDir = m_title.substr(l_pos + 1);
+   }
+   else
+   {
+      // New path
+      l_newDir = m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_highlightedLine].m_name;
+   }
+
+   // List the new path
+   if (m_fileLister.list(l_newDir))
+   {
+      // Path OK
+      m_title = l_newDir;
+      m_nbItems = m_fileLister.getNbTotal();
+     // If it's a back movement, restore old highlighted dir
+      if (! l_oldDir.empty())
+         m_highlightedLine = m_fileLister.searchDir(l_oldDir);
+      else
+         m_highlightedLine = 0;
+      // TODO : adjust camera
+      // TODO : clear select list
+      // New render
+      g_hasChanged = true;
+      INHIBIT(std::cout << "Path: " << m_title << " (" << m_nbItems << ") items\n";)
+   }
 }

@@ -23,9 +23,6 @@ class IWindow
    // Is window full screen?
    bool isFullScreen(void) const;
 
-   // Set title
-   void setTitle(const std::string &p_title);
-
    protected:
 
    // Constructor
@@ -34,6 +31,10 @@ class IWindow
    // Move cursor up or down
    void moveCursorUp(const unsigned int p_step, bool p_loop);
    void moveCursorDown(const unsigned int p_step, bool p_loop);
+
+   // Key pressed
+   virtual void keyPressedValidate(void) = 0;
+   virtual void keyPressedBack(void) = 0;
 
    // Window is fullscreen or not
    bool m_fullscreen;

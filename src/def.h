@@ -66,7 +66,7 @@
    #define BUTTON_PRESSED_DOWN         event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_DOWN
    #define BUTTON_PRESSED_PAGEUP       event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_PAGEUP
    #define BUTTON_PRESSED_PAGEDOWN     event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_PAGEDOWN
-   #define BUTTON_PRESSED_VALIDATE     event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_ENTER
+   #define BUTTON_PRESSED_VALIDATE     event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_RETURN
    #define BUTTON_PRESSED_BACK         event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_BACKSPACE
    #define BUTTON_HELD_UP              SDL_GetKeyboardState(NULL)[SDL_SCANCODE_UP]
    #define BUTTON_HELD_PAGEUP          SDL_GetKeyboardState(NULL)[SDL_SCANCODE_PAGEUP]

@@ -26,7 +26,7 @@ IWindow::~IWindow(void)
 // Constructor
 IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
    m_fullscreen(p_fullscreen),
-   m_title(""),
+   m_title(p_title),
    m_highlightedLine(0),
    m_cursorLoop(false),
    m_nbItems(0),
@@ -36,8 +36,7 @@ IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
 {
    // Add window to the list
    g_windows.push_back(this);
-   // Set title
-   setTitle(p_title);
+   g_hasChanged = true;
 }
 
 //------------------------------------------------------------------------------
@@ -46,15 +45,6 @@ IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
 bool IWindow::isFullScreen(void) const
 {
    return m_fullscreen;
-}
-
-//------------------------------------------------------------------------------
-
-// Set title
-void IWindow::setTitle(const std::string &p_title)
-{
-   m_title = p_title;
-   g_hasChanged = true;
 }
 
 //------------------------------------------------------------------------------
@@ -102,6 +92,20 @@ int IWindow::execute(void)
             moveCursorDown(m_nbVisibleItems, m_cursorLoop);
             m_lastPressed = BUTTON_PAGEDOWN;
             m_timer = KEYHOLD_TIMER_FIRST;
+            continue;
+         }
+         if (BUTTON_PRESSED_VALIDATE)
+         {
+            keyPressedValidate();
+            m_lastPressed = -1;
+            m_timer = 0;
+            continue;
+         }
+         if (BUTTON_PRESSED_BACK)
+         {
+            keyPressedBack();
+            m_lastPressed = -1;
+            m_timer = 0;
             continue;
          }
       }
@@ -166,7 +170,7 @@ int IWindow::execute(void)
 // Render all windows
 void IWindow::renderAll(void)
 {
-   INHIBIT(std::cout << "renderAll - " << g_windows.size() << " windows\n";)
+   //~ INHIBIT(std::cout << "renderAll - " << g_windows.size() << " windows\n";)
    if (g_windows.empty())
       return;
    // First window to draw is the last that is fullscreen
