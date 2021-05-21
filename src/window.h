@@ -36,6 +36,9 @@ class IWindow
    virtual void keyPressedValidate(void) = 0;
    virtual void keyPressedBack(void) = 0;
 
+   // Adjust camera
+   void adjustCamera(void);
+
    // Window is fullscreen or not
    bool m_fullscreen;
 
@@ -60,6 +63,9 @@ class IWindow
    // Timer for key hold
    unsigned int m_timer;
    int m_lastPressed;
+
+   // Index of the first displayed line
+   unsigned int m_camera;
 
    private:
 

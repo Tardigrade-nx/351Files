@@ -19,7 +19,6 @@ MainWindow::~MainWindow(void)
 MainWindow::MainWindow(const std::string &p_title):
    IWindow(true, p_title),
    m_fileLister(),
-   m_camera(0),
    m_iconFile(NULL),
    m_iconDir(NULL),
    m_iconUp(NULL)
@@ -172,7 +171,8 @@ void MainWindow::openHighlightedDir(void)
          m_highlightedLine = m_fileLister.searchDir(l_oldDir);
       else
          m_highlightedLine = 0;
-      // TODO : adjust camera
+      // Adjust camera
+      adjustCamera();
       // TODO : clear select list
       // New render
       g_hasChanged = true;

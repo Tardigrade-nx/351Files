@@ -36,9 +36,6 @@ class MainWindow : public IWindow
    // File lister
    CFileLister m_fileLister;
 
-   // Index of the first displayed line
-   unsigned int m_camera;
-
    // Textures for icons
    SDL_Texture *m_iconFile;
    SDL_Texture *m_iconDir;

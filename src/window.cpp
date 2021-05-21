@@ -32,7 +32,8 @@ IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
    m_nbItems(0),
    m_nbVisibleItems(0),
    m_timer(0),
-   m_lastPressed(-1)
+   m_lastPressed(-1),
+   m_camera(0)
 {
    // Add window to the list
    g_windows.push_back(this);
@@ -75,7 +76,7 @@ int IWindow::execute(void)
          }
          if (BUTTON_PRESSED_PAGEUP)
          {
-            moveCursorUp(m_nbVisibleItems, m_cursorLoop);
+            moveCursorUp(m_nbVisibleItems - 1, m_cursorLoop);
             m_lastPressed = BUTTON_PAGEUP;
             m_timer = KEYHOLD_TIMER_FIRST;
             continue;
@@ -89,7 +90,7 @@ int IWindow::execute(void)
          }
          if (BUTTON_PRESSED_PAGEDOWN)
          {
-            moveCursorDown(m_nbVisibleItems, m_cursorLoop);
+            moveCursorDown(m_nbVisibleItems - 1, m_cursorLoop);
             m_lastPressed = BUTTON_PAGEDOWN;
             m_timer = KEYHOLD_TIMER_FIRST;
             continue;
@@ -123,7 +124,7 @@ int IWindow::execute(void)
       {
          if (m_lastPressed == BUTTON_PAGEUP && m_timer > 0 && --m_timer == 0)
          {
-            moveCursorUp(m_nbVisibleItems, false);
+            moveCursorUp(m_nbVisibleItems - 1, false);
             m_timer = KEYHOLD_TIMER;
          }
       }
@@ -139,7 +140,7 @@ int IWindow::execute(void)
       {
          if (m_lastPressed == BUTTON_PAGEDOWN && m_timer > 0 && --m_timer == 0)
          {
-            moveCursorDown(m_nbVisibleItems, false);
+            moveCursorDown(m_nbVisibleItems - 1, false);
             m_timer = KEYHOLD_TIMER;
          }
       }
@@ -207,6 +208,8 @@ void IWindow::moveCursorUp(const unsigned int p_step, bool p_loop)
          m_highlightedLine = 0;
       g_hasChanged = true;
    }
+   // Adjust camera
+   adjustCamera();
 }
 
 //------------------------------------------------------------------------------
@@ -234,4 +237,20 @@ void IWindow::moveCursorDown(const unsigned int p_step, bool p_loop)
          g_hasChanged = true;
       }
    }
+   // Adjust camera
+   adjustCamera();
+}
+
+
+//------------------------------------------------------------------------------
+
+// Adjust camera
+void IWindow::adjustCamera(void)
+{
+   if (m_nbItems <= m_nbVisibleItems)
+      m_camera = 0;
+   else if (m_highlightedLine < m_camera)
+      m_camera = m_highlightedLine;
+   else if (m_highlightedLine > m_camera + m_nbVisibleItems - 1)
+      m_camera = m_highlightedLine - m_nbVisibleItems + 1;
 }
