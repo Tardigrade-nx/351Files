@@ -3,6 +3,7 @@
 #include <sstream>
 #include "def.h"
 #include "sdlutils.h"
+#include "fileUtils.h"
 
 // Destructor
 MainWindow::~MainWindow(void)
@@ -70,7 +71,6 @@ void MainWindow::render(const bool p_focus)
    SDL_RenderFillRect(g_renderer, &rect);
 
    // Render file list
-   std::ostringstream oss;
    l_y += LINE_HEIGHT;
    SDL_Color l_bgColor = {COLOR_BODY_BG};
    for (unsigned int l_i = m_camera; l_i < m_camera + m_nbVisibleItems && l_i < m_nbItems; ++l_i)
@@ -99,12 +99,7 @@ void MainWindow::render(const bool p_focus)
 
       // File size
       if (! m_fileLister.isDirectory(l_i))
-      {
-         oss << m_fileLister[l_i].m_size;
-         SDLUtils::renderText(oss.str(), SCREEN_WIDTH - 1 - MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, l_bgColor, SDLUtils::T_TEXT_ALIGN_RIGHT, SDLUtils::T_TEXT_ALIGN_MIDDLE);
-         oss.str("");
-         oss.clear();
-      }
+         SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - 1 - MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, l_bgColor, SDLUtils::T_TEXT_ALIGN_RIGHT, SDLUtils::T_TEXT_ALIGN_MIDDLE);
 
       // Next line
       l_y += LINE_HEIGHT;
