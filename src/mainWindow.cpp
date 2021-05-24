@@ -4,6 +4,7 @@
 #include "def.h"
 #include "sdlutils.h"
 #include "fileUtils.h"
+#include "dialog.h"
 
 // Destructor
 MainWindow::~MainWindow(void)
@@ -24,8 +25,6 @@ MainWindow::MainWindow(const std::string &p_title):
    m_iconDir(NULL),
    m_iconUp(NULL)
 {
-   m_nbVisibleItems = (SCREEN_HEIGHT - LINE_HEIGHT) / LINE_HEIGHT;
-   INHIBIT(std::cout << "Nb visible items: " << m_nbVisibleItems << "\n";)
    // Load textures
    m_iconFile = SDLUtils::loadTexture(std::string(RES_PATH) + "/file.png");
    m_iconDir = SDLUtils::loadTexture(std::string(RES_PATH) + "/folder.png");
@@ -57,7 +56,7 @@ void MainWindow::render(const bool p_focus)
 
    // Render title text
    int l_y = LINE_HEIGHT / 2;
-   SDLUtils::renderText(m_title, MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_TEXT_ALIGN_LEFT, SDLUtils::T_TEXT_ALIGN_MIDDLE);
+   SDLUtils::renderText(m_title, MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
    // Render cursor
    if (p_focus)
@@ -76,17 +75,7 @@ void MainWindow::render(const bool p_focus)
    for (unsigned int l_i = m_camera; l_i < m_camera + m_nbVisibleItems && l_i < m_nbItems; ++l_i)
    {
       // Background color for the line
-      if (m_highlightedLine == l_i)
-      {
-         if (p_focus)
-            l_bgColor = {COLOR_CURSOR_FOCUS};
-         else
-            l_bgColor = {COLOR_CURSOR_NO_FOCUS};
-      }
-      else
-      {
-         l_bgColor = {COLOR_BODY_BG};
-      }
+      l_bgColor = getBackgroundColor(l_i, p_focus);
 
       // Icon
       if (l_i == 0 && m_fileLister[l_i].m_name == "..")
@@ -95,11 +84,11 @@ void MainWindow::render(const bool p_focus)
          SDLUtils::renderTexture(m_fileLister.isDirectory(l_i) ? m_iconDir : m_iconFile, MARGIN_X, l_y - (ICON_SIZE / 2));
 
       // File name
-      SDLUtils::renderText(m_fileLister[l_i].m_name, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, l_bgColor, SDLUtils::T_TEXT_ALIGN_LEFT, SDLUtils::T_TEXT_ALIGN_MIDDLE);
+      SDLUtils::renderText(m_fileLister[l_i].m_name, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
       // File size
       if (! m_fileLister.isDirectory(l_i))
-         SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - 1 - MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, l_bgColor, SDLUtils::T_TEXT_ALIGN_RIGHT, SDLUtils::T_TEXT_ALIGN_MIDDLE);
+         SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - 1 - MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
 
       // Next line
       l_y += LINE_HEIGHT;
@@ -109,27 +98,79 @@ void MainWindow::render(const bool p_focus)
 
 //------------------------------------------------------------------------------
 
-// Key pressed: validate
-void MainWindow::keyPressedValidate(void)
+// Key pressed
+void MainWindow::keyPressed(const SDL_Event &event)
 {
-   // If a file is highlighted, do nothing
-   if (! m_fileLister.isDirectory(m_highlightedLine))
+   // Button Validate
+   if (BUTTON_PRESSED_VALIDATE)
+   {
+      // Reset timer
+      m_lastPressed = -1;
+      m_timer = 0;
+      // If a file is highlighted, do nothing
+      if (! m_fileLister.isDirectory(m_highlightedLine))
+         return;
+      // Open highlighted dir
+      openHighlightedDir();
       return;
-   // Open highlighted dir
-   openHighlightedDir();
-}
-
-//------------------------------------------------------------------------------
-
-// Key pressed: back
-void MainWindow::keyPressedBack(void)
-{
-   // If we're already at '/, do nothing
-   if (m_title == "/")
+   }
+   // Button Back
+   if (BUTTON_PRESSED_BACK)
+   {
+      // Reset timer
+      m_lastPressed = -1;
+      m_timer = 0;
+      // If we're already at '/, do nothing
+      if (m_title == "/")
+         return;
+      // Select and open ".."
+      m_highlightedLine = 0;
+      openHighlightedDir();
       return;
-   // Select and open ".."
-   m_highlightedLine = 0;
-   openHighlightedDir();
+   }
+   // Button system menu
+   if (BUTTON_PRESSED_MENU_SYSTEM)
+   {
+      // Reset timer
+      m_lastPressed = -1;
+      m_timer = 0;
+      // Open dialog
+      Dialog l_dialog ("System");
+      l_dialog.addOption("Select all");
+      l_dialog.addOption("Select none");
+      l_dialog.addOption("New directory");
+      l_dialog.addOption("Disk info");
+      l_dialog.addOption("Quit");
+      switch(l_dialog.execute())
+      {
+         // Quit
+         case 4:
+            m_retVal = 0;
+            break;
+         default:
+            break;
+      }
+      return;
+   }
+   // Button context menu
+   if (BUTTON_PRESSED_MENU_CONTEXT)
+   {
+      // Reset timer
+      m_lastPressed = -1;
+      m_timer = 0;
+      // Open dialog
+      Dialog l_dialog ("x selected");
+      l_dialog.addOption("Copy");
+      l_dialog.addOption("Cut");
+      l_dialog.addOption("Delete");
+      l_dialog.addOption("Disk used");
+      switch(l_dialog.execute())
+      {
+         default:
+            break;
+      }
+      return;
+   }
 }
 
 //------------------------------------------------------------------------------

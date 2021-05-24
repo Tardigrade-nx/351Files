@@ -33,8 +33,10 @@ IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
    m_nbVisibleItems(0),
    m_timer(0),
    m_lastPressed(-1),
-   m_camera(0)
+   m_camera(0),
+   m_retVal(-1)
 {
+   m_nbVisibleItems = (SCREEN_HEIGHT - LINE_HEIGHT) / LINE_HEIGHT;
    // Add window to the list
    g_windows.push_back(this);
    g_hasChanged = true;
@@ -56,7 +58,7 @@ int IWindow::execute(void)
    // Main loop
    Uint32 l_time(0);
    SDL_Event event;
-   while (1)
+   while (m_retVal == -1)
    {
       l_time = SDL_GetTicks();
 
@@ -95,20 +97,8 @@ int IWindow::execute(void)
             m_timer = KEYHOLD_TIMER_FIRST;
             continue;
          }
-         if (BUTTON_PRESSED_VALIDATE)
-         {
-            keyPressedValidate();
-            m_lastPressed = -1;
-            m_timer = 0;
-            continue;
-         }
-         if (BUTTON_PRESSED_BACK)
-         {
-            keyPressedBack();
-            m_lastPressed = -1;
-            m_timer = 0;
-            continue;
-         }
+         // Specific reaction to event
+         keyPressed(event);
       }
 
       // Handle key holds
@@ -150,6 +140,10 @@ int IWindow::execute(void)
          m_timer = 0;
       }
 
+      // Close window now
+      if (m_retVal != -1)
+         return m_retVal;
+
       // Render windows if necessary
       if (g_hasChanged)
       {
@@ -163,7 +157,7 @@ int IWindow::execute(void)
       if (l_time <= MS_PER_FRAME)
          SDL_Delay(l_time);
    }
-   return 0;
+   return m_retVal;
 }
 
 //------------------------------------------------------------------------------
@@ -171,7 +165,7 @@ int IWindow::execute(void)
 // Render all windows
 void IWindow::renderAll(void)
 {
-   //~ INHIBIT(std::cout << "renderAll - " << g_windows.size() << " windows\n";)
+   INHIBIT(std::cout << "renderAll - " << g_windows.size() << " windows\n";)
    if (g_windows.empty())
       return;
    // First window to draw is the last that is fullscreen
@@ -253,4 +247,19 @@ void IWindow::adjustCamera(void)
       m_camera = m_highlightedLine;
    else if (m_highlightedLine > m_camera + m_nbVisibleItems - 1)
       m_camera = m_highlightedLine - m_nbVisibleItems + 1;
+}
+
+//------------------------------------------------------------------------------
+
+// Get background color for the item at the given index
+SDL_Color IWindow::getBackgroundColor(const unsigned int p_i, const bool p_focus)
+{
+   // Background color for the line
+   if (m_highlightedLine == p_i)
+   {
+      if (p_focus)
+         return {COLOR_CURSOR_FOCUS};
+      return {COLOR_CURSOR_NO_FOCUS};
+   }
+   return {COLOR_BODY_BG};
 }

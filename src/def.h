@@ -56,22 +56,27 @@
 #define KEYHOLD_TIMER_FIRST   16
 #define KEYHOLD_TIMER         4
 
+// Size of dialog border
+#define DIALOG_BORDER         4
+
 // Button events
 #if defined(DEVICE_RG351P)
    // TODO
 #elif defined(DEVICE_RG351V)
    // TODO
 #else
-   #define BUTTON_PRESSED_UP           event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_UP
-   #define BUTTON_PRESSED_DOWN         event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_DOWN
-   #define BUTTON_PRESSED_PAGEUP       event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_PAGEUP
-   #define BUTTON_PRESSED_PAGEDOWN     event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_PAGEDOWN
-   #define BUTTON_PRESSED_VALIDATE     event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_RETURN
-   #define BUTTON_PRESSED_BACK         event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_BACKSPACE
-   #define BUTTON_HELD_UP              SDL_GetKeyboardState(NULL)[SDL_SCANCODE_UP]
-   #define BUTTON_HELD_PAGEUP          SDL_GetKeyboardState(NULL)[SDL_SCANCODE_PAGEUP]
-   #define BUTTON_HELD_DOWN            SDL_GetKeyboardState(NULL)[SDL_SCANCODE_DOWN]
-   #define BUTTON_HELD_PAGEDOWN        SDL_GetKeyboardState(NULL)[SDL_SCANCODE_PAGEDOWN]
+   #define BUTTON_PRESSED_UP              event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_UP
+   #define BUTTON_PRESSED_DOWN            event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_DOWN
+   #define BUTTON_PRESSED_PAGEUP          event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_PAGEUP
+   #define BUTTON_PRESSED_PAGEDOWN        event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_PAGEDOWN
+   #define BUTTON_PRESSED_VALIDATE        event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_RETURN
+   #define BUTTON_PRESSED_BACK            event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_BACKSPACE
+   #define BUTTON_PRESSED_MENU_SYSTEM     event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_w
+   #define BUTTON_PRESSED_MENU_CONTEXT    event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_x
+   #define BUTTON_HELD_UP                 SDL_GetKeyboardState(NULL)[SDL_SCANCODE_UP]
+   #define BUTTON_HELD_PAGEUP             SDL_GetKeyboardState(NULL)[SDL_SCANCODE_PAGEUP]
+   #define BUTTON_HELD_DOWN               SDL_GetKeyboardState(NULL)[SDL_SCANCODE_DOWN]
+   #define BUTTON_HELD_PAGEDOWN           SDL_GetKeyboardState(NULL)[SDL_SCANCODE_PAGEDOWN]
 #endif
 
 // Globals

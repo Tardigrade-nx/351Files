@@ -141,38 +141,64 @@ TTF_Font *SDLUtils::loadFont(const std::string &p_path, const int p_size)
 //------------------------------------------------------------------------------
 
 // Render a texture
-void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p_y)
+void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p_y, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV)
 {
    SDL_Rect destRect;
    destRect.x = p_x;
    destRect.y = p_y;
    SDL_QueryTexture(p_texture, NULL, NULL, &destRect.w, &destRect.h);
-   SDL_RenderCopy(g_renderer, p_texture, NULL, &destRect);
-}
-
-//------------------------------------------------------------------------------
-
-// Render a texture at the center off the screen
-void SDLUtils::renderTexture(SDL_Texture * p_texture)
-{
-   SDL_Rect destRect;
-   SDL_QueryTexture(p_texture, NULL, NULL, &destRect.w, &destRect.h);
-   destRect.x = (SCREEN_WIDTH - destRect.w) / 2;
-   destRect.y = (SCREEN_HEIGHT - destRect.h) / 2;
+   switch (p_alignH)
+   {
+      case T_ALIGN_RIGHT:
+         destRect.x -= destRect.w;
+         break;
+      case T_ALIGN_CENTER:
+         destRect.x -= destRect.w / 2;
+         break;
+      default:
+         break;
+   }
+   switch (p_alignV)
+   {
+      case T_ALIGN_BOTTOM:
+         destRect.y -= destRect.h;
+         break;
+      case T_ALIGN_MIDDLE:
+         destRect.y -= destRect.h / 2;
+         break;
+      default:
+         break;
+   }
    SDL_RenderCopy(g_renderer, p_texture, NULL, &destRect);
 }
 
 //------------------------------------------------------------------------------
 
 // Render text on the screen
-void SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_TEXT_ALIGN_H p_textAlignH, const T_TEXT_ALIGN_V p_textAlignV)
+void SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV)
+{
+   SDL_Texture *texture = renderText(p_text, p_fg, p_bg);
+   if (texture == NULL)
+   {
+      std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
+      return;
+   }
+   // Render texture on screen
+   renderTexture(texture, p_x, p_y, p_alignH, p_alignV);
+   // Free texture
+   SDL_DestroyTexture(texture);
+}
+
+//------------------------------------------------------------------------------
+
+SDL_Texture *SDLUtils::renderText(const std::string &p_text, const SDL_Color &p_fg, const SDL_Color &p_bg)
 {
    // Create surface
    SDL_Surface *surface = TTF_RenderUTF8_Shaded(g_font, p_text.c_str(), p_fg, p_bg);
    if (surface == NULL)
    {
       std::cerr << "TTF_RenderUTF8_Shaded: " << SDL_GetError() << std::endl;
-      return;
+      return NULL;
    }
    // Create texture from surface
    SDL_Texture *texture = SDL_CreateTextureFromSurface(g_renderer, surface);
@@ -180,38 +206,7 @@ void SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_
    if (texture == NULL)
    {
       std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
-      return;
+      return NULL;
    }
-   // Compute coordinates depending on the requested alignment
-   int x = p_x;
-   int y = p_y;
-   int w = 0;
-   int h = 0;
-   SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-   switch (p_textAlignH)
-   {
-      case T_TEXT_ALIGN_RIGHT:
-         x -= w;
-         break;
-      case T_TEXT_ALIGN_CENTER:
-         x -= w / 2;
-         break;
-      default:
-         break;
-   }
-   switch (p_textAlignV)
-   {
-      case T_TEXT_ALIGN_BOTTOM:
-         y -= h;
-         break;
-      case T_TEXT_ALIGN_MIDDLE:
-         y -= h / 2;
-         break;
-      default:
-         break;
-   }
-   // Render texture on screen
-   renderTexture(texture, x, y);
-   // Free texture
-   SDL_DestroyTexture(texture);
+   return texture;
 }

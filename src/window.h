@@ -33,11 +33,13 @@ class IWindow
    void moveCursorDown(const unsigned int p_step, bool p_loop);
 
    // Key pressed
-   virtual void keyPressedValidate(void) = 0;
-   virtual void keyPressedBack(void) = 0;
+   virtual void keyPressed(const SDL_Event &event) = 0;
 
    // Adjust camera
    void adjustCamera(void);
+
+   // Get background color for the item at the given index
+   SDL_Color getBackgroundColor(const unsigned int p_i, const bool p_focus);
 
    // Window is fullscreen or not
    bool m_fullscreen;
@@ -66,6 +68,10 @@ class IWindow
 
    // Index of the first displayed line
    unsigned int m_camera;
+
+   // Return value of the window
+   // -1 => executing
+   int m_retVal;
 
    private:
 

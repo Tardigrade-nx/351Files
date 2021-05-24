@@ -27,8 +27,7 @@ class MainWindow : public IWindow
    const MainWindow &operator =(const MainWindow &p_source);
 
    // Key pressed
-   virtual void keyPressedValidate(void);
-   virtual void keyPressedBack(void);
+   virtual void keyPressed(const SDL_Event &event);
 
    // Open highlighted dir
    void openHighlightedDir(void);
