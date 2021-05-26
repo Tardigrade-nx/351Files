@@ -72,7 +72,7 @@ const bool CFileLister::list(const std::string &p_path)
     return true;
 }
 
-const T_FILE &CFileLister::operator[](const unsigned int p_i) const
+T_FILE &CFileLister::operator[](const unsigned int p_i)
 {
     if (p_i < m_listDirs.size())
         return m_listDirs[p_i];
@@ -113,4 +113,27 @@ const unsigned int CFileLister::searchDir(const std::string &p_name) const
             ++l_ret;
     }
     return l_found ? l_ret : 0;
+}
+
+// Set selected status for all files (except '..')
+void CFileLister::setSelectedAll(const bool p_selected)
+{
+    auto it = m_listDirs.begin();
+    for (; it != m_listDirs.end(); ++it)
+        if (it->m_name != "..")
+            it->m_selected = p_selected;
+    for (it = m_listFiles.begin(); it != m_listFiles.end(); ++it)
+        it->m_selected = p_selected;
+}
+
+// Number of selected files
+const unsigned int CFileLister::getNbSelected(void) const
+{
+    unsigned int nb = 0;
+    auto it = m_listDirs.begin();
+    for (; it != m_listDirs.end(); ++it)
+        nb += it->m_selected;
+    for (it = m_listFiles.begin(); it != m_listFiles.end(); ++it)
+        nb += it->m_selected;
+    return nb;
 }

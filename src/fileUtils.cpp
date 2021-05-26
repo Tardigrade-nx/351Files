@@ -26,3 +26,21 @@ std::string FileUtils::formatSize(const unsigned long int &p_size)
       oss << std::fixed << std::setprecision(1) << l_size << fileSizeUnits[l_i];
    return oss.str();
 }
+
+// To lower case
+static void AsciiToLower(std::string *s)
+{
+   for (char &c : *s)
+      if (c >= 'A' && c <= 'Z')
+         c -= ('Z' - 'z');
+}
+
+// Lower case file extension
+std::string FileUtils::getLowercaseFileExtension(const std::string &p_name) {
+   const auto dot_pos = p_name.rfind('.');
+   if (dot_pos == std::string::npos)
+      return "";
+   std::string ext = p_name.substr(dot_pos + 1);
+   AsciiToLower(&ext);
+   return ext;
+}

@@ -5,6 +5,7 @@
 #include <string>
 #include <SDL.h>
 #include "sdlutils.h"
+#include "fileUtils.h"
 
 // Class used to store file info
 struct T_FILE
@@ -12,28 +13,24 @@ struct T_FILE
     // Constructor
     T_FILE(void):
         m_name(""),
-        m_size(0)
+        m_ext(""),
+        m_size(0),
+        m_selected(false)
     {}
 
     // Constructor
     T_FILE(const std::string &p_name, const unsigned long int &p_size):
         m_name(p_name),
-        m_size(p_size)
+        m_ext(FileUtils::getLowercaseFileExtension(p_name)),
+        m_size(p_size),
+        m_selected(false)
     {}
 
     // Copy constructor
-    T_FILE(const T_FILE &p_source):
-        m_name(p_source.m_name),
-        m_size(p_source.m_size)
-    {}
+    T_FILE(const T_FILE &p_source) = default;
 
     // Operator =
-    const T_FILE &operator =(const T_FILE &p_source)
-    {
-        m_name = p_source.m_name;
-        m_size = p_source.m_size;
-        return *this;
-    }
+    T_FILE &operator =(const T_FILE &p_source) = default;
 
     // Destructor
     ~T_FILE(void)
@@ -41,7 +38,9 @@ struct T_FILE
 
     // File attributes
     std::string m_name;
+    std::string m_ext;
     unsigned long int m_size;
+    bool m_selected;
 };
 
 class CFileLister
@@ -59,7 +58,7 @@ class CFileLister
     const bool list(const std::string &p_path);
 
     // Get an element in the list (dirs and files combined)
-    const T_FILE &operator[](const unsigned int p_i) const;
+    T_FILE &operator[](const unsigned int p_i);
 
     // Get the number of dirs/files
     const unsigned int getNbDirs(void) const;
@@ -71,6 +70,12 @@ class CFileLister
 
     // Get index of the given dir name, 0 if not found
     const unsigned int searchDir(const std::string &p_name) const;
+
+    // Set selected status for all files (except '..')
+    void setSelectedAll(const bool p_selected);
+
+    // Number of selected files
+    const unsigned int getNbSelected(void) const;
 
     private:
 

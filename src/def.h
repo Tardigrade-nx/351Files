@@ -42,6 +42,7 @@
 // Colors
 #define COLOR_TITLE_BG           68,  68,  68
 #define COLOR_TEXT_NORMAL        255, 255, 255
+#define COLOR_TEXT_SELECTED      255, 0, 0
 #define COLOR_BODY_BG            45,  45,  45
 #define COLOR_CURSOR_FOCUS       21,  83,  158
 #define COLOR_CURSOR_NO_FOCUS    80,  80,  80
@@ -73,6 +74,7 @@
    #define BUTTON_PRESSED_BACK            event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_BACKSPACE
    #define BUTTON_PRESSED_MENU_SYSTEM     event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_w
    #define BUTTON_PRESSED_MENU_CONTEXT    event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_x
+   #define BUTTON_PRESSED_SELECT          event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_INSERT
    #define BUTTON_HELD_UP                 SDL_GetKeyboardState(NULL)[SDL_SCANCODE_UP]
    #define BUTTON_HELD_PAGEUP             SDL_GetKeyboardState(NULL)[SDL_SCANCODE_PAGEUP]
    #define BUTTON_HELD_DOWN               SDL_GetKeyboardState(NULL)[SDL_SCANCODE_DOWN]

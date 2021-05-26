@@ -32,6 +32,15 @@ class MainWindow : public IWindow
    // Open highlighted dir
    void openHighlightedDir(void);
 
+   // Select highlighted item
+   void selectHighlightedItem(const bool p_step);
+
+   // Open system menu
+   void openSystemMenu(void);
+
+   // Open context menu
+   void openContextMenu(void);
+
    // File lister
    CFileLister m_fileLister;
 

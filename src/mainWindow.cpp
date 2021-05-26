@@ -98,24 +98,29 @@ void MainWindow::render(const bool p_focus)
 
    // Render file list
    l_y += LINE_HEIGHT;
+   SDL_Color l_fgColor = {COLOR_TEXT_NORMAL};
    SDL_Color l_bgColor = {COLOR_BODY_BG};
    for (unsigned int l_i = m_camera; l_i < m_camera + m_nbVisibleItems && l_i < m_nbItems; ++l_i)
    {
-      // Background color for the line
+      // Colors for the line
+      if (m_fileLister[l_i].m_selected)
+         l_fgColor = {COLOR_TEXT_SELECTED};
+      else
+         l_fgColor = {COLOR_TEXT_NORMAL};
       l_bgColor = getBackgroundColor(l_i, p_focus);
 
       // Icon
-      if (l_i == 0 && m_fileLister[l_i].m_name == "..")
+      if (m_fileLister[l_i].m_name == "..")
          SDLUtils::renderTexture(m_iconUp, MARGIN_X, l_y - (ICON_SIZE / 2));
       else
          SDLUtils::renderTexture(m_fileLister.isDirectory(l_i) ? m_iconDir : m_iconFile, MARGIN_X, l_y - (ICON_SIZE / 2));
 
       // File name
-      SDLUtils::renderText(m_fileLister[l_i].m_name, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+      SDLUtils::renderText(m_fileLister[l_i].m_name, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
       // File size
       if (! m_fileLister.isDirectory(l_i))
-         SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - 1 - MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
+         SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - 1 - MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
 
       // Next line
       l_y += LINE_HEIGHT;
@@ -161,22 +166,8 @@ void MainWindow::keyPressed(const SDL_Event &event)
       // Reset timer
       m_lastPressed = -1;
       m_timer = 0;
-      // Open dialog
-      Dialog l_dialog ("System");
-      l_dialog.addOption("Select all", m_iconSelect);
-      l_dialog.addOption("Select none", m_iconNone);
-      l_dialog.addOption("New directory", m_iconNewDir);
-      l_dialog.addOption("Disk info", m_iconDisk);
-      l_dialog.addOption("Quit", m_iconQuit);
-      switch(l_dialog.execute())
-      {
-         // Quit
-         case 4:
-            m_retVal = 0;
-            break;
-         default:
-            break;
-      }
+      // Open system menu
+      openSystemMenu();
       return;
    }
    // Button context menu
@@ -185,18 +176,18 @@ void MainWindow::keyPressed(const SDL_Event &event)
       // Reset timer
       m_lastPressed = -1;
       m_timer = 0;
-      // Open dialog
-      Dialog l_dialog ("x selected");
-      l_dialog.addOption("Copy", m_iconCopy);
-      l_dialog.addOption("Cut", m_iconCut);
-      l_dialog.addOption("Paste", m_iconPaste);
-      l_dialog.addOption("Delete", m_iconTrash);
-      l_dialog.addOption("Disk used", m_iconDisk);
-      switch(l_dialog.execute())
-      {
-         default:
-            break;
-      }
+      // Open context menu
+      openContextMenu();
+      return;
+   }
+   // Button select
+   if (BUTTON_PRESSED_SELECT)
+   {
+      // Reset timer
+      m_lastPressed = -1;
+      m_timer = 0;
+      // Select / unselect highlighted item
+      selectHighlightedItem(true);
       return;
    }
 }
@@ -237,9 +228,106 @@ void MainWindow::openHighlightedDir(void)
          m_highlightedLine = 0;
       // Adjust camera
       adjustCamera();
-      // TODO : clear select list
       // New render
       g_hasChanged = true;
       INHIBIT(std::cout << "Path: " << m_title << " (" << m_nbItems << ") items\n";)
+   }
+}
+
+//------------------------------------------------------------------------------
+
+// Select highlighted item
+void MainWindow::selectHighlightedItem(const bool p_step)
+{
+   // Cannot select '..'
+   if (m_fileLister[m_highlightedLine].m_name == "..")
+      return;
+   // Select/unselect highlighted item
+   m_fileLister[m_highlightedLine].m_selected = ! m_fileLister[m_highlightedLine].m_selected;
+   // Move 1 step if requested
+   if (p_step)
+      moveCursorDown(1, false);
+   g_hasChanged = true;
+}
+
+//------------------------------------------------------------------------------
+
+// Open system menu
+void MainWindow::openSystemMenu(void)
+{
+   // Open dialog
+   Dialog l_dialog ("System");
+   l_dialog.addOption("Select all", 0, m_iconSelect);
+   l_dialog.addOption("Select none", 1, m_iconNone);
+   l_dialog.addOption("New directory", 2, m_iconNewDir);
+   l_dialog.addOption("Disk info", 3, m_iconDisk);
+   l_dialog.addOption("Quit", 4, m_iconQuit);
+   switch(l_dialog.execute())
+   {
+      // Select all
+      case 0:
+         m_fileLister.setSelectedAll(true);
+         g_hasChanged = true;
+         break;
+      // Select none
+      case 1:
+         m_fileLister.setSelectedAll(false);
+         g_hasChanged = true;
+         break;
+      case 2:
+      case 3:
+      {
+         Dialog l_dialog2 ("Info");
+         l_dialog2.addLabel("Not yet implemented!");
+         l_dialog2.addOption("OK", 0);
+         l_dialog2.execute();
+      }
+      break;
+      // Quit
+      case 4:
+         m_retVal = 0;
+         break;
+      default:
+         break;
+   }
+}
+
+//------------------------------------------------------------------------------
+
+// Open context menu
+void MainWindow::openContextMenu(void)
+{
+   // If no file is selected, select current file
+   auto nbSelected = m_fileLister.getNbSelected();
+   if (nbSelected == 0)
+   {
+      selectHighlightedItem(false);
+      nbSelected = m_fileLister.getNbSelected();
+   }
+   // Open dialog
+   std::ostringstream oss;
+   oss << nbSelected << " selected";
+   Dialog l_dialog (oss.str());
+   l_dialog.addOption("Copy", 0, m_iconCopy);
+   l_dialog.addOption("Cut", 1, m_iconCut);
+   l_dialog.addOption("Paste", 2, m_iconPaste);
+   l_dialog.addOption("Delete", 3, m_iconTrash);
+   l_dialog.addOption("Disk used", 4, m_iconDisk);
+   switch(l_dialog.execute())
+   {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      {
+         Dialog l_dialog2 ("Info");
+         l_dialog2.addLabel("Not yet implemented!");
+         l_dialog2.addOption("OK", 0);
+         l_dialog2.execute();
+      }
+      break;
+      default:
+         break;
    }
 }

@@ -143,7 +143,7 @@ void Dialog::keyPressed(const SDL_Event &event)
       m_lastPressed = -1;
       m_timer = 0;
       // Close window with return value
-      m_retVal = m_highlightedLine;
+      m_retVal = m_optionRetVals[m_highlightedLine];
       return;
    }
    // Button Back
@@ -172,9 +172,10 @@ void Dialog::addLabel(const std::string &p_label, SDL_Texture *p_icon)
 //------------------------------------------------------------------------------
 
 // Add a menu option
-void Dialog::addOption(const std::string &p_option, SDL_Texture *p_icon)
+void Dialog::addOption(const std::string &p_option, const int p_retVal, SDL_Texture *p_icon)
 {
    m_options.push_back(p_option);
+   m_optionRetVals.push_back(p_retVal);
    m_optionIcons.push_back(p_icon);
    ++m_nbItems;
    if (p_icon != NULL && !m_iconPresent)
