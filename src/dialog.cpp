@@ -4,7 +4,8 @@
 
 // Constructor
 Dialog::Dialog(const std::string &p_title):
-   IWindow(false, p_title)
+   IWindow(false, p_title),
+   m_iconPresent(false)
 {
    m_cursorLoop = true;
 }
@@ -57,9 +58,14 @@ void Dialog::render(const bool p_focus)
          l_largestW = l_w;
    }
 
+   // Largest line of the dialog
+   l_largestW = DIALOG_BORDER + MARGIN_X + l_largestW + MARGIN_X + DIALOG_BORDER;
+   if (m_iconPresent)
+      l_largestW += ICON_SIZE + MARGIN_X;
+
    // Render dialog background
    SDL_Rect l_dialogDim;
-   l_dialogDim.w = l_largestW + (MARGIN_X + DIALOG_BORDER) * 2;
+   l_dialogDim.w = l_largestW;
    l_dialogDim.h = LINE_HEIGHT + (m_labels.size() + m_options.size()) * LINE_HEIGHT + DIALOG_BORDER;
    l_dialogDim.x = (SCREEN_WIDTH - l_dialogDim.w) / 2;
    l_dialogDim.y = (SCREEN_HEIGHT - l_dialogDim.h) / 2;
@@ -81,10 +87,14 @@ void Dialog::render(const bool p_focus)
 
    // Display labels
    l_y += LINE_HEIGHT;
-   std::vector<SDL_Texture *>::iterator l_tex;
-   for (l_tex = l_texLabels.begin(); l_tex != l_texLabels.end(); ++l_tex)
+   std::vector<SDL_Texture *>::iterator l_tex, l_icon;
+   for (l_tex = l_texLabels.begin(), l_icon = m_labelIcons.begin(); l_tex != l_texLabels.end(); ++l_tex, ++l_icon)
    {
-      SDLUtils::renderTexture(*l_tex, l_dialogDim.x + DIALOG_BORDER + MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+      // Icon
+      if (*l_icon != NULL)
+         SDLUtils::renderTexture(*l_icon, l_dialogDim.x + DIALOG_BORDER + MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+      // Text
+      SDLUtils::renderTexture(*l_tex, l_dialogDim.x + DIALOG_BORDER + MARGIN_X + (*l_icon == NULL ? 0 : ICON_SIZE + MARGIN_X), l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
       l_y += LINE_HEIGHT;
    }
 
@@ -100,9 +110,13 @@ void Dialog::render(const bool p_focus)
    SDL_RenderFillRect(g_renderer, &l_rect);
 
    // Display options
-   for (l_tex = l_texOptions.begin(); l_tex != l_texOptions.end(); ++l_tex)
+   for (l_tex = l_texOptions.begin(), l_icon = m_optionIcons.begin(); l_tex != l_texOptions.end(); ++l_tex, ++l_icon)
    {
-      SDLUtils::renderTexture(*l_tex, l_dialogDim.x + DIALOG_BORDER + MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+      // Icon
+      if (*l_icon != NULL)
+         SDLUtils::renderTexture(*l_icon, l_dialogDim.x + DIALOG_BORDER + MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+      // Text
+      SDLUtils::renderTexture(*l_tex, l_dialogDim.x + DIALOG_BORDER + MARGIN_X + (*l_icon == NULL ? 0 : ICON_SIZE + MARGIN_X), l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
       l_y += LINE_HEIGHT;
    }
 
@@ -147,16 +161,22 @@ void Dialog::keyPressed(const SDL_Event &event)
 //------------------------------------------------------------------------------
 
 // Add a label
-void Dialog::addLabel(const std::string &p_label)
+void Dialog::addLabel(const std::string &p_label, SDL_Texture *p_icon)
 {
    m_labels.push_back(p_label);
+   m_labelIcons.push_back(p_icon);
+   if (p_icon != NULL && !m_iconPresent)
+      m_iconPresent = true;
 }
 
 //------------------------------------------------------------------------------
 
 // Add a menu option
-void Dialog::addOption(const std::string &p_option)
+void Dialog::addOption(const std::string &p_option, SDL_Texture *p_icon)
 {
    m_options.push_back(p_option);
+   m_optionIcons.push_back(p_icon);
    ++m_nbItems;
+   if (p_icon != NULL && !m_iconPresent)
+      m_iconPresent = true;
 }

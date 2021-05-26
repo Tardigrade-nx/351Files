@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <SDL.h>
 #include "window.h"
 
 class Dialog : public IWindow
@@ -19,18 +20,23 @@ class Dialog : public IWindow
    virtual void render(const bool p_focus);
 
    // Add a label
-   void addLabel(const std::string &p_label);
+   void addLabel(const std::string &p_label, SDL_Texture *p_icon = NULL);
 
    // Add a menu option
-   void addOption(const std::string &p_option);
+   void addOption(const std::string &p_option, SDL_Texture *p_icon = NULL);
 
    private:
 
    // List of labels
    std::vector<std::string> m_labels;
+   std::vector<SDL_Texture *> m_labelIcons;
 
    // List of options
    std::vector<std::string> m_options;
+   std::vector<SDL_Texture *> m_optionIcons;
+
+   // True if at least 1 icon is present
+   bool m_iconPresent;
 
    // Forbidden
    Dialog(const Dialog &p_source);

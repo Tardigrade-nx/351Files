@@ -10,9 +10,18 @@
 MainWindow::~MainWindow(void)
 {
    // Free textures
-   if (m_iconFile != NULL) { SDL_DestroyTexture(m_iconFile); m_iconFile = NULL; }
-   if (m_iconDir != NULL) { SDL_DestroyTexture(m_iconDir); m_iconDir = NULL; }
-   if (m_iconUp != NULL) { SDL_DestroyTexture(m_iconUp); m_iconUp = NULL; }
+   if (m_iconFile != NULL)    { SDL_DestroyTexture(m_iconFile);      m_iconFile = NULL; }
+   if (m_iconDir != NULL)     { SDL_DestroyTexture(m_iconDir);       m_iconDir = NULL; }
+   if (m_iconUp != NULL)      { SDL_DestroyTexture(m_iconUp);        m_iconUp = NULL; }
+   if (m_iconCopy != NULL)    { SDL_DestroyTexture(m_iconCopy);      m_iconCopy = NULL; }
+   if (m_iconCut != NULL)     { SDL_DestroyTexture(m_iconCut);       m_iconCut = NULL; }
+   if (m_iconPaste != NULL)   { SDL_DestroyTexture(m_iconPaste);     m_iconPaste = NULL; }
+   if (m_iconTrash != NULL)   { SDL_DestroyTexture(m_iconTrash);     m_iconTrash = NULL; }
+   if (m_iconDisk != NULL)    { SDL_DestroyTexture(m_iconDisk);      m_iconDisk = NULL; }
+   if (m_iconSelect != NULL)  { SDL_DestroyTexture(m_iconSelect);    m_iconSelect = NULL; }
+   if (m_iconNone != NULL)    { SDL_DestroyTexture(m_iconNone);      m_iconNone = NULL; }
+   if (m_iconNewDir != NULL)  { SDL_DestroyTexture(m_iconNewDir);    m_iconNewDir = NULL; }
+   if (m_iconQuit != NULL)    { SDL_DestroyTexture(m_iconQuit);      m_iconQuit = NULL; }
 }
 
 //------------------------------------------------------------------------------
@@ -23,12 +32,30 @@ MainWindow::MainWindow(const std::string &p_title):
    m_fileLister(),
    m_iconFile(NULL),
    m_iconDir(NULL),
-   m_iconUp(NULL)
+   m_iconUp(NULL),
+   m_iconCopy(NULL),
+   m_iconCut(NULL),
+   m_iconPaste(NULL),
+   m_iconTrash(NULL),
+   m_iconDisk(NULL),
+   m_iconSelect(NULL),
+   m_iconNone(NULL),
+   m_iconNewDir(NULL),
+   m_iconQuit(NULL)
 {
    // Load textures
    m_iconFile = SDLUtils::loadTexture(std::string(RES_PATH) + "/file.png");
    m_iconDir = SDLUtils::loadTexture(std::string(RES_PATH) + "/folder.png");
    m_iconUp = SDLUtils::loadTexture(std::string(RES_PATH) + "/up.png");
+   m_iconCopy = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit-copy.png");
+   m_iconCut = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit-cut.png");
+   m_iconPaste = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit-paste.png");
+   m_iconTrash = SDLUtils::loadTexture(std::string(RES_PATH) + "/trash.png");
+   m_iconDisk = SDLUtils::loadTexture(std::string(RES_PATH) + "/disk.png");
+   m_iconSelect = SDLUtils::loadTexture(std::string(RES_PATH) + "/select.png");
+   m_iconNone = SDLUtils::loadTexture(std::string(RES_PATH) + "/none.png");
+   m_iconNewDir = SDLUtils::loadTexture(std::string(RES_PATH) + "/folder-new.png");
+   m_iconQuit = SDLUtils::loadTexture(std::string(RES_PATH) + "/quit.png");
    // List files
    if (! m_fileLister.list(m_title))
    {
@@ -136,11 +163,11 @@ void MainWindow::keyPressed(const SDL_Event &event)
       m_timer = 0;
       // Open dialog
       Dialog l_dialog ("System");
-      l_dialog.addOption("Select all");
-      l_dialog.addOption("Select none");
-      l_dialog.addOption("New directory");
-      l_dialog.addOption("Disk info");
-      l_dialog.addOption("Quit");
+      l_dialog.addOption("Select all", m_iconSelect);
+      l_dialog.addOption("Select none", m_iconNone);
+      l_dialog.addOption("New directory", m_iconNewDir);
+      l_dialog.addOption("Disk info", m_iconDisk);
+      l_dialog.addOption("Quit", m_iconQuit);
       switch(l_dialog.execute())
       {
          // Quit
@@ -160,10 +187,11 @@ void MainWindow::keyPressed(const SDL_Event &event)
       m_timer = 0;
       // Open dialog
       Dialog l_dialog ("x selected");
-      l_dialog.addOption("Copy");
-      l_dialog.addOption("Cut");
-      l_dialog.addOption("Delete");
-      l_dialog.addOption("Disk used");
+      l_dialog.addOption("Copy", m_iconCopy);
+      l_dialog.addOption("Cut", m_iconCut);
+      l_dialog.addOption("Paste", m_iconPaste);
+      l_dialog.addOption("Delete", m_iconTrash);
+      l_dialog.addOption("Disk used", m_iconDisk);
       switch(l_dialog.execute())
       {
          default:

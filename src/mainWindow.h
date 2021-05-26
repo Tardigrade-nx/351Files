@@ -39,6 +39,15 @@ class MainWindow : public IWindow
    SDL_Texture *m_iconFile;
    SDL_Texture *m_iconDir;
    SDL_Texture *m_iconUp;
+   SDL_Texture *m_iconCopy;
+   SDL_Texture *m_iconCut;
+   SDL_Texture *m_iconPaste;
+   SDL_Texture *m_iconTrash;
+   SDL_Texture *m_iconDisk;
+   SDL_Texture *m_iconSelect;
+   SDL_Texture *m_iconNone;
+   SDL_Texture *m_iconNewDir;
+   SDL_Texture *m_iconQuit;
 
 };
 
