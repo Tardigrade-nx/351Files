@@ -27,9 +27,6 @@ int main(int argc, char* args[])
       return 1;
    }
 
-   // Load textures
-   // ...
-
    // Load font
    g_font = SDLUtils::loadFont(std::string(RES_PATH) + "/" + FONT_NAME, FONT_SIZE);
    if (g_font == NULL)

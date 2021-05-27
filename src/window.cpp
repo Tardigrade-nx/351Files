@@ -149,6 +149,9 @@ int IWindow::execute(void)
       {
          renderAll();
          SDL_RenderPresent(g_renderer);
+         #ifndef DEVICE_DEFAULT
+         SDL_RenderPresent(g_renderer);
+         #endif
          g_hasChanged = false;
       }
 

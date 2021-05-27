@@ -26,11 +26,11 @@ bool SDLUtils::init()
    }
 
    // Initialize SDL_ttf
-    if (TTF_Init() == -1)
-    {
-        std::cerr << "SDL_ttf could not initialize! TTF_GetError: " << TTF_GetError() << std::endl;
-        return 1;
-    }
+   if (TTF_Init() == -1)
+   {
+      std::cerr << "SDL_ttf could not initialize! TTF_GetError: " << TTF_GetError() << std::endl;
+      return false;
+   }
 
    // Initialize joystick
    INHIBIT(std::cout << "SDL_NumJoysticks: '" << SDL_NumJoysticks() << "'" << std::endl;)
@@ -58,7 +58,11 @@ bool SDLUtils::init()
    }
 
    // Create renderer
+   #if defined(DEVICE_DEFAULT)
    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
+   #else
+   g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);
+   #endif
    if (g_renderer == NULL)
    {
       std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
