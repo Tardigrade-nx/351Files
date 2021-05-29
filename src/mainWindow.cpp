@@ -42,9 +42,10 @@ void MainWindow::render(const bool p_focus)
    SDL_Rect rect { 0, 0, SCREEN_WIDTH, LINE_HEIGHT };
    SDL_RenderFillRect(g_renderer, &rect);
 
-   // Render title text
+   // Render title
    int l_y = LINE_HEIGHT / 2;
-   SDLUtils::renderText(m_title, MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+   SDLUtils::renderTexture(g_iconFloppy, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+   SDLUtils::renderText(m_title, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
    // Render cursor
    if (p_focus)
@@ -72,9 +73,9 @@ void MainWindow::render(const bool p_focus)
 
       // Icon
       if (m_fileLister[l_i].m_name == "..")
-         SDLUtils::renderTexture(g_iconUp, MARGIN_X, l_y - (ICON_SIZE / 2));
+         SDLUtils::renderTexture(g_iconUp, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
       else
-         SDLUtils::renderTexture(m_fileLister.isDirectory(l_i) ? g_iconDir : g_iconFile, MARGIN_X, l_y - (ICON_SIZE / 2));
+         SDLUtils::renderTexture(m_fileLister.isDirectory(l_i) ? g_iconDir : g_iconFile, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
       // File name
       SDLUtils::renderText(m_fileLister[l_i].m_name, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);

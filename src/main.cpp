@@ -30,6 +30,7 @@ SDL_Texture *g_iconNewDir = NULL;
 SDL_Texture *g_iconQuit = NULL;
 SDL_Texture *g_iconEdit = NULL;
 SDL_Texture *g_iconCancel = NULL;
+SDL_Texture *g_iconFloppy = NULL;
 
 //------------------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ int main(int argc, char* args[])
    g_iconQuit = SDLUtils::loadTexture(std::string(RES_PATH) + "/quit.png");
    g_iconEdit = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit.png");
    g_iconCancel = SDLUtils::loadTexture(std::string(RES_PATH) + "/cancel.png");
+   g_iconFloppy = SDLUtils::loadTexture(std::string(RES_PATH) + "/floppy.png");
 
    // Load font
    g_font = SDLUtils::loadFont(std::string(RES_PATH) + "/" + FONT_NAME, FONT_SIZE);
@@ -88,6 +90,7 @@ int main(int argc, char* args[])
    if (g_iconQuit != NULL)    { SDL_DestroyTexture(g_iconQuit);      g_iconQuit = NULL; }
    if (g_iconEdit != NULL)    { SDL_DestroyTexture(g_iconEdit);      g_iconEdit = NULL; }
    if (g_iconCancel != NULL)  { SDL_DestroyTexture(g_iconCancel);    g_iconCancel = NULL; }
+   if (g_iconFloppy != NULL)  { SDL_DestroyTexture(g_iconFloppy);    g_iconFloppy = NULL; }
 
    // Quit SDL
    SDLUtils::close();
