@@ -9,53 +9,14 @@
 // Destructor
 MainWindow::~MainWindow(void)
 {
-   // Free textures
-   if (m_iconFile != NULL)    { SDL_DestroyTexture(m_iconFile);      m_iconFile = NULL; }
-   if (m_iconDir != NULL)     { SDL_DestroyTexture(m_iconDir);       m_iconDir = NULL; }
-   if (m_iconUp != NULL)      { SDL_DestroyTexture(m_iconUp);        m_iconUp = NULL; }
-   if (m_iconCopy != NULL)    { SDL_DestroyTexture(m_iconCopy);      m_iconCopy = NULL; }
-   if (m_iconCut != NULL)     { SDL_DestroyTexture(m_iconCut);       m_iconCut = NULL; }
-   if (m_iconPaste != NULL)   { SDL_DestroyTexture(m_iconPaste);     m_iconPaste = NULL; }
-   if (m_iconTrash != NULL)   { SDL_DestroyTexture(m_iconTrash);     m_iconTrash = NULL; }
-   if (m_iconDisk != NULL)    { SDL_DestroyTexture(m_iconDisk);      m_iconDisk = NULL; }
-   if (m_iconSelect != NULL)  { SDL_DestroyTexture(m_iconSelect);    m_iconSelect = NULL; }
-   if (m_iconNone != NULL)    { SDL_DestroyTexture(m_iconNone);      m_iconNone = NULL; }
-   if (m_iconNewDir != NULL)  { SDL_DestroyTexture(m_iconNewDir);    m_iconNewDir = NULL; }
-   if (m_iconQuit != NULL)    { SDL_DestroyTexture(m_iconQuit);      m_iconQuit = NULL; }
 }
 
 //------------------------------------------------------------------------------
 
 // Constructor
 MainWindow::MainWindow(const std::string &p_title):
-   IWindow(true, p_title),
-   m_fileLister(),
-   m_iconFile(NULL),
-   m_iconDir(NULL),
-   m_iconUp(NULL),
-   m_iconCopy(NULL),
-   m_iconCut(NULL),
-   m_iconPaste(NULL),
-   m_iconTrash(NULL),
-   m_iconDisk(NULL),
-   m_iconSelect(NULL),
-   m_iconNone(NULL),
-   m_iconNewDir(NULL),
-   m_iconQuit(NULL)
+   IWindow(true, p_title)
 {
-   // Load textures
-   m_iconFile = SDLUtils::loadTexture(std::string(RES_PATH) + "/file.png");
-   m_iconDir = SDLUtils::loadTexture(std::string(RES_PATH) + "/folder.png");
-   m_iconUp = SDLUtils::loadTexture(std::string(RES_PATH) + "/up.png");
-   m_iconCopy = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit-copy.png");
-   m_iconCut = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit-cut.png");
-   m_iconPaste = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit-paste.png");
-   m_iconTrash = SDLUtils::loadTexture(std::string(RES_PATH) + "/trash.png");
-   m_iconDisk = SDLUtils::loadTexture(std::string(RES_PATH) + "/disk.png");
-   m_iconSelect = SDLUtils::loadTexture(std::string(RES_PATH) + "/select.png");
-   m_iconNone = SDLUtils::loadTexture(std::string(RES_PATH) + "/none.png");
-   m_iconNewDir = SDLUtils::loadTexture(std::string(RES_PATH) + "/folder-new.png");
-   m_iconQuit = SDLUtils::loadTexture(std::string(RES_PATH) + "/quit.png");
    // List files
    if (! m_fileLister.list(m_title))
    {
@@ -111,9 +72,9 @@ void MainWindow::render(const bool p_focus)
 
       // Icon
       if (m_fileLister[l_i].m_name == "..")
-         SDLUtils::renderTexture(m_iconUp, MARGIN_X, l_y - (ICON_SIZE / 2));
+         SDLUtils::renderTexture(g_iconUp, MARGIN_X, l_y - (ICON_SIZE / 2));
       else
-         SDLUtils::renderTexture(m_fileLister.isDirectory(l_i) ? m_iconDir : m_iconFile, MARGIN_X, l_y - (ICON_SIZE / 2));
+         SDLUtils::renderTexture(m_fileLister.isDirectory(l_i) ? g_iconDir : g_iconFile, MARGIN_X, l_y - (ICON_SIZE / 2));
 
       // File name
       SDLUtils::renderText(m_fileLister[l_i].m_name, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
@@ -158,16 +119,6 @@ void MainWindow::keyPressed(const SDL_Event &event)
       // Select and open ".."
       m_highlightedLine = 0;
       openHighlightedDir();
-      return;
-   }
-   // Button system menu
-   if (BUTTON_PRESSED_MENU_SYSTEM)
-   {
-      // Reset timer
-      m_lastPressed = -1;
-      m_timer = 0;
-      // Open system menu
-      openSystemMenu();
       return;
    }
    // Button context menu
@@ -252,48 +203,6 @@ void MainWindow::selectHighlightedItem(const bool p_step)
 
 //------------------------------------------------------------------------------
 
-// Open system menu
-void MainWindow::openSystemMenu(void)
-{
-   // Open dialog
-   Dialog l_dialog ("System");
-   l_dialog.addOption("Select all", 0, m_iconSelect);
-   l_dialog.addOption("Select none", 1, m_iconNone);
-   l_dialog.addOption("New directory", 2, m_iconNewDir);
-   l_dialog.addOption("Disk info", 3, m_iconDisk);
-   l_dialog.addOption("Quit", 4, m_iconQuit);
-   switch(l_dialog.execute())
-   {
-      // Select all
-      case 0:
-         m_fileLister.setSelectedAll(true);
-         g_hasChanged = true;
-         break;
-      // Select none
-      case 1:
-         m_fileLister.setSelectedAll(false);
-         g_hasChanged = true;
-         break;
-      case 2:
-      case 3:
-      {
-         Dialog l_dialog2 ("Info");
-         l_dialog2.addLabel("Not yet implemented!");
-         l_dialog2.addOption("OK", 0);
-         l_dialog2.execute();
-      }
-      break;
-      // Quit
-      case 4:
-         m_retVal = 0;
-         break;
-      default:
-         break;
-   }
-}
-
-//------------------------------------------------------------------------------
-
 // Open context menu
 void MainWindow::openContextMenu(void)
 {
@@ -308,26 +217,101 @@ void MainWindow::openContextMenu(void)
    std::ostringstream oss;
    oss << nbSelected << " selected";
    Dialog l_dialog (oss.str());
-   l_dialog.addOption("Copy", 0, m_iconCopy);
-   l_dialog.addOption("Cut", 1, m_iconCut);
-   l_dialog.addOption("Paste", 2, m_iconPaste);
-   l_dialog.addOption("Delete", 3, m_iconTrash);
-   l_dialog.addOption("Disk used", 4, m_iconDisk);
+   if (nbSelected > 0)
+   {
+      l_dialog.addOption("Copy", 0, g_iconCopy);
+      l_dialog.addOption("Cut", 1, g_iconCut);
+   }
+   if (m_clipboard.size() > 0)
+      l_dialog.addOption("Paste", 2, g_iconPaste);
+   if (nbSelected > 0)
+      l_dialog.addOption("Delete", 3, g_iconTrash);
+   if (nbSelected == 1)
+      l_dialog.addOption("Rename", 9, g_iconEdit);
+   if (nbSelected > 0)
+      l_dialog.addOption("Size", 4, g_iconDisk);
+   l_dialog.addOption("Select all", 5, g_iconSelect);
+   l_dialog.addOption("Select none", 6, g_iconNone);
+   l_dialog.addOption("New directory", 7, g_iconNewDir);
+   l_dialog.addOption("Quit", 8, g_iconQuit);
    switch(l_dialog.execute())
    {
+      // Copy
       case 0:
+         m_fileLister.getSelectList(m_title, m_clipboard);
+         m_clipboardOperation = 'c';
+         INHIBIT(std::cout << m_clipboard.size() << " added to clipboard for copy\n";)
+         break;
+      // Move
       case 1:
+         m_fileLister.getSelectList(m_title, m_clipboard);
+         m_clipboardOperation = 'm';
+         INHIBIT(std::cout << m_clipboard.size() << " added to clipboard for move\n";)
+         break;
+      // Paste
       case 2:
+         if (m_clipboardOperation == 'c')
+            FileUtils::copyFiles(m_clipboard, m_title);
+         else if (m_clipboardOperation == 'm')
+            FileUtils::moveFiles(m_clipboard, m_title);
+         refresh();
+         break;
+      // Delete
       case 3:
+         m_fileLister.getSelectList(m_title, m_clipboard);
+         FileUtils::removeFiles(m_clipboard);
+         m_clipboard.clear();
+         refresh();
+         break;
+      // Select all
+      case 5:
+         m_fileLister.setSelectedAll(true);
+         g_hasChanged = true;
+         break;
+      // Select none
+      case 6:
+         m_fileLister.setSelectedAll(false);
+         g_hasChanged = true;
+         break;
+      // Quit
+      case 8:
+         m_retVal = 0;
+         break;
       case 4:
+      case 7:
+      case 9:
       {
          Dialog l_dialog2 ("Info");
          l_dialog2.addLabel("Not yet implemented!");
-         l_dialog2.addOption("OK", 0);
+         l_dialog2.addOption("OK", 0, g_iconSelect);
          l_dialog2.execute();
       }
       break;
       default:
          break;
    }
+}
+
+//------------------------------------------------------------------------------
+
+// Refresh current directory
+void MainWindow::refresh(void)
+{
+   INHIBIT(std::cout << "MainWindow::refresh\n";)
+   // List the current path
+   if (! m_fileLister.list(m_title))
+   {
+      // Path is wrong, fallback to default
+      m_title = START_PATH;
+      m_fileLister.list(m_title);
+   }
+   // Update number of items
+   m_nbItems = m_fileLister.getNbTotal();
+   // Adjust selected line
+   if (m_highlightedLine > m_nbItems - 1)
+      m_highlightedLine = m_nbItems - 1;
+   // Adjust camera
+   adjustCamera();
+   // New render
+   g_hasChanged = true;
 }

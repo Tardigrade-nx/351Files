@@ -32,11 +32,11 @@ class MainWindow : public IWindow
    // Open highlighted dir
    void openHighlightedDir(void);
 
+   // Refresh current directory
+   void refresh(void);
+
    // Select highlighted item
    void selectHighlightedItem(const bool p_step);
-
-   // Open system menu
-   void openSystemMenu(void);
 
    // Open context menu
    void openContextMenu(void);
@@ -44,19 +44,10 @@ class MainWindow : public IWindow
    // File lister
    CFileLister m_fileLister;
 
-   // Textures for icons
-   SDL_Texture *m_iconFile;
-   SDL_Texture *m_iconDir;
-   SDL_Texture *m_iconUp;
-   SDL_Texture *m_iconCopy;
-   SDL_Texture *m_iconCut;
-   SDL_Texture *m_iconPaste;
-   SDL_Texture *m_iconTrash;
-   SDL_Texture *m_iconDisk;
-   SDL_Texture *m_iconSelect;
-   SDL_Texture *m_iconNone;
-   SDL_Texture *m_iconNewDir;
-   SDL_Texture *m_iconQuit;
+   // Clipboard containing full path of files, for copying or moving
+   // Operation: 'c' = copy, 'm' = move
+   std::vector<std::string> m_clipboard;
+   char m_clipboardOperation;
 
 };
 

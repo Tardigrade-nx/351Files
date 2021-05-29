@@ -22,7 +22,7 @@
 #elif defined(DEVICE_RG351V)
    #define SCREEN_WIDTH    640
    #define SCREEN_HEIGHT   480
-   #define START_PATH      "/"
+   #define START_PATH      "/storage"
    #define RES_PATH        "./res"
    #define FONT_NAME       "NotoSans-Regular.ttf"
    #define FONT_SIZE       20
@@ -62,19 +62,18 @@
 
 // Button events
 #if defined(DEVICE_RG351P)
-   #define BUTTON_PRESSED_UP              0
-   #define BUTTON_PRESSED_DOWN            0
-   #define BUTTON_PRESSED_PAGEUP          0
-   #define BUTTON_PRESSED_PAGEDOWN        0
-   #define BUTTON_PRESSED_VALIDATE        0
-   #define BUTTON_PRESSED_BACK            0
-   #define BUTTON_PRESSED_MENU_SYSTEM     0
-   #define BUTTON_PRESSED_MENU_CONTEXT    0
-   #define BUTTON_PRESSED_SELECT          0
-   #define BUTTON_HELD_UP                 0
-   #define BUTTON_HELD_PAGEUP             0
-   #define BUTTON_HELD_DOWN               0
-   #define BUTTON_HELD_PAGEDOWN           0
+   #define BUTTON_PRESSED_UP              event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_UP
+   #define BUTTON_PRESSED_DOWN            event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_DOWN
+   #define BUTTON_PRESSED_PAGEUP          event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 4
+   #define BUTTON_PRESSED_PAGEDOWN        event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 5
+   #define BUTTON_PRESSED_VALIDATE        event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 0
+   #define BUTTON_PRESSED_BACK            event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 1
+   #define BUTTON_PRESSED_MENU_CONTEXT    event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 2
+   #define BUTTON_PRESSED_SELECT          event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 3
+   #define BUTTON_HELD_UP                 SDL_JoystickGetHat(g_joystick, 0) == SDL_HAT_UP
+   #define BUTTON_HELD_PAGEUP             SDL_JoystickGetButton(g_joystick, 4)
+   #define BUTTON_HELD_DOWN               SDL_JoystickGetHat(g_joystick, 0) == SDL_HAT_DOWN
+   #define BUTTON_HELD_PAGEDOWN           SDL_JoystickGetButton(g_joystick, 5)
 #elif defined(DEVICE_RG351V)
    #define BUTTON_PRESSED_UP              event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_UP
    #define BUTTON_PRESSED_DOWN            event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_DOWN
@@ -82,7 +81,6 @@
    #define BUTTON_PRESSED_PAGEDOWN        event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 5
    #define BUTTON_PRESSED_VALIDATE        event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 0
    #define BUTTON_PRESSED_BACK            event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 1
-   #define BUTTON_PRESSED_MENU_SYSTEM     event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 6
    #define BUTTON_PRESSED_MENU_CONTEXT    event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 2
    #define BUTTON_PRESSED_SELECT          event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 3
    #define BUTTON_HELD_UP                 SDL_JoystickGetHat(g_joystick, 0) == SDL_HAT_UP
@@ -96,7 +94,6 @@
    #define BUTTON_PRESSED_PAGEDOWN        event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_PAGEDOWN
    #define BUTTON_PRESSED_VALIDATE        event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_RETURN
    #define BUTTON_PRESSED_BACK            event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_BACKSPACE
-   #define BUTTON_PRESSED_MENU_SYSTEM     event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_w
    #define BUTTON_PRESSED_MENU_CONTEXT    event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_x
    #define BUTTON_PRESSED_SELECT          event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_INSERT
    #define BUTTON_HELD_UP                 SDL_GetKeyboardState(NULL)[SDL_SCANCODE_UP]
@@ -112,5 +109,20 @@ extern SDL_Joystick* g_joystick;
 extern TTF_Font *g_font;
 class IWindow;
 extern std::vector<IWindow *> g_windows;
+// Textures for icons
+extern SDL_Texture *g_iconFile;
+extern SDL_Texture *g_iconDir;
+extern SDL_Texture *g_iconUp;
+extern SDL_Texture *g_iconCopy;
+extern SDL_Texture *g_iconCut;
+extern SDL_Texture *g_iconPaste;
+extern SDL_Texture *g_iconTrash;
+extern SDL_Texture *g_iconDisk;
+extern SDL_Texture *g_iconSelect;
+extern SDL_Texture *g_iconNone;
+extern SDL_Texture *g_iconNewDir;
+extern SDL_Texture *g_iconQuit;
+extern SDL_Texture *g_iconEdit;
+extern SDL_Texture *g_iconCancel;
 
 #endif

@@ -46,7 +46,7 @@ bool SDLUtils::init()
    }
 
    // Create window
-   #if defined(DEVICE_DEFAULT)
+   #if defined(DEVICE_PC)
    g_window = SDL_CreateWindow(APP_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
    #else
    g_window = SDL_CreateWindow(APP_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
@@ -58,7 +58,7 @@ bool SDLUtils::init()
    }
 
    // Create renderer
-   #if defined(DEVICE_DEFAULT)
+   #if defined(DEVICE_PC)
    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
    #else
    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_SOFTWARE);

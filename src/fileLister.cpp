@@ -137,3 +137,24 @@ const unsigned int CFileLister::getNbSelected(void) const
         nb += it->m_selected;
     return nb;
 }
+
+// Get list of selected files, with full path
+void CFileLister::getSelectList(const std::string &p_path, std::vector<std::string> &p_list) const
+{
+    // Clear existing list
+    p_list.clear();
+    // Add a '/' between dir and file if necessary
+    std::string separator("/");
+    if (p_path == "/")
+        separator = "";
+    // Add selected dirs
+    auto it = m_listDirs.begin();
+    for (; it != m_listDirs.end(); ++it)
+        if (it->m_selected)
+            p_list.push_back(p_path + separator + it->m_name);
+    // Add selected files
+    it = m_listFiles.begin();
+    for (; it != m_listFiles.end(); ++it)
+        if (it->m_selected)
+            p_list.push_back(p_path + separator + it->m_name);
+}
