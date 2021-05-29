@@ -5,8 +5,8 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
-#define INHIBIT(X) X
-//~ #define INHIBIT(X) /* X */
+//~ #define INHIBIT(X) X
+#define INHIBIT(X) /* X */
 
 #define APP_NAME "351Files"
 
@@ -48,7 +48,7 @@
 #define COLOR_CURSOR_NO_FOCUS    80,  80,  80
 
 // Margins
-#define MARGIN_X           8
+#define MARGIN_X           10
 
 // Framerate = 30fps
 #define MS_PER_FRAME       16

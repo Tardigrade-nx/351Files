@@ -266,6 +266,16 @@ void FileUtils::moveFiles(const std::vector<std::string> &p_src, const std::stri
 // Remove files
 void FileUtils::removeFiles(const std::vector<std::string> &p_files)
 {
+   // Confirmation
+   std::ostringstream oss;
+   oss << "Delete " << p_files.size() << " file(s)?";
+   Dialog l_dialog("Question:");
+   l_dialog.addLabel(oss.str());
+   l_dialog.addOption("Yes", 0, g_iconSelect);
+   l_dialog.addOption("No", 1, g_iconNone);
+   if (l_dialog.execute() != 0)
+      return;
+   // Delete files
    for (auto l_it = p_files.begin(); l_it != p_files.end(); ++l_it)
    {
       INHIBIT(std::cout << "Remove " << *l_it << "\n";)

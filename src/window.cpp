@@ -151,6 +151,7 @@ int IWindow::execute(void)
          SDL_RenderPresent(g_renderer);
          #ifndef DEVICE_PC
          SDL_RenderPresent(g_renderer);
+         SDL_RenderPresent(g_renderer);
          #endif
          g_hasChanged = false;
       }
