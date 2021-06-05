@@ -54,7 +54,7 @@ void MainWindow::render(const bool p_focus)
    else
       SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_NO_FOCUS, 255);
    rect.x = 0;
-   rect.y = LINE_HEIGHT + (m_cursor.y - m_camera) * LINE_HEIGHT;
+   rect.y = LINE_HEIGHT + (m_cursor - m_camera) * LINE_HEIGHT;
    rect.w = SCREEN_WIDTH;
    rect.h = LINE_HEIGHT;
    SDL_RenderFillRect(g_renderer, &rect);
@@ -102,7 +102,7 @@ void MainWindow::keyPressed(const SDL_Event &event)
       // Reset timer
       resetTimer();
       // If a file is highlighted, do nothing
-      if (! m_fileLister.isDirectory(m_cursor.y))
+      if (! m_fileLister.isDirectory(m_cursor))
          return;
       // Open highlighted dir
       openHighlightedDir();
@@ -117,7 +117,7 @@ void MainWindow::keyPressed(const SDL_Event &event)
       if (m_title == "/")
          return;
       // Select and open ".."
-      m_cursor.y = 0;
+      m_cursor = 0;
       openHighlightedDir();
       return;
    }
@@ -149,7 +149,7 @@ void MainWindow::openHighlightedDir(void)
    // Build new path
    std::string l_newDir("");
    std::string l_oldDir("");
-   if (m_fileLister[m_cursor.y].m_name == "..")
+   if (m_fileLister[m_cursor].m_name == "..")
    {
       // New path = parent
       size_t l_pos = m_title.rfind('/');
@@ -161,7 +161,7 @@ void MainWindow::openHighlightedDir(void)
    else
    {
       // New path
-      l_newDir = m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor.y].m_name;
+      l_newDir = m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name;
    }
 
    // List the new path
@@ -172,9 +172,9 @@ void MainWindow::openHighlightedDir(void)
       m_nbItems = m_fileLister.getNbTotal();
      // If it's a back movement, restore old highlighted dir
       if (! l_oldDir.empty())
-         m_cursor.y = m_fileLister.searchDir(l_oldDir);
+         m_cursor = m_fileLister.searchDir(l_oldDir);
       else
-         m_cursor.y = 0;
+         m_cursor = 0;
       // Adjust camera
       adjustCamera();
       // New render
@@ -189,10 +189,10 @@ void MainWindow::openHighlightedDir(void)
 void MainWindow::selectHighlightedItem(const bool p_step)
 {
    // Cannot select '..'
-   if (m_fileLister[m_cursor.y].m_name == "..")
+   if (m_fileLister[m_cursor].m_name == "..")
       return;
    // Select/unselect highlighted item
-   m_fileLister[m_cursor.y].m_selected = ! m_fileLister[m_cursor.y].m_selected;
+   m_fileLister[m_cursor].m_selected = ! m_fileLister[m_cursor].m_selected;
    // Move 1 step if requested
    if (p_step)
       moveCursorDown(1, false);
@@ -295,16 +295,14 @@ void MainWindow::openContextMenu(void)
          l_dialog.execute();
       }
       break;
-      // Cancel
-      case -2:
-         if (nbSelected == 1)
-         {
-            m_fileLister.setSelectedAll(false);
-            g_hasChanged = true;
-         }
-         break;
       default:
          break;
+   }
+   // If only 1 file is selected, unselect
+   if (nbSelected == 1)
+   {
+      m_fileLister.setSelectedAll(false);
+      g_hasChanged = true;
    }
 }
 
@@ -324,8 +322,8 @@ void MainWindow::refresh(void)
    // Update number of items
    m_nbItems = m_fileLister.getNbTotal();
    // Adjust selected line
-   if (m_cursor.y > m_nbItems - 1)
-      m_cursor.y = m_nbItems - 1;
+   if (m_cursor > m_nbItems - 1)
+      m_cursor = m_nbItems - 1;
    // Adjust camera
    adjustCamera();
    // New render

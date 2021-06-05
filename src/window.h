@@ -28,9 +28,11 @@ class IWindow
    // Constructor
    IWindow(const bool p_fullscreen, const std::string &p_title);
 
-   // Move cursor up or down
-   void moveCursorUp(const int p_step, bool p_loop);
-   void moveCursorDown(const int p_step, bool p_loop);
+   // Move cursor
+   virtual void moveCursorUp(const int p_step, bool p_loop);
+   virtual void moveCursorDown(const int p_step, bool p_loop);
+   virtual void moveCursorLeft(const int p_step, bool p_loop);
+   virtual void moveCursorRight(const int p_step, bool p_loop);
 
    // Key pressed
    virtual void keyPressed(const SDL_Event &event) {};
@@ -54,7 +56,7 @@ class IWindow
    static bool g_hasChanged;
 
    // Coordinates of the cursor
-   SDL_Point m_cursor;
+   int m_cursor;
 
    // Loop or not when moving cursor
    bool m_cursorLoop;

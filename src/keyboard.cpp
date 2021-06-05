@@ -40,12 +40,20 @@ void Keyboard::render(const bool p_focus)
 {
    // Keyboard background
    SDL_RenderCopy(g_renderer, m_background, NULL, &m_keyboard);
+   // Cursor
+   if (p_focus)
+      SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_FOCUS, 255);
+   else
+      SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_NO_FOCUS, 255);
+   SDL_Rect rect = m_key[m_cursor];
+   rect.y += m_keyboard.y;
+   SDL_RenderFillRect(g_renderer, &rect);
    // Draw key labels
    for (int ind = 0; ind <= 31; ++ind)
    {
       if (m_keyLabel[m_keyLabelCurrent].substr(ind, 1).empty())
          continue;
-      SDLUtils::renderText(m_keyLabel[m_keyLabelCurrent].substr(ind, 1), m_keyboard.x + m_key[ind].x + m_key[ind].w / 2, m_keyboard.y + m_key[ind].y + m_key[ind].h / 2, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG}, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
+      SDLUtils::renderText(m_keyLabel[m_keyLabelCurrent].substr(ind, 1), m_keyboard.x + m_key[ind].x + m_key[ind].w / 2, m_keyboard.y + m_key[ind].y + m_key[ind].h / 2, {COLOR_TEXT_NORMAL}, getBackgroundColor(ind, p_focus), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
    }
    // Backspace
    SDLUtils::renderTexture(m_texBackspace, m_keyboard.x + m_key[10].x + m_key[10].w / 2, m_keyboard.y + m_key[10].y + m_key[10].h / 2, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
@@ -58,7 +66,7 @@ void Keyboard::render(const bool p_focus)
    SDLUtils::renderTexture(m_texArrow, m_keyboard.x + m_key[34].x + m_key[34].w / 2, m_keyboard.y + m_key[34].y + m_key[34].h / 2, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
    SDLUtils::renderTexture(m_texArrow, m_keyboard.x + m_key[35].x + m_key[35].w / 2, m_keyboard.y + m_key[35].y + m_key[35].h / 2, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE, SDL_FLIP_HORIZONTAL);
    // Number / symbols
-   SDLUtils::renderText("&123", m_keyboard.x + m_key[32].x + m_key[32].w / 2, m_keyboard.y + m_key[32].y + m_key[32].h / 2, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG}, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
+   SDLUtils::renderText("&123", m_keyboard.x + m_key[32].x + m_key[32].w / 2, m_keyboard.y + m_key[32].y + m_key[32].h / 2, {COLOR_TEXT_NORMAL}, getBackgroundColor(32, p_focus), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
 }
 
 //------------------------------------------------------------------------------
@@ -163,4 +171,110 @@ void Keyboard::init(void)
 
    // Restore renderer
    SDL_SetRenderTarget(g_renderer, NULL);
+}
+
+//------------------------------------------------------------------------------
+
+// Move cursor up
+void Keyboard::moveCursorUp(const int p_step, bool p_loop)
+{
+   // 1st line
+   if (m_cursor >= 0 && m_cursor <= 10)
+   {
+      if (! p_loop) return;
+      if (m_cursor == 0) m_cursor = 32;
+      else if (m_cursor == 9 || m_cursor == 10) m_cursor += 25;
+      else m_cursor = 33;
+      g_hasChanged = true;
+      return;
+   }
+   // 2nd line
+   if (m_cursor >= 11 && m_cursor <= 20)
+   {
+      m_cursor -= 11;
+      g_hasChanged = true;
+      return;
+   }
+   // 3rd line
+   if (m_cursor >= 21 && m_cursor <= 31)
+   {
+      if (m_cursor == 31) m_cursor = 20;
+      else m_cursor -= 10;
+      g_hasChanged = true;
+      return;
+   }
+   // 4th line
+   if (m_cursor == 32) { m_cursor = 21; g_hasChanged = true; return; }
+   if (m_cursor == 33) { m_cursor = 26; g_hasChanged = true; return; }
+   if (m_cursor == 34) { m_cursor = 30; g_hasChanged = true; return; }
+   if (m_cursor == 35) { m_cursor = 31; g_hasChanged = true; return; }
+}
+
+//------------------------------------------------------------------------------
+
+// Move cursor down
+void Keyboard::moveCursorDown(const int p_step, bool p_loop)
+{
+   // 1st line
+   if (m_cursor >= 0 && m_cursor <= 10)
+   {
+      if (m_cursor == 10) m_cursor = 20;
+      else m_cursor += 11;
+      g_hasChanged = true;
+      return;
+   }
+   // 2nd line
+   if (m_cursor >= 11 && m_cursor <= 20)
+   {
+      m_cursor += 10;
+      g_hasChanged = true;
+      return;
+   }
+   // 3rd line
+   if (m_cursor >= 21 && m_cursor <= 31)
+   {
+      if (m_cursor == 21) m_cursor = 32;
+      else if (m_cursor == 30 || m_cursor == 31) m_cursor += 4;
+      else m_cursor = 33;
+      g_hasChanged = true;
+      return;
+   }
+   // 4th line
+   if (m_cursor >= 32 && m_cursor <= 35)
+   {
+      if (!p_loop) return;
+      if (m_cursor == 32) m_cursor = 0;
+      else if (m_cursor == 34 || m_cursor == 35) m_cursor -= 25;
+      else m_cursor = 5;
+      g_hasChanged = true;
+      return;
+   }
+}
+
+//------------------------------------------------------------------------------
+
+// Move cursor left
+void Keyboard::moveCursorLeft(const int p_step, bool p_loop)
+{
+   if (!p_loop && (m_cursor == 0 || m_cursor == 11 || m_cursor == 21 || m_cursor == 32)) return;
+   if (m_cursor == 0) m_cursor = 10;
+   else if (m_cursor == 11) m_cursor = 20;
+   else if (m_cursor == 21) m_cursor = 31;
+   else if (m_cursor == 32) m_cursor = 35;
+   else --m_cursor;
+   g_hasChanged = true;
+}
+
+//------------------------------------------------------------------------------
+
+// Move cursor right
+void Keyboard::moveCursorRight(const int p_step, bool p_loop)
+{
+   if (!p_loop && (m_cursor == 10 || m_cursor == 20 || m_cursor == 31 || m_cursor == 35)) return;
+   if (m_cursor == 10) m_cursor = 0;
+   else if (m_cursor == 20) m_cursor = 11;
+   else if (m_cursor == 31) m_cursor = 21;
+   else if (m_cursor == 35) m_cursor = 32;
+   else ++m_cursor;
+   g_hasChanged = true;
 }

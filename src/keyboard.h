@@ -34,6 +34,12 @@ class Keyboard : public IWindow
    // Create background image and init the keyboard
    void init(void);
 
+   // Move cursor
+   virtual void moveCursorUp(const int p_step, bool p_loop);
+   virtual void moveCursorDown(const int p_step, bool p_loop);
+   virtual void moveCursorLeft(const int p_step, bool p_loop);
+   virtual void moveCursorRight(const int p_step, bool p_loop);
+
    // Background image for the keyboard
    SDL_Texture *m_background;
 

@@ -8,7 +8,9 @@ enum {
    BUTTON_UP = 0,
    BUTTON_PAGEUP,
    BUTTON_DOWN,
-   BUTTON_PAGEDOWN
+   BUTTON_PAGEDOWN,
+   BUTTON_LEFT,
+   BUTTON_RIGHT
 };
 
 //------------------------------------------------------------------------------
@@ -27,6 +29,7 @@ IWindow::~IWindow(void)
 IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
    m_fullscreen(p_fullscreen),
    m_title(p_title),
+   m_cursor(0),
    m_cursorLoop(false),
    m_nbItems(0),
    m_nbVisibleLines(0),
@@ -35,7 +38,6 @@ IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
    m_camera(0),
    m_retVal(-1)
 {
-   m_cursor = {0, 0};
    m_nbVisibleLines = (SCREEN_HEIGHT - LINE_HEIGHT) / LINE_HEIGHT;
    // Add window to the list
    g_windows.push_back(this);
@@ -97,6 +99,20 @@ int IWindow::execute(void)
             m_timer = KEYHOLD_TIMER_FIRST;
             continue;
          }
+         if (BUTTON_PRESSED_LEFT)
+         {
+            moveCursorLeft(1, m_cursorLoop);
+            m_lastPressed = BUTTON_LEFT;
+            m_timer = KEYHOLD_TIMER_FIRST;
+            continue;
+         }
+         if (BUTTON_PRESSED_RIGHT)
+         {
+            moveCursorRight(1, m_cursorLoop);
+            m_lastPressed = BUTTON_RIGHT;
+            m_timer = KEYHOLD_TIMER_FIRST;
+            continue;
+         }
          // Specific reaction to event
          keyPressed(event);
       }
@@ -131,6 +147,22 @@ int IWindow::execute(void)
          if (m_lastPressed == BUTTON_PAGEDOWN && m_timer > 0 && --m_timer == 0)
          {
             moveCursorDown(m_nbVisibleLines - 1, false);
+            m_timer = KEYHOLD_TIMER;
+         }
+      }
+      else if (BUTTON_HELD_LEFT)
+      {
+         if (m_lastPressed == BUTTON_LEFT && m_timer > 0 && --m_timer == 0)
+         {
+            moveCursorLeft(1, false);
+            m_timer = KEYHOLD_TIMER;
+         }
+      }
+      else if (BUTTON_HELD_RIGHT)
+      {
+         if (m_lastPressed == BUTTON_RIGHT && m_timer > 0 && --m_timer == 0)
+         {
+            moveCursorRight(1, false);
             m_timer = KEYHOLD_TIMER;
          }
       }
@@ -188,21 +220,21 @@ void IWindow::moveCursorUp(const int p_step, bool p_loop)
    if (m_nbItems == 0)
       return;
    // Cursor already at the top
-   if (m_cursor.y == 0)
+   if (m_cursor == 0)
    {
       if (p_loop)
       {
-         m_cursor.y = m_nbItems - 1;
+         m_cursor = m_nbItems - 1;
          g_hasChanged = true;
       }
    }
    // Cursor can move up
    else
    {
-      if (m_cursor.y > p_step)
-         m_cursor.y -= p_step;
+      if (m_cursor > p_step)
+         m_cursor -= p_step;
       else
-         m_cursor.y = 0;
+         m_cursor = 0;
       g_hasChanged = true;
    }
    // Adjust camera
@@ -217,12 +249,12 @@ void IWindow::moveCursorDown(const int p_step, bool p_loop)
    if (m_nbItems == 0)
       return;
    // Cursor can move down
-   if (m_cursor.y < m_nbItems - 1)
+   if (m_cursor < m_nbItems - 1)
    {
-     if (m_cursor.y + p_step > m_nbItems - 1)
-         m_cursor.y = m_nbItems - 1;
+     if (m_cursor + p_step > m_nbItems - 1)
+         m_cursor = m_nbItems - 1;
      else
-         m_cursor.y += p_step;
+         m_cursor += p_step;
       g_hasChanged = true;
    }
    // Cursor already at the bottom
@@ -230,7 +262,7 @@ void IWindow::moveCursorDown(const int p_step, bool p_loop)
    {
       if (p_loop)
       {
-         m_cursor.y = 0;
+         m_cursor = 0;
          g_hasChanged = true;
       }
    }
@@ -238,6 +270,19 @@ void IWindow::moveCursorDown(const int p_step, bool p_loop)
    adjustCamera();
 }
 
+//------------------------------------------------------------------------------
+
+   // Move cursor left
+   void IWindow::moveCursorLeft(const int p_step, bool p_loop)
+   {
+   }
+
+//------------------------------------------------------------------------------
+
+   // Move cursor right
+   void IWindow::moveCursorRight(const int p_step, bool p_loop)
+   {
+   }
 
 //------------------------------------------------------------------------------
 
@@ -246,10 +291,10 @@ void IWindow::adjustCamera(void)
 {
    if (m_nbItems <= m_nbVisibleLines)
       m_camera = 0;
-   else if (m_cursor.y < m_camera)
-      m_camera = m_cursor.y;
-   else if (m_cursor.y > m_camera + m_nbVisibleLines - 1)
-      m_camera = m_cursor.y - m_nbVisibleLines + 1;
+   else if (m_cursor < m_camera)
+      m_camera = m_cursor;
+   else if (m_cursor > m_camera + m_nbVisibleLines - 1)
+      m_camera = m_cursor - m_nbVisibleLines + 1;
 }
 
 //------------------------------------------------------------------------------
@@ -258,7 +303,7 @@ void IWindow::adjustCamera(void)
 SDL_Color IWindow::getBackgroundColor(const int p_i, const bool p_focus) const
 {
    // Background color for the line
-   if (m_cursor.y == p_i)
+   if (m_cursor == p_i)
    {
       if (p_focus)
          return {COLOR_CURSOR_FOCUS};

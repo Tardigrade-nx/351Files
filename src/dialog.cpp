@@ -104,7 +104,7 @@ void Dialog::render(const bool p_focus)
    else
       SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_NO_FOCUS, 255);
    l_rect.x = l_dialogDim.x + DIALOG_BORDER;
-   l_rect.y = l_dialogDim.y + LINE_HEIGHT + (m_cursor.y - m_camera + m_labels.size()) * LINE_HEIGHT;
+   l_rect.y = l_dialogDim.y + LINE_HEIGHT + (m_cursor - m_camera + m_labels.size()) * LINE_HEIGHT;
    l_rect.w = l_dialogDim.w - 2 * DIALOG_BORDER;
    l_rect.h = LINE_HEIGHT;
    SDL_RenderFillRect(g_renderer, &l_rect);
@@ -142,7 +142,7 @@ void Dialog::keyPressed(const SDL_Event &event)
       // Reset timer
       resetTimer();
       // Close window with return value
-      m_retVal = m_optionRetVals[m_cursor.y];
+      m_retVal = m_optionRetVals[m_cursor];
       return;
    }
    // Button Back
