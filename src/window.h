@@ -29,17 +29,20 @@ class IWindow
    IWindow(const bool p_fullscreen, const std::string &p_title);
 
    // Move cursor up or down
-   void moveCursorUp(const unsigned int p_step, bool p_loop);
-   void moveCursorDown(const unsigned int p_step, bool p_loop);
+   void moveCursorUp(const int p_step, bool p_loop);
+   void moveCursorDown(const int p_step, bool p_loop);
 
    // Key pressed
-   virtual void keyPressed(const SDL_Event &event) = 0;
+   virtual void keyPressed(const SDL_Event &event) {};
 
    // Adjust camera
    void adjustCamera(void);
 
    // Get background color for the item at the given index
-   SDL_Color getBackgroundColor(const unsigned int p_i, const bool p_focus);
+   SDL_Color getBackgroundColor(const int p_i, const bool p_focus) const;
+
+   // Reset timer for key hold
+   void resetTimer(void);
 
    // Window is fullscreen or not
    bool m_fullscreen;
@@ -50,24 +53,24 @@ class IWindow
    // Windows has changed or not
    static bool g_hasChanged;
 
-   // Index of the highlighted line
-   unsigned int m_highlightedLine;
+   // Coordinates of the cursor
+   SDL_Point m_cursor;
 
    // Loop or not when moving cursor
    bool m_cursorLoop;
 
-   // Number of items
-   unsigned int m_nbItems;
+   // Number of selectable items
+   int m_nbItems;
 
-   // Number of visible items
-   unsigned int m_nbVisibleItems;
+   // Number of visible lines
+   int m_nbVisibleLines;
 
    // Timer for key hold
-   unsigned int m_timer;
+   int m_timer;
    int m_lastPressed;
 
    // Index of the first displayed line
-   unsigned int m_camera;
+   int m_camera;
 
    // Return value of the window
    // -1 => executing

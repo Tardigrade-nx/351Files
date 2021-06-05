@@ -145,7 +145,7 @@ TTF_Font *SDLUtils::loadFont(const std::string &p_path, const int p_size)
 //------------------------------------------------------------------------------
 
 // Render a texture
-void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p_y, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV)
+void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p_y, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV, const SDL_RendererFlip p_flip)
 {
    SDL_Rect destRect;
    destRect.x = p_x;
@@ -173,7 +173,10 @@ void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p
       default:
          break;
    }
-   SDL_RenderCopy(g_renderer, p_texture, NULL, &destRect);
+   if (p_flip == SDL_FLIP_NONE)
+      SDL_RenderCopy(g_renderer, p_texture, NULL, &destRect);
+   else
+      SDL_RenderCopyEx(g_renderer, p_texture, NULL, &destRect, 0.0, NULL, p_flip);
 }
 
 //------------------------------------------------------------------------------
