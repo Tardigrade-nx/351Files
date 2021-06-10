@@ -13,8 +13,8 @@
 #if defined(DEVICE_RG351P)
    #define SCREEN_WIDTH             480
    #define SCREEN_HEIGHT            320
-   #define START_PATH               "/"
-   #define RES_PATH                 "./res"
+   #define START_PATH               "/storage/roms"
+   #define RES_PATH                 "/storage/.config/distribution/configs/fm/res"
    #define FONT_NAME                "NotoSans-Regular.ttf"
    #define FONT_SIZE                14
    #define LINE_HEIGHT              24
@@ -25,8 +25,8 @@
 #elif defined(DEVICE_RG351V)
    #define SCREEN_WIDTH             640
    #define SCREEN_HEIGHT            480
-   #define START_PATH               "/storage"
-   #define RES_PATH                 "./res"
+   #define START_PATH               "/storage/roms"
+   #define RES_PATH                 "/storage/.config/distribution/configs/fm/res"
    #define FONT_NAME                "NotoSans-Regular.ttf"
    #define FONT_SIZE                20
    #define LINE_HEIGHT              32
@@ -90,8 +90,8 @@
    #define BUTTON_PRESSED_DOWN            event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_DOWN
    #define BUTTON_PRESSED_LEFT            event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_LEFT
    #define BUTTON_PRESSED_RIGHT           event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_RIGHT
-   #define BUTTON_PRESSED_PAGEUP          event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 4
-   #define BUTTON_PRESSED_PAGEDOWN        event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 5
+   #define BUTTON_PRESSED_PAGEUP          event.type == SDL_JOYBUTTONDOWN && (event.jbutton.button == 4 || event.jbutton.button == 10)
+   #define BUTTON_PRESSED_PAGEDOWN        event.type == SDL_JOYBUTTONDOWN && (event.jbutton.button == 5 || event.jbutton.button == 11)
    #define BUTTON_PRESSED_VALIDATE        event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 0
    #define BUTTON_PRESSED_BACK            event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 1
    #define BUTTON_PRESSED_MENU_CONTEXT    event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 2
@@ -100,8 +100,8 @@
    #define BUTTON_HELD_DOWN               SDL_JoystickGetHat(g_joystick, 0) == SDL_HAT_DOWN
    #define BUTTON_HELD_LEFT               SDL_JoystickGetHat(g_joystick, 0) == SDL_HAT_LEFT
    #define BUTTON_HELD_RIGHT              SDL_JoystickGetHat(g_joystick, 0) == SDL_HAT_RIGHT
-   #define BUTTON_HELD_PAGEUP             SDL_JoystickGetButton(g_joystick, 4)
-   #define BUTTON_HELD_PAGEDOWN           SDL_JoystickGetButton(g_joystick, 5)
+   #define BUTTON_HELD_PAGEUP             SDL_JoystickGetButton(g_joystick, 4) || SDL_JoystickGetButton(g_joystick, 10)
+   #define BUTTON_HELD_PAGEDOWN           SDL_JoystickGetButton(g_joystick, 5) || SDL_JoystickGetButton(g_joystick, 11)
 #else
    #define BUTTON_PRESSED_UP              event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_UP
    #define BUTTON_PRESSED_DOWN            event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_DOWN
