@@ -5,8 +5,8 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
-#define INHIBIT(X) X
-//~ #define INHIBIT(X) /* X */
+//~ #define INHIBIT(X) X
+#define INHIBIT(X) /* X */
 
 #define APP_NAME "351Files"
 
