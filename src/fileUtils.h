@@ -7,7 +7,9 @@
 namespace FileUtils
 {
 
+//------------------------------------------------------------------------------
    // File operations
+//------------------------------------------------------------------------------
 
    // Copy files to dest dir
    void copyFiles(const std::vector<std::string> &p_src, const std::string &p_dest);
@@ -21,7 +23,12 @@ namespace FileUtils
    // Create new directory
    void makeDirectory(const std::string &p_file);
 
+   // Rename a file
+   void renameFile(const std::string &p_file1, const std::string &p_file2);
+
+//------------------------------------------------------------------------------
    // File utilities
+//------------------------------------------------------------------------------
 
    // Format file size to human readable (K, M, G)
    std::string formatSize(const unsigned long int &p_size);

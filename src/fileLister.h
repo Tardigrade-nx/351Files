@@ -80,6 +80,9 @@ class CFileLister
     // Get list of selected files, with full path
     void getSelectList(const std::string &p_path, std::vector<std::string> &p_list) const;
 
+    // Get short name of the first selected element
+    std::string getSelectFirst(void) const;
+
     private:
 
     // Forbidden

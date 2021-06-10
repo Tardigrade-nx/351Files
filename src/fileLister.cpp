@@ -158,3 +158,19 @@ void CFileLister::getSelectList(const std::string &p_path, std::vector<std::stri
         if (it->m_selected)
             p_list.push_back(p_path + separator + it->m_name);
 }
+
+// Get short name of the first selected element
+std::string CFileLister::getSelectFirst(void) const
+{
+    // Search dirs
+    auto it = m_listDirs.begin();
+    for (; it != m_listDirs.end(); ++it)
+        if (it->m_selected)
+            return it->m_name;
+    // Search files
+    it = m_listFiles.begin();
+    for (; it != m_listFiles.end(); ++it)
+        if (it->m_selected)
+            return it->m_name;
+    return "";
+}

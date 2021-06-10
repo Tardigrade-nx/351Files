@@ -287,9 +287,29 @@ void FileUtils::removeFiles(const std::vector<std::string> &p_files)
 // Create new directory
 void FileUtils::makeDirectory(const std::string &p_file)
 {
-   if (p_file.empty())
-      return;
    INHIBIT(std::cout << "Create directory " << p_file << "\n";)
    Run("mkdir", "-p", p_file);
    Run("sync", p_file);
+}
+
+//------------------------------------------------------------------------------
+
+// Rename a file
+void FileUtils::renameFile(const std::string &p_file1, const std::string &p_file2)
+{
+   // Check if destination file already exists
+   if (fileExists(p_file2))
+   {
+      INHIBIT(std::cout << "File " << p_file2 << " already exists => ask for confirmation\n";)
+      Dialog l_dialog("Question:");
+      l_dialog.addLabel("Overwrite " + getFileName(p_file2) + "?");
+      l_dialog.addOption("Yes", 0, g_iconSelect);
+      l_dialog.addOption("No", 1, g_iconNone);
+      if (l_dialog.execute() != 0)
+         return;
+   }
+   // Rename file
+   INHIBIT(std::cout << "Rename file " << p_file1 << " to " << p_file2 << '\n';)
+   Run("mv", p_file1, p_file2);
+   Run("sync", p_file2);
 }

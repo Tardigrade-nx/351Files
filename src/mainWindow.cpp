@@ -284,12 +284,23 @@ void MainWindow::openContextMenu(void)
       {
          Keyboard keyboard;
          keyboard.execute();
-         FileUtils::makeDirectory(keyboard.getInputText());
+         if (! keyboard.getInputText().empty())
+            FileUtils::makeDirectory(m_title + (m_title == "/" ? "" : "/") + keyboard.getInputText());
+         refresh();
+      }
+      break;
+      // Rename
+      case 9:
+      {
+         std::string fileSrc = m_fileLister.getSelectFirst();
+         Keyboard keyboard(fileSrc);
+         keyboard.execute();
+         if (! keyboard.getInputText().empty())
+            FileUtils::renameFile(m_title + (m_title == "/" ? "" : "/") + fileSrc, m_title + (m_title == "/" ? "" : "/") + keyboard.getInputText());
          refresh();
       }
       break;
       case 4:
-      case 9:
       {
          Dialog l_dialog ("Info");
          l_dialog.addLabel("Not yet implemented!");
