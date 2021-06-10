@@ -145,12 +145,21 @@ TTF_Font *SDLUtils::loadFont(const std::string &p_path, const int p_size)
 //------------------------------------------------------------------------------
 
 // Render a texture
-void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p_y, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV, const SDL_RendererFlip p_flip)
+void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p_y, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV, const SDL_RendererFlip p_flip, const SDL_Rect *p_clip)
 {
+   // Destination rectangle
    SDL_Rect destRect;
    destRect.x = p_x;
    destRect.y = p_y;
-   SDL_QueryTexture(p_texture, NULL, NULL, &destRect.w, &destRect.h);
+   if (p_clip == NULL)
+   {
+      SDL_QueryTexture(p_texture, NULL, NULL, &destRect.w, &destRect.h);
+   }
+   else
+   {
+      destRect.w = p_clip->w;
+      destRect.h = p_clip->h;
+   }
    switch (p_alignH)
    {
       case T_ALIGN_RIGHT:
@@ -173,10 +182,11 @@ void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p
       default:
          break;
    }
+   // Render copy
    if (p_flip == SDL_FLIP_NONE)
-      SDL_RenderCopy(g_renderer, p_texture, NULL, &destRect);
+      SDL_RenderCopy(g_renderer, p_texture, p_clip, &destRect);
    else
-      SDL_RenderCopyEx(g_renderer, p_texture, NULL, &destRect, 0.0, NULL, p_flip);
+      SDL_RenderCopyEx(g_renderer, p_texture, p_clip, &destRect, 0.0, NULL, p_flip);
 }
 
 //------------------------------------------------------------------------------

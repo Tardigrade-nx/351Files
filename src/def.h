@@ -11,32 +11,41 @@
 #define APP_NAME "351Files"
 
 #if defined(DEVICE_RG351P)
-   #define SCREEN_WIDTH    480
-   #define SCREEN_HEIGHT   320
-   #define START_PATH      "/"
-   #define RES_PATH        "./res"
-   #define FONT_NAME       "NotoSans-Regular.ttf"
-   #define FONT_SIZE       20
-   #define LINE_HEIGHT     32
-   #define ICON_SIZE       24
+   #define SCREEN_WIDTH             480
+   #define SCREEN_HEIGHT            320
+   #define START_PATH               "/"
+   #define RES_PATH                 "./res"
+   #define FONT_NAME                "NotoSans-Regular.ttf"
+   #define FONT_SIZE                14
+   #define LINE_HEIGHT              24
+   #define ICON_SIZE                24
+   #define MARGIN_X                 8
+   #define KEYBOARD_MARGIN          3
+   #define KEYBOARD_KEY_SPACING     3
 #elif defined(DEVICE_RG351V)
-   #define SCREEN_WIDTH    640
-   #define SCREEN_HEIGHT   480
-   #define START_PATH      "/storage"
-   #define RES_PATH        "./res"
-   #define FONT_NAME       "NotoSans-Regular.ttf"
-   #define FONT_SIZE       20
-   #define LINE_HEIGHT     32
-   #define ICON_SIZE       24
+   #define SCREEN_WIDTH             640
+   #define SCREEN_HEIGHT            480
+   #define START_PATH               "/storage"
+   #define RES_PATH                 "./res"
+   #define FONT_NAME                "NotoSans-Regular.ttf"
+   #define FONT_SIZE                20
+   #define LINE_HEIGHT              32
+   #define ICON_SIZE                24
+   #define MARGIN_X                 10
+   #define KEYBOARD_MARGIN          8
+   #define KEYBOARD_KEY_SPACING     4
 #else
-   #define SCREEN_WIDTH    640
-   #define SCREEN_HEIGHT   480
-   #define START_PATH      getenv("PWD")
-   #define RES_PATH        "./res"
-   #define FONT_NAME       "NotoSans-Regular.ttf"
-   #define FONT_SIZE       20
-   #define LINE_HEIGHT     32
-   #define ICON_SIZE       24
+   #define SCREEN_WIDTH             640
+   #define SCREEN_HEIGHT            480
+   #define START_PATH               getenv("PWD")
+   #define RES_PATH                 "./res"
+   #define FONT_NAME                "NotoSans-Regular.ttf"
+   #define FONT_SIZE                20
+   #define LINE_HEIGHT              32
+   #define ICON_SIZE                24
+   #define MARGIN_X                 10
+   #define KEYBOARD_MARGIN          8
+   #define KEYBOARD_KEY_SPACING     4
 #endif
 
 // Colors
@@ -44,14 +53,12 @@
 #define COLOR_TEXT_NORMAL        255, 255, 255
 #define COLOR_TEXT_SELECTED      255, 0, 0
 #define COLOR_BODY_BG            45,  45,  45
+#define COLOR_KEYBOARD_DARK      35,  35,  35
 #define COLOR_CURSOR_FOCUS       21,  83,  158
 #define COLOR_CURSOR_NO_FOCUS    80,  80,  80
 
-// Margins
-#define MARGIN_X           10
-
 // Framerate = 30fps
-#define MS_PER_FRAME       16
+#define MS_PER_FRAME          16
 
 // Timer for key holds
 #define KEYHOLD_TIMER_FIRST   16

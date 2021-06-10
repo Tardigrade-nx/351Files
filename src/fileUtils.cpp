@@ -1,7 +1,6 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
-#include <cmath>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -288,6 +287,8 @@ void FileUtils::removeFiles(const std::vector<std::string> &p_files)
 // Create new directory
 void FileUtils::makeDirectory(const std::string &p_file)
 {
+   if (p_file.empty())
+      return;
    INHIBIT(std::cout << "Create directory " << p_file << "\n";)
    Run("mkdir", "-p", p_file);
    Run("sync", p_file);

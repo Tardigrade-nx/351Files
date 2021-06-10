@@ -41,7 +41,7 @@ class IWindow
    void adjustCamera(void);
 
    // Get background color for the item at the given index
-   SDL_Color getBackgroundColor(const int p_i, const bool p_focus) const;
+   virtual SDL_Color getBackgroundColor(const int p_i, const bool p_focus) const;
 
    // Reset timer for key hold
    void resetTimer(void);

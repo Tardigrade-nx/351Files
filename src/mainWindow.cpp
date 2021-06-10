@@ -284,6 +284,8 @@ void MainWindow::openContextMenu(void)
       {
          Keyboard keyboard;
          keyboard.execute();
+         FileUtils::makeDirectory(keyboard.getInputText());
+         refresh();
       }
       break;
       case 4:

@@ -5,9 +5,6 @@
 #include <string>
 #include "window.h"
 
-#define KEYBOARD_MARGIN          8
-#define KEYBOARD_KEY_SPACING     4
-
 class Keyboard : public IWindow
 {
 
@@ -17,10 +14,13 @@ class Keyboard : public IWindow
    virtual ~Keyboard(void);
 
    // Constructor
-   Keyboard(void);
+   Keyboard(const std::string &p_text = "");
 
    // Draw window
    virtual void render(const bool p_focus);
+
+   // Get input text
+   const std::string &getInputText(void) const;
 
    private:
 
@@ -40,6 +40,9 @@ class Keyboard : public IWindow
    virtual void moveCursorLeft(const int p_step, bool p_loop);
    virtual void moveCursorRight(const int p_step, bool p_loop);
 
+   // Get background color for the item at the given index
+   virtual SDL_Color getBackgroundColor(const int p_i, const bool p_focus) const;
+
    // Background image for the keyboard
    SDL_Texture *m_background;
 
@@ -55,9 +58,14 @@ class Keyboard : public IWindow
 
    // Textures for keys
    SDL_Texture *m_texShiftEmpty;
+   SDL_Texture *m_texShiftFull;
    SDL_Texture *m_texEnter;
    SDL_Texture *m_texArrow;
    SDL_Texture *m_texBackspace;
+
+   // Input text
+   std::string m_inputText;
+   int m_inputTextCursor;
 
 };
 
