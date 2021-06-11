@@ -16,8 +16,14 @@ MainWindow::~MainWindow(void)
 
 // Constructor
 MainWindow::MainWindow(const std::string &p_title):
-   IWindow(true, p_title)
+   IWindow(true, p_title),
+   m_camera(0)
 {
+   // Scrollbar
+   m_scrollbar.w = 0;
+   m_scrollbar.h = 0;
+   m_scrollbar.x = SCREEN_WIDTH - MARGIN_X;
+   m_scrollbar.y = LINE_HEIGHT;
    // List files
    if (! m_fileLister.list(m_title))
    {
@@ -25,7 +31,10 @@ MainWindow::MainWindow(const std::string &p_title):
       m_title = "/";
       m_fileLister.list(m_title);
    }
+   // Number of items
    m_nbItems = m_fileLister.getNbTotal();
+   // Adjust scrollbar
+   adjustScrollbar();
    INHIBIT(std::cout << "Path: " << m_title << " (" << m_nbItems << ") items\n";)
 }
 
@@ -55,9 +64,13 @@ void MainWindow::render(const bool p_focus)
       SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_NO_FOCUS, 255);
    rect.x = 0;
    rect.y = LINE_HEIGHT + (m_cursor - m_camera) * LINE_HEIGHT;
-   rect.w = SCREEN_WIDTH;
+   rect.w = SCREEN_WIDTH - m_scrollbar.w;
    rect.h = LINE_HEIGHT;
    SDL_RenderFillRect(g_renderer, &rect);
+
+   // Render scrollbar
+   if (m_scrollbar.h > 0)
+      SDL_RenderFillRect(g_renderer, &m_scrollbar);
 
    // Render file list
    l_y += LINE_HEIGHT;
@@ -83,12 +96,29 @@ void MainWindow::render(const bool p_focus)
 
       // File size
       if (! m_fileLister.isDirectory(l_i))
-         SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - 1 - MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
+         SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - 1 - m_scrollbar.w - MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
 
       // Next line
       l_y += LINE_HEIGHT;
    }
 
+}
+
+//------------------------------------------------------------------------------
+
+// Move cursor up / down
+void MainWindow::moveCursorUp(const int p_step, bool p_loop)
+{
+   IWindow::moveCursorUp(p_step, p_loop);
+   adjustCamera();
+   adjustScrollbarPosition();
+}
+
+void MainWindow::moveCursorDown(const int p_step, bool p_loop)
+{
+   IWindow::moveCursorDown(p_step, p_loop);
+   adjustCamera();
+   adjustScrollbarPosition();
 }
 
 //------------------------------------------------------------------------------
@@ -165,22 +195,29 @@ void MainWindow::openHighlightedDir(void)
    }
 
    // List the new path
-   if (m_fileLister.list(l_newDir))
+   if (! m_fileLister.list(l_newDir))
    {
-      // Path OK
-      m_title = l_newDir;
-      m_nbItems = m_fileLister.getNbTotal();
-     // If it's a back movement, restore old highlighted dir
-      if (! l_oldDir.empty())
-         m_cursor = m_fileLister.searchDir(l_oldDir);
-      else
-         m_cursor = 0;
-      // Adjust camera
-      adjustCamera();
-      // New render
+      // An error occurred, stay at current dir
+      m_fileLister.list(m_title);
       g_hasChanged = true;
-      INHIBIT(std::cout << "Path: " << m_title << " (" << m_nbItems << ") items\n";)
+      return;
    }
+
+   // New path is OK
+   m_title = l_newDir;
+   m_nbItems = m_fileLister.getNbTotal();
+  // If it's a back movement, restore old highlighted dir
+   if (! l_oldDir.empty())
+      m_cursor = m_fileLister.searchDir(l_oldDir);
+   else
+      m_cursor = 0;
+   // Adjust camera
+   adjustCamera();
+   // Adjust scrollbar
+   adjustScrollbar();
+   // New render
+   g_hasChanged = true;
+   INHIBIT(std::cout << "Path: " << m_title << " (" << m_nbItems << ") items\n";)
 }
 
 //------------------------------------------------------------------------------
@@ -339,6 +376,58 @@ void MainWindow::refresh(void)
       m_cursor = m_nbItems - 1;
    // Adjust camera
    adjustCamera();
+   // Adjust scrollbar
+   adjustScrollbar();
    // New render
    g_hasChanged = true;
+}
+
+//------------------------------------------------------------------------------
+
+// Adjust camera
+void MainWindow::adjustCamera(void)
+{
+   if (m_nbItems <= m_nbVisibleLines)
+      m_camera = 0;
+   else if (m_cursor < m_camera)
+      m_camera = m_cursor;
+   else if (m_cursor > m_camera + m_nbVisibleLines - 1)
+      m_camera = m_cursor - m_nbVisibleLines + 1;
+}
+
+//------------------------------------------------------------------------------
+
+// Set scrollbar size and position
+void MainWindow::adjustScrollbar(void)
+{
+   // If all items fit on screen, no scrollbar
+   if (m_nbItems <= m_nbVisibleLines)
+   {
+      m_scrollbar.w = 0;
+      m_scrollbar.h = 0;
+      return;
+   }
+   // Scrollbar size
+   m_scrollbar.w = MARGIN_X;
+   m_scrollbar.h = round((SCREEN_HEIGHT - LINE_HEIGHT) / (m_nbItems - m_nbVisibleLines));
+   // Scrollbar position
+   adjustScrollbarPosition();
+}
+
+//------------------------------------------------------------------------------
+
+// Set scrollbar position
+void MainWindow::adjustScrollbarPosition(void)
+{
+   // Case: no scrollbar
+   if (m_scrollbar.h == 0)
+      return;
+   // Case: last item visible => scroll bar at bottom
+   if (m_camera >= m_nbItems - m_nbVisibleLines)
+   {
+      m_scrollbar.y = SCREEN_HEIGHT - m_scrollbar.h;
+      return;
+   }
+   // General case
+   m_scrollbar.y = LINE_HEIGHT + m_camera * round((SCREEN_HEIGHT - m_scrollbar.h) / (m_nbItems - m_nbVisibleLines));
 }

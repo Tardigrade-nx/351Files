@@ -29,6 +29,10 @@ class MainWindow : public IWindow
    // Key pressed
    virtual void keyPressed(const SDL_Event &event);
 
+   // Move cursor
+   virtual void moveCursorUp(const int p_step, bool p_loop);
+   virtual void moveCursorDown(const int p_step, bool p_loop);
+
    // Open highlighted dir
    void openHighlightedDir(void);
 
@@ -41,6 +45,13 @@ class MainWindow : public IWindow
    // Open context menu
    void openContextMenu(void);
 
+   // Adjust camera
+   void adjustCamera(void);
+
+   // Scrollbar
+   void adjustScrollbar(void);
+   void adjustScrollbarPosition(void);
+
    // File lister
    CFileLister m_fileLister;
 
@@ -48,6 +59,12 @@ class MainWindow : public IWindow
    // Operation: 'c' = copy, 'm' = move
    std::vector<std::string> m_clipboard;
    char m_clipboardOperation;
+
+   // Index of the first displayed line
+   int m_camera;
+
+   // Vertical scrollbar
+   SDL_Rect m_scrollbar;
 
 };
 

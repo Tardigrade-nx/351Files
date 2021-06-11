@@ -37,9 +37,6 @@ class IWindow
    // Key pressed
    virtual void keyPressed(const SDL_Event &event) {};
 
-   // Adjust camera
-   void adjustCamera(void);
-
    // Get background color for the item at the given index
    virtual SDL_Color getBackgroundColor(const int p_i, const bool p_focus) const;
 
@@ -70,9 +67,6 @@ class IWindow
    // Timer for key hold
    int m_timer;
    int m_lastPressed;
-
-   // Index of the first displayed line
-   int m_camera;
 
    // Return value of the window
    // -1 => executing

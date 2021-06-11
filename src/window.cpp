@@ -35,7 +35,6 @@ IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
    m_nbVisibleLines(0),
    m_timer(0),
    m_lastPressed(-1),
-   m_camera(0),
    m_retVal(-1)
 {
    m_nbVisibleLines = (SCREEN_HEIGHT - LINE_HEIGHT) / LINE_HEIGHT;
@@ -237,8 +236,6 @@ void IWindow::moveCursorUp(const int p_step, bool p_loop)
          m_cursor = 0;
       g_hasChanged = true;
    }
-   // Adjust camera
-   adjustCamera();
 }
 
 //------------------------------------------------------------------------------
@@ -266,8 +263,6 @@ void IWindow::moveCursorDown(const int p_step, bool p_loop)
          g_hasChanged = true;
       }
    }
-   // Adjust camera
-   adjustCamera();
 }
 
 //------------------------------------------------------------------------------
@@ -283,19 +278,6 @@ void IWindow::moveCursorDown(const int p_step, bool p_loop)
    void IWindow::moveCursorRight(const int p_step, bool p_loop)
    {
    }
-
-//------------------------------------------------------------------------------
-
-// Adjust camera
-void IWindow::adjustCamera(void)
-{
-   if (m_nbItems <= m_nbVisibleLines)
-      m_camera = 0;
-   else if (m_cursor < m_camera)
-      m_camera = m_cursor;
-   else if (m_cursor > m_camera + m_nbVisibleLines - 1)
-      m_camera = m_cursor - m_nbVisibleLines + 1;
-}
 
 //------------------------------------------------------------------------------
 
