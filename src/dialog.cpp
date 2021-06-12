@@ -23,11 +23,12 @@ Dialog::~Dialog(void)
 void Dialog::render(const bool p_focus)
 {
    // Render all textures first, in order to know the dialog size
-   int l_w = 0, l_largestW = 0;
+   SDL_Rect l_dialogDim = {0, 0, 0, 0};
+   int l_w = 0;
 
    // Render title
    SDL_Texture *l_textureTitle = SDLUtils::renderText(m_title, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG});
-   SDL_QueryTexture(l_textureTitle, NULL, NULL, &l_largestW, NULL);
+   SDL_QueryTexture(l_textureTitle, NULL, NULL, &l_dialogDim.w, NULL);
 
    // Render labels
    std::vector<std::string>::iterator l_it;
@@ -38,8 +39,8 @@ void Dialog::render(const bool p_focus)
       l_texLabels.push_back(SDLUtils::renderText(*l_it, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG}));
       SDL_QueryTexture(l_texLabels.back(), NULL, NULL, &l_w, NULL);
       // Remember largest width
-      if (l_w > l_largestW)
-         l_largestW = l_w;
+      if (l_w > l_dialogDim.w)
+         l_dialogDim.w = l_w;
    }
 
    // Render options
@@ -54,18 +55,18 @@ void Dialog::render(const bool p_focus)
       l_texOptions.push_back(SDLUtils::renderText(*l_it, {COLOR_TEXT_NORMAL}, l_bgColor));
       SDL_QueryTexture(l_texOptions.back(), NULL, NULL, &l_w, NULL);
       // Remember largest width
-      if (l_w > l_largestW)
-         l_largestW = l_w;
+      if (l_w > l_dialogDim.w)
+         l_dialogDim.w = l_w;
    }
 
    // Largest line of the dialog
-   l_largestW = DIALOG_BORDER + MARGIN_X + l_largestW + MARGIN_X + DIALOG_BORDER;
+   l_dialogDim.w = DIALOG_BORDER + MARGIN_X + l_dialogDim.w + MARGIN_X + DIALOG_BORDER;
    if (m_iconPresent)
-      l_largestW += ICON_SIZE + MARGIN_X;
+      l_dialogDim.w += ICON_SIZE + MARGIN_X;
+   if (l_dialogDim.w > SCREEN_WIDTH)
+      l_dialogDim.w = SCREEN_WIDTH;
 
    // Render dialog background
-   SDL_Rect l_dialogDim;
-   l_dialogDim.w = l_largestW;
    l_dialogDim.h = LINE_HEIGHT + (m_labels.size() + m_options.size()) * LINE_HEIGHT + DIALOG_BORDER;
    l_dialogDim.x = (SCREEN_WIDTH - l_dialogDim.w) / 2;
    l_dialogDim.y = (SCREEN_HEIGHT - l_dialogDim.h) / 2;
