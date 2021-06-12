@@ -192,18 +192,32 @@ void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p
 //------------------------------------------------------------------------------
 
 // Render text on the screen
-void SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV)
+int SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV, const int p_maxWidth, const T_ALIGN_H p_alignHClip)
 {
    SDL_Texture *texture = renderText(p_text, p_fg, p_bg);
    if (texture == NULL)
    {
       std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
-      return;
+      return 0;
    }
-   // Render texture on screen
-   renderTexture(texture, p_x, p_y, p_alignH, p_alignV);
+   int w = 0, h = 0;
+   SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+   // Check size
+   if (p_maxWidth != -1 && w > p_maxWidth)
+   {
+      // Clip texture width
+      SDL_Rect rect = { 0, 0, p_maxWidth, h};
+      if (p_alignHClip == T_ALIGN_RIGHT)
+         rect.x = w - rect.w;
+      renderTexture(texture, p_x, p_y, p_alignH, p_alignV, SDL_FLIP_NONE, &rect);
+   }
+   else
+   {
+      renderTexture(texture, p_x, p_y, p_alignH, p_alignV);
+   }
    // Free texture
    SDL_DestroyTexture(texture);
+   return w;
 }
 
 //------------------------------------------------------------------------------

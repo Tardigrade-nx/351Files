@@ -76,6 +76,7 @@ void MainWindow::render(const bool p_focus)
    l_y += LINE_HEIGHT;
    SDL_Color l_fgColor = {COLOR_TEXT_NORMAL};
    SDL_Color l_bgColor = {COLOR_BODY_BG};
+   int sizeW = 0;
    for (int l_i = m_camera; l_i < m_camera + m_nbVisibleLines && l_i < m_nbItems; ++l_i)
    {
       // Colors for the line
@@ -91,12 +92,14 @@ void MainWindow::render(const bool p_focus)
       else
          SDLUtils::renderTexture(m_fileLister.isDirectory(l_i) ? g_iconDir : g_iconFile, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
-      // File name
-      SDLUtils::renderText(m_fileLister[l_i].m_name, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
-
       // File size
-      if (! m_fileLister.isDirectory(l_i))
-         SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - 1 - m_scrollbar.w - MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
+      if (m_fileLister.isDirectory(l_i))
+         sizeW = 0;
+      else
+         sizeW = SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - m_scrollbar.w - MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
+
+      // File name
+      SDLUtils::renderText(m_fileLister[l_i].m_name, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 4*MARGIN_X - ICON_SIZE - m_scrollbar.w - sizeW);
 
       // Next line
       l_y += LINE_HEIGHT;

@@ -51,23 +51,7 @@ void Keyboard::render(const bool p_focus)
    // Input text
    SDL_Rect rect;
    if (! m_inputText.empty())
-   {
-      SDL_Texture *tex = SDLUtils::renderText(m_inputText, {COLOR_TEXT_NORMAL}, {COLOR_KEYBOARD_DARK});
-      SDL_QueryTexture(tex, NULL, NULL, &rect.w, &rect.h);
-      if (rect.w > m_keyboard.w - 4*KEYBOARD_MARGIN)
-      {
-         // Text is too big => clip it
-         rect.x = rect.w - (m_keyboard.w - 4*KEYBOARD_MARGIN);
-         rect.y = 0;
-         rect.w = m_keyboard.w - 4*KEYBOARD_MARGIN;
-         SDLUtils::renderTexture(tex, m_key[0].x + KEYBOARD_MARGIN, m_keyboard.y + KEYBOARD_MARGIN + LINE_HEIGHT/2, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, SDL_FLIP_NONE, &rect);
-      }
-      else
-      {
-         SDLUtils::renderTexture(tex, m_key[0].x + KEYBOARD_MARGIN, m_keyboard.y + KEYBOARD_MARGIN + LINE_HEIGHT/2, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
-      }
-      SDL_DestroyTexture(tex);
-   }
+      SDLUtils::renderText(m_inputText, m_key[0].x + KEYBOARD_MARGIN, m_keyboard.y + KEYBOARD_MARGIN + LINE_HEIGHT/2, {COLOR_TEXT_NORMAL}, {COLOR_KEYBOARD_DARK}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, m_keyboard.w - 4*KEYBOARD_MARGIN, SDLUtils::T_ALIGN_RIGHT);
    // Cursor
    if (p_focus)
       SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_FOCUS, 255);

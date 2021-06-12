@@ -39,7 +39,8 @@ namespace SDLUtils
    void renderTexture(SDL_Texture * p_texture, const int p_x, const int p_y, const T_ALIGN_H p_alignH = T_ALIGN_LEFT, const T_ALIGN_V p_alignV = T_ALIGN_TOP, const SDL_RendererFlip p_flip = SDL_FLIP_NONE, const SDL_Rect *p_clip = NULL);
 
    // Render text on the screen
-   void renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH = T_ALIGN_LEFT, const T_ALIGN_V p_alignV = T_ALIGN_TOP);
+   // Return: width of the texture
+   int renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH = T_ALIGN_LEFT, const T_ALIGN_V p_alignV = T_ALIGN_TOP, const int p_maxWidth = -1, const T_ALIGN_H p_alignHClip = T_ALIGN_LEFT);
 
    // Render text and return the texture
    SDL_Texture *renderText(const std::string &p_text, const SDL_Color &p_fg, const SDL_Color &p_bg);
