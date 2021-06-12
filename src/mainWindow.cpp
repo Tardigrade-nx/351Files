@@ -320,10 +320,11 @@ void MainWindow::openContextMenu(void)
       case 7:
       {
          Keyboard keyboard;
-         keyboard.execute();
-         if (! keyboard.getInputText().empty())
+         if (keyboard.execute() != -2 && ! keyboard.getInputText().empty())
+         {
             FileUtils::makeDirectory(m_title + (m_title == "/" ? "" : "/") + keyboard.getInputText());
-         refresh();
+            refresh();
+         }
       }
       break;
       // Rename
@@ -331,10 +332,11 @@ void MainWindow::openContextMenu(void)
       {
          std::string fileSrc = m_fileLister.getSelectFirst();
          Keyboard keyboard(fileSrc);
-         keyboard.execute();
-         if (! keyboard.getInputText().empty())
+         if (keyboard.execute() != -2 && ! keyboard.getInputText().empty())
+         {
             FileUtils::renameFile(m_title + (m_title == "/" ? "" : "/") + fileSrc, m_title + (m_title == "/" ? "" : "/") + keyboard.getInputText());
-         refresh();
+            refresh();
+         }
       }
       break;
       case 4:

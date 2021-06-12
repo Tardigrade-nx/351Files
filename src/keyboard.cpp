@@ -66,6 +66,7 @@ void Keyboard::render(const bool p_focus)
       {
          SDLUtils::renderTexture(tex, m_key[0].x + KEYBOARD_MARGIN, m_keyboard.y + KEYBOARD_MARGIN + LINE_HEIGHT/2, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
       }
+      SDL_DestroyTexture(tex);
    }
    // Cursor
    if (p_focus)
