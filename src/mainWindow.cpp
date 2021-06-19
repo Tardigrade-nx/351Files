@@ -1,6 +1,7 @@
 #include "mainWindow.h"
 #include <iostream>
 #include <sstream>
+#include <climits>
 #include "def.h"
 #include "sdlutils.h"
 #include "fileUtils.h"
@@ -32,7 +33,7 @@ MainWindow::MainWindow(const std::string &p_title):
       m_fileLister.list(m_title);
    }
    // Number of items
-   m_nbItems = m_fileLister.getNbTotal();
+   m_nbItems = m_fileLister.getNbElements();
    // Adjust scrollbar
    adjustScrollbar();
    INHIBIT(std::cout << "Path: " << m_title << " (" << m_nbItems << ") items\n";)
@@ -93,7 +94,7 @@ void MainWindow::render(const bool p_focus)
          SDLUtils::renderTexture(m_fileLister.isDirectory(l_i) ? g_iconDir : g_iconFile, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
       // File size
-      if (m_fileLister.isDirectory(l_i))
+      if (m_fileLister[l_i].m_size == ULLONG_MAX)
          sizeW = 0;
       else
          sizeW = SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - m_scrollbar.w - MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
@@ -208,7 +209,7 @@ void MainWindow::openHighlightedDir(void)
 
    // New path is OK
    m_title = l_newDir;
-   m_nbItems = m_fileLister.getNbTotal();
+   m_nbItems = m_fileLister.getNbElements();
   // If it's a back movement, restore old highlighted dir
    if (! l_oldDir.empty())
       m_cursor = m_fileLister.searchDir(l_oldDir);
@@ -246,10 +247,12 @@ void MainWindow::openContextMenu(void)
 {
    // If no file is selected, select current file
    auto nbSelected = m_fileLister.getNbSelected();
+   bool autoUnselect = false;
    if (nbSelected == 0)
    {
       selectHighlightedItem(false);
       nbSelected = m_fileLister.getNbSelected();
+      autoUnselect = true;
    }
    // Open dialog
    int result = -1;
@@ -268,8 +271,8 @@ void MainWindow::openContextMenu(void)
          l_dialog.addOption("Delete", 3, g_iconTrash);
       if (nbSelected == 1)
          l_dialog.addOption("Rename", 9, g_iconEdit);
-      //~ if (nbSelected > 0)
-         //~ l_dialog.addOption("Size", 4, g_iconDisk);
+      if (m_fileLister.getNbSelected('d') > 0)
+         l_dialog.addOption("Size", 4, g_iconDisk);
       l_dialog.addOption("Select all", 5, g_iconSelect);
       l_dialog.addOption("Select none", 6, g_iconNone);
       l_dialog.addOption("New directory", 7, g_iconNewDir);
@@ -305,9 +308,15 @@ void MainWindow::openContextMenu(void)
          m_clipboard.clear();
          refresh();
          break;
+      // Size
+      case 4:
+         m_fileLister.computeSelectedDirSize(m_title);
+         g_hasChanged = true;
+         break;
       // Select all
       case 5:
          m_fileLister.setSelectedAll(true);
+         autoUnselect = false;
          g_hasChanged = true;
          break;
       // Select none
@@ -342,19 +351,11 @@ void MainWindow::openContextMenu(void)
          }
       }
       break;
-      case 4:
-      {
-         Dialog l_dialog ("Info");
-         l_dialog.addLabel("Not yet implemented!");
-         l_dialog.addOption("OK", 0, g_iconSelect);
-         l_dialog.execute();
-      }
-      break;
       default:
          break;
    }
-   // If only 1 file is selected, unselect
-   if (nbSelected == 1)
+   // If the file was auto-selected, auto-unselect it
+   if (autoUnselect)
    {
       m_fileLister.setSelectedAll(false);
       g_hasChanged = true;
@@ -375,7 +376,7 @@ void MainWindow::refresh(void)
       m_fileLister.list(m_title);
    }
    // Update number of items
-   m_nbItems = m_fileLister.getNbTotal();
+   m_nbItems = m_fileLister.getNbElements();
    // Adjust selected line
    if (m_cursor > m_nbItems - 1)
       m_cursor = m_nbItems - 1;

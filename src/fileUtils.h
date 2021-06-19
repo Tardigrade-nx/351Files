@@ -31,7 +31,7 @@ namespace FileUtils
 //------------------------------------------------------------------------------
 
    // Format file size to human readable (K, M, G)
-   std::string formatSize(const unsigned long int &p_size);
+   std::string formatSize(const unsigned long long int &p_size);
 
    // Lower case file extension
    std::string getLowercaseFileExtension(const std::string &p_name);
@@ -44,6 +44,9 @@ namespace FileUtils
 
    // Extract dir name from a path
    std::string getDirName(const std::string &p_path);
+
+   // Dir size
+   unsigned long long int getDirSize(const std::string &p_path);
 
 }
 

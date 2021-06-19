@@ -19,7 +19,7 @@ struct T_FILE
     {}
 
     // Constructor
-    T_FILE(const std::string &p_name, const unsigned long int &p_size):
+    T_FILE(const std::string &p_name, const unsigned long long int &p_size):
         m_name(p_name),
         m_ext(FileUtils::getLowercaseFileExtension(p_name)),
         m_size(p_size),
@@ -39,7 +39,7 @@ struct T_FILE
     // File attributes
     std::string m_name;
     std::string m_ext;
-    unsigned long int m_size;
+    unsigned long long int m_size;
     bool m_selected;
 };
 
@@ -60,11 +60,6 @@ class CFileLister
     // Get an element in the list (dirs and files combined)
     T_FILE &operator[](const unsigned int p_i);
 
-    // Get the number of dirs/files
-    const unsigned int getNbDirs(void) const;
-    const unsigned int getNbFiles(void) const;
-    const unsigned int getNbTotal(void) const;
-
     // True => directory, false => file
     const bool isDirectory(const unsigned int p_i) const;
 
@@ -74,14 +69,22 @@ class CFileLister
     // Set selected status for all files (except '..')
     void setSelectedAll(const bool p_selected);
 
-    // Number of selected files
-    const unsigned int getNbSelected(void) const;
+    // Number of elements
+    // p_type: 'f' = files, 'd' = directories, 'a' = all
+    const unsigned int getNbElements(const char p_type = 'a') const;
+
+    // Number of selected elements
+    // p_type: 'f' = files, 'd' = directories, 'a' = all
+    const unsigned int getNbSelected(const char p_type = 'a') const;
 
     // Get list of selected files, with full path
     void getSelectList(const std::string &p_path, std::vector<std::string> &p_list) const;
 
     // Get short name of the first selected element
     std::string getSelectFirst(void) const;
+
+    // Compute size of all selected dirs
+    void computeSelectedDirSize(const std::string &p_path);
 
     private:
 

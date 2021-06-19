@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <string.h>
+#include <climits>
 #include "fileLister.h"
 
 bool compareNoCase(const T_FILE& p_s1, const T_FILE& p_s2)
@@ -10,13 +11,19 @@ bool compareNoCase(const T_FILE& p_s1, const T_FILE& p_s2)
     return strcasecmp(p_s1.m_name.c_str(), p_s2.m_name.c_str()) <= 0;
 }
 
+//------------------------------------------------------------------------------
+
 CFileLister::CFileLister(void)
 {
 }
 
+//------------------------------------------------------------------------------
+
 CFileLister::~CFileLister(void)
 {
 }
+
+//------------------------------------------------------------------------------
 
 const bool CFileLister::list(const std::string &p_path)
 {
@@ -52,7 +59,7 @@ const bool CFileLister::list(const std::string &p_path)
                 // Check type
                 if (S_ISDIR(l_stat.st_mode))
                     // It's a directory
-                    m_listDirs.push_back(T_FILE(l_file, l_stat.st_size));
+                    m_listDirs.push_back(T_FILE(l_file, ULLONG_MAX));
                 else
                     // It's a file
                     m_listFiles.push_back(T_FILE(l_file, l_stat.st_size));
@@ -68,9 +75,11 @@ const bool CFileLister::list(const std::string &p_path)
     sort(m_listDirs.begin(), m_listDirs.end(), compareNoCase);
     // Add "..", always at the first place
     if (p_path != "/")
-        m_listDirs.insert(m_listDirs.begin(), T_FILE("..", 0));
+        m_listDirs.insert(m_listDirs.begin(), T_FILE("..", ULLONG_MAX));
     return true;
 }
+
+//------------------------------------------------------------------------------
 
 T_FILE &CFileLister::operator[](const unsigned int p_i)
 {
@@ -80,25 +89,28 @@ T_FILE &CFileLister::operator[](const unsigned int p_i)
         return m_listFiles[p_i - m_listDirs.size()];
 }
 
-const unsigned int CFileLister::getNbDirs(void) const
+//------------------------------------------------------------------------------
+
+// Number of elements
+// p_type: 'f' = files, 'd' = directories, 'a' = all
+const unsigned int CFileLister::getNbElements(const char p_type) const
 {
-    return m_listDirs.size();
+    unsigned int nb = 0;
+    if (p_type == 'f' || p_type == 'a')
+        nb += m_listFiles.size();
+    if (p_type == 'd' || p_type == 'a')
+        nb += m_listDirs.size();
+    return nb;
 }
 
-const unsigned int CFileLister::getNbFiles(void) const
-{
-    return m_listFiles.size();
-}
-
-const unsigned int CFileLister::getNbTotal(void) const
-{
-    return m_listDirs.size() + m_listFiles.size();
-}
+//------------------------------------------------------------------------------
 
 const bool CFileLister::isDirectory(const unsigned int p_i) const
 {
     return p_i < m_listDirs.size();
 }
+
+//------------------------------------------------------------------------------
 
 const unsigned int CFileLister::searchDir(const std::string &p_name) const
 {
@@ -115,6 +127,8 @@ const unsigned int CFileLister::searchDir(const std::string &p_name) const
     return l_found ? l_ret : 0;
 }
 
+//------------------------------------------------------------------------------
+
 // Set selected status for all files (except '..')
 void CFileLister::setSelectedAll(const bool p_selected)
 {
@@ -126,17 +140,24 @@ void CFileLister::setSelectedAll(const bool p_selected)
         it->m_selected = p_selected;
 }
 
-// Number of selected files
-const unsigned int CFileLister::getNbSelected(void) const
+//------------------------------------------------------------------------------
+
+// Number of selected elements
+// p_type: 'f' = files, 'd' = directories, 'a' = all
+const unsigned int CFileLister::getNbSelected(const char p_type) const
 {
     unsigned int nb = 0;
-    auto it = m_listDirs.begin();
-    for (; it != m_listDirs.end(); ++it)
-        nb += it->m_selected;
-    for (it = m_listFiles.begin(); it != m_listFiles.end(); ++it)
-        nb += it->m_selected;
+    std::vector<T_FILE>::const_iterator it;
+    if (p_type == 'd' || p_type == 'a')
+        for (it = m_listDirs.begin(); it != m_listDirs.end(); ++it)
+            nb += it->m_selected;
+    if (p_type == 'f' || p_type == 'a')
+        for (it = m_listFiles.begin(); it != m_listFiles.end(); ++it)
+            nb += it->m_selected;
     return nb;
 }
+
+//------------------------------------------------------------------------------
 
 // Get list of selected files, with full path
 void CFileLister::getSelectList(const std::string &p_path, std::vector<std::string> &p_list) const
@@ -159,6 +180,8 @@ void CFileLister::getSelectList(const std::string &p_path, std::vector<std::stri
             p_list.push_back(p_path + separator + it->m_name);
 }
 
+//------------------------------------------------------------------------------
+
 // Get short name of the first selected element
 std::string CFileLister::getSelectFirst(void) const
 {
@@ -173,4 +196,18 @@ std::string CFileLister::getSelectFirst(void) const
         if (it->m_selected)
             return it->m_name;
     return "";
+}
+
+//------------------------------------------------------------------------------
+
+// Compute size of all selected dirs
+void CFileLister::computeSelectedDirSize(const std::string &p_path)
+{
+    // Search selected dirs
+    for (auto it = m_listDirs.begin(); it != m_listDirs.end(); ++it)
+    {
+        if (! it->m_selected)
+            continue;
+        it->m_size = FileUtils::getDirSize(p_path + (p_path == "/" ? "" : "/") + it->m_name);
+    }
 }

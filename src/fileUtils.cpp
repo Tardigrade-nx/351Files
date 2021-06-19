@@ -101,7 +101,7 @@ namespace FileUtils
 //------------------------------------------------------------------------------
 
 // Format file size to human readable (K, M, G)
-std::string FileUtils::formatSize(const unsigned long int &p_size)
+std::string FileUtils::formatSize(const unsigned long long int &p_size)
 {
    // Convert size
    double l_size = p_size;
@@ -111,7 +111,7 @@ std::string FileUtils::formatSize(const unsigned long int &p_size)
    // Format size to string
    std::ostringstream oss;
    if (std::floor(l_size) == l_size)
-      oss << static_cast<unsigned long int>(l_size) << fileSizeUnits[l_i];
+      oss << static_cast<unsigned int>(l_size) << fileSizeUnits[l_i];
    else
       oss << std::fixed << std::setprecision(1) << l_size << fileSizeUnits[l_i];
    return oss.str();
@@ -312,4 +312,32 @@ void FileUtils::renameFile(const std::string &p_file1, const std::string &p_file
    INHIBIT(std::cout << "Rename file " << p_file1 << " to " << p_file2 << '\n';)
    Run("mv", p_file1, p_file2);
    Run("sync", p_file2);
+}
+
+//------------------------------------------------------------------------------
+
+// Dir size
+unsigned long long int FileUtils::getDirSize(const std::string &p_path)
+{
+   // Execute command 'du'
+   std::string l_line = "du -bs " + p_path;
+   char l_buffer[256];
+   FILE *l_pipe = popen(l_line.c_str(), "r");
+   if (l_pipe == NULL)
+   {
+      std::cerr << "getDirSize: Error popen\n";
+      return 0;
+   }
+   while (fgets(l_buffer, sizeof(l_buffer), l_pipe) != NULL);
+   l_line = l_buffer;
+   pclose(l_pipe);
+   // Keep the number only
+   size_t l_pos = l_line.find(" ");
+   if (l_pos != std::string::npos)
+      l_line = l_line.erase(l_pos);
+   // Convert to int
+   unsigned long long int l_result = 0;
+   std::istringstream iss(l_line);
+   iss >> l_result;
+   return l_result;
 }
