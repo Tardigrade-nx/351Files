@@ -13,8 +13,12 @@
 #if defined(DEVICE_RG351P)
    #define SCREEN_WIDTH             480
    #define SCREEN_HEIGHT            320
-   #define START_PATH               "/storage/roms"
-   #define RES_PATH                 "/storage/.config/distribution/configs/fm/res"
+   #ifndef START_PATH
+      #define START_PATH               getenv("PWD")
+   #endif
+   #ifndef RES_PATH
+      #define RES_PATH                 "./res"
+   #endif
    #define FONT_NAME                "NotoSans-Regular.ttf"
    #define FONT_SIZE                14
    #define LINE_HEIGHT              24
@@ -25,8 +29,12 @@
 #elif defined(DEVICE_RG351V)
    #define SCREEN_WIDTH             640
    #define SCREEN_HEIGHT            480
-   #define START_PATH               "/storage/roms"
-   #define RES_PATH                 "/storage/.config/distribution/configs/fm/res"
+   #ifndef START_PATH
+      #define START_PATH               getenv("PWD")
+   #endif
+   #ifndef RES_PATH
+      #define RES_PATH                 "./res"
+   #endif
    #define FONT_NAME                "NotoSans-Regular.ttf"
    #define FONT_SIZE                20
    #define LINE_HEIGHT              32
