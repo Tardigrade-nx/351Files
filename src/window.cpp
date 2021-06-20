@@ -178,11 +178,7 @@ int IWindow::execute(void)
       if (g_hasChanged)
       {
          renderAll();
-         SDL_RenderPresent(g_renderer);
-         #ifndef DEVICE_PC
-         SDL_RenderPresent(g_renderer);
-         SDL_RenderPresent(g_renderer);
-         #endif
+         renderPresent();
          g_hasChanged = false;
       }
 
@@ -209,6 +205,17 @@ void IWindow::renderAll(void)
    // Draw windows
    for (std::vector<IWindow *>::iterator it = g_windows.begin() + ind; it != g_windows.end(); ++it)
       (*it)->render(it + 1 == g_windows.end());
+}
+
+//------------------------------------------------------------------------------
+
+void IWindow::renderPresent(void)
+{
+   SDL_RenderPresent(g_renderer);
+   #ifndef DEVICE_PC
+   SDL_RenderPresent(g_renderer);
+   SDL_RenderPresent(g_renderer);
+   #endif
 }
 
 //------------------------------------------------------------------------------

@@ -100,15 +100,18 @@ void Dialog::render(const bool p_focus)
    }
 
    // Render cursor
-   if (p_focus)
-      SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_FOCUS, 255);
-   else
-      SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_NO_FOCUS, 255);
-   l_rect.x = l_dialogDim.x + DIALOG_BORDER;
-   l_rect.y = l_dialogDim.y + LINE_HEIGHT + (m_cursor + m_labels.size()) * LINE_HEIGHT;
-   l_rect.w = l_dialogDim.w - 2 * DIALOG_BORDER;
-   l_rect.h = LINE_HEIGHT;
-   SDL_RenderFillRect(g_renderer, &l_rect);
+   if (m_options.size() > 0)
+   {
+      if (p_focus)
+         SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_FOCUS, 255);
+      else
+         SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_NO_FOCUS, 255);
+      l_rect.x = l_dialogDim.x + DIALOG_BORDER;
+      l_rect.y = l_dialogDim.y + LINE_HEIGHT + (m_cursor + m_labels.size()) * LINE_HEIGHT;
+      l_rect.w = l_dialogDim.w - 2 * DIALOG_BORDER;
+      l_rect.h = LINE_HEIGHT;
+      SDL_RenderFillRect(g_renderer, &l_rect);
+   }
 
    // Display options
    for (l_tex = l_texOptions.begin(), l_icon = m_optionIcons.begin(); l_tex != l_texOptions.end(); ++l_tex, ++l_icon)

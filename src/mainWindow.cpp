@@ -310,9 +310,16 @@ void MainWindow::openContextMenu(void)
          break;
       // Size
       case 4:
+      {
+         // Display a "please wait" message
+         Dialog dialogPleaseWait("Info");
+         dialogPleaseWait.addLabel("Please wait...");
+         dialogPleaseWait.render(true);
+         IWindow::renderPresent();
          m_fileLister.computeSelectedDirSize(m_title);
          g_hasChanged = true;
-         break;
+      }
+      break;
       // Select all
       case 5:
          m_fileLister.setSelectedAll(true);

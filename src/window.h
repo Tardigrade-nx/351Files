@@ -8,6 +8,9 @@ class IWindow
 {
    public:
 
+   // Constructor
+   IWindow(const bool p_fullscreen, const std::string &p_title);
+
    // Destructor
    virtual ~IWindow(void);
 
@@ -19,14 +22,12 @@ class IWindow
 
    // Render all windows
    static void renderAll(void);
+   static void renderPresent(void);
 
    // Is window full screen?
    bool isFullScreen(void) const;
 
    protected:
-
-   // Constructor
-   IWindow(const bool p_fullscreen, const std::string &p_title);
 
    // Move cursor
    virtual void moveCursorUp(const int p_step, bool p_loop);
