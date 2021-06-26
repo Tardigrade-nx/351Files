@@ -8,6 +8,7 @@
 #include "dialog.h"
 #include "keyboard.h"
 #include "textViewer.h"
+#include "imageViewer.h"
 
 // Destructor
 MainWindow::~MainWindow(void)
@@ -85,8 +86,12 @@ void MainWindow::render(const bool p_focus)
       // Icon
       if (m_fileLister[l_i].m_name == "..")
          SDLUtils::renderTexture(g_iconUp, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+      else if (m_fileLister.isDirectory(l_i))
+         SDLUtils::renderTexture(g_iconDir, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+      else if (ImageViewer::extensionIsSupported(m_fileLister[l_i].m_ext))
+         SDLUtils::renderTexture(g_iconImage, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
       else
-         SDLUtils::renderTexture(m_fileLister.isDirectory(l_i) ? g_iconDir : g_iconFile, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+         SDLUtils::renderTexture(g_iconFile, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
       // File size
       if (m_fileLister[l_i].m_size == ULLONG_MAX)
@@ -130,31 +135,11 @@ void MainWindow::keyPressed(const SDL_Event &event)
    {
       // Reset timer
       resetTimer();
-      // If it's a directory, open it
+      // Open directory or file
       if (m_fileLister.isDirectory(m_cursor))
-      {
          openHighlightedDir();
-      }
       else
-      {
-         bool view = true;
-         // If the file is > 1M, ask for confirmation
-         if (m_fileLister[m_cursor].m_size > 1024 * 1024)
-         {
-            Dialog l_dialog("Question:");
-            l_dialog.addLabel("The file is big. View anyway?");
-            l_dialog.addOption("Yes", 0, g_iconSelect);
-            l_dialog.addOption("No", 1, g_iconNone);
-            if (l_dialog.execute() != 0)
-               view = false;
-         }
-         // View file as text
-         if (view)
-         {
-            TextViewer textViewer(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
-            textViewer.execute();
-         }
-      }
+         openHighlightedFile();
       return;
    }
    // Button Back
@@ -237,6 +222,39 @@ void MainWindow::openHighlightedDir(void)
    // New render
    g_hasChanged = true;
    INHIBIT(std::cout << "Path: " << m_title << " (" << m_nbItems << ") items\n";)
+}
+
+//------------------------------------------------------------------------------
+
+// Open highlighted dir
+void MainWindow::openHighlightedFile(void)
+{
+   // Case: file is a supported image
+   if (ImageViewer::extensionIsSupported(m_fileLister[m_cursor].m_ext))
+   {
+      ImageViewer imageViewer(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
+      imageViewer.execute();
+      return;
+   }
+
+   // Case: view file as text
+   bool view = true;
+   // If the file is > 1M, ask for confirmation
+   if (m_fileLister[m_cursor].m_size > 1024 * 1024)
+   {
+      Dialog l_dialog("Question:");
+      l_dialog.addLabel("The file is big. View anyway?");
+      l_dialog.addOption("Yes", 0, g_iconSelect);
+      l_dialog.addOption("No", 1, g_iconCancel);
+      if (l_dialog.execute() != 0)
+         view = false;
+   }
+   // View file as text
+   if (view)
+   {
+      TextViewer textViewer(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
+      textViewer.execute();
+   }
 }
 
 //------------------------------------------------------------------------------

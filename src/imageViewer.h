@@ -1,29 +1,31 @@
-#ifndef _TEXTVIEWER_H_
-#define _TEXTVIEWER_H_
+#ifndef _IMAGEVIEWER_H_
+#define _IMAGEVIEWER_H_
 
 #include <string>
-#include <vector>
 #include <SDL.h>
 #include "window.h"
 
-class TextViewer : public IWindow
+class ImageViewer : public IWindow
 {
    public:
 
    // Constructor
-   TextViewer(const std::string &p_title);
+   ImageViewer(const std::string &p_title);
 
    // Destructor
-   virtual ~TextViewer(void);
+   virtual ~ImageViewer(void);
 
    // Draw window
    virtual void render(const bool p_focus);
 
+   // Supported extensions
+   static bool extensionIsSupported(const std::string &p_ext);
+
    private:
 
    // Forbidden
-   TextViewer(const TextViewer &p_source);
-   const TextViewer &operator =(const TextViewer &p_source);
+   ImageViewer(const ImageViewer &p_source);
+   const ImageViewer &operator =(const ImageViewer &p_source);
 
    // Key pressed
    virtual void keyPressed(const SDL_Event &event);
@@ -34,9 +36,13 @@ class TextViewer : public IWindow
    virtual void moveCursorLeft(const int p_step, bool p_loop);
    virtual void moveCursorRight(const int p_step, bool p_loop);
 
-   // List of lines
-   std::vector<std::string> m_lines;
+   // The image to view
+   SDL_Texture *m_image;
+   int m_imageW;
+   int m_imageH;
 
+   // Resize image to fit the screen
+   bool m_fitToScreen;
 };
 
 #endif

@@ -33,8 +33,9 @@ class MainWindow : public IWindow
    virtual void moveCursorUp(const int p_step, bool p_loop);
    virtual void moveCursorDown(const int p_step, bool p_loop);
 
-   // Open highlighted dir
+   // Open highlighted dir / file
    void openHighlightedDir(void);
+   void openHighlightedFile(void);
 
    // Refresh current directory
    void refresh(void);
