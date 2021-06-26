@@ -1,5 +1,5 @@
 # 351Files
-A Single panel file Manager tailored for Anbernic 351 devices: RG351V and RG351P.
+A Single panel file Manager tailored for Anbernic 351 devices: RG351V and RG351P. Can be easily adapted to any Linux-based device.
 
 Based on DinguxCommander.
 * Original page: http://beyondds.free.fr/index.php?Dingoo-dinguxcommander

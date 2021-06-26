@@ -7,6 +7,7 @@
 #include "fileUtils.h"
 #include "dialog.h"
 #include "keyboard.h"
+#include "textViewer.h"
 
 // Destructor
 MainWindow::~MainWindow(void)
@@ -135,11 +136,17 @@ void MainWindow::keyPressed(const SDL_Event &event)
    {
       // Reset timer
       resetTimer();
-      // If a file is highlighted, do nothing
-      if (! m_fileLister.isDirectory(m_cursor))
-         return;
-      // Open highlighted dir
-      openHighlightedDir();
+      // If it's a directory, open it
+      if (m_fileLister.isDirectory(m_cursor))
+      {
+         openHighlightedDir();
+      }
+      else
+      {
+         // View file as text
+         TextViewer textViewer(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
+         textViewer.execute();
+      }
       return;
    }
    // Button Back
