@@ -18,7 +18,7 @@ bool SDLUtils::init()
    }
 
    // Intialize SDL_image
-   int flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP;
+   int flags = IMG_INIT_JPG | IMG_INIT_PNG;
    if ((IMG_Init(flags) & flags) != flags)
    {
       std::cerr << "SDL_image could not initialize! IMG_GetError: " << IMG_GetError() << std::endl;
