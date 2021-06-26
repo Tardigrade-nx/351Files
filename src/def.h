@@ -10,9 +10,12 @@
 
 #define APP_NAME "351Files"
 
+// Parameters for RG351P
 #if defined(DEVICE_RG351P)
    #define SCREEN_WIDTH             480
    #define SCREEN_HEIGHT            320
+   #define HARDWARE_ACCELERATION    0
+   #define FULLSCREEN               1
    #ifndef START_PATH
       #define START_PATH               getenv("PWD")
    #endif
@@ -26,9 +29,13 @@
    #define MARGIN_X                 8
    #define KEYBOARD_MARGIN          3
    #define KEYBOARD_KEY_SPACING     3
+
+// Parameters for RG351V
 #elif defined(DEVICE_RG351V)
    #define SCREEN_WIDTH             640
    #define SCREEN_HEIGHT            480
+   #define HARDWARE_ACCELERATION    0
+   #define FULLSCREEN               1
    #ifndef START_PATH
       #define START_PATH               getenv("PWD")
    #endif
@@ -42,9 +49,13 @@
    #define MARGIN_X                 10
    #define KEYBOARD_MARGIN          8
    #define KEYBOARD_KEY_SPACING     4
+
+// Paraters for desktop PC
 #else
    #define SCREEN_WIDTH             640
    #define SCREEN_HEIGHT            480
+   #define HARDWARE_ACCELERATION    1
+   #define FULLSCREEN               0
    #define START_PATH               getenv("PWD")
    #define RES_PATH                 "./res"
    #define FONT_NAME                "NotoSans-Regular.ttf"
