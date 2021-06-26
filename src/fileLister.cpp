@@ -5,6 +5,7 @@
 #include <string.h>
 #include <climits>
 #include "fileLister.h"
+#include "imageViewer.h"
 
 bool compareNoCase(const T_FILE& p_s1, const T_FILE& p_s2)
 {
@@ -210,4 +211,23 @@ void CFileLister::computeSelectedDirSize(const std::string &p_path)
             continue;
         it->m_size = FileUtils::getDirSize(p_path + (p_path == "/" ? "" : "/") + it->m_name);
     }
+}
+
+//------------------------------------------------------------------------------
+
+// Get next / previous image
+int CFileLister::getNextImage(const int p_startIndex)
+{
+    for (int ind = p_startIndex + 1 - static_cast<int>(m_listDirs.size()); ind < static_cast<int>(m_listFiles.size()); ++ind)
+        if (ImageViewer::extensionIsSupported(m_listFiles[ind].m_ext))
+            return ind + m_listDirs.size();
+    return -1;
+}
+
+int CFileLister::getPreviousImage(const int p_startIndex)
+{
+    for (int ind = p_startIndex - 1 - m_listDirs.size(); ind >= 0; --ind)
+        if (ImageViewer::extensionIsSupported(m_listFiles[ind].m_ext))
+            return ind + m_listDirs.size();
+    return -1;
 }

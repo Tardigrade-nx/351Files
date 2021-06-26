@@ -2,8 +2,6 @@
 #include "def.h"
 #include "sdlutils.h"
 
-#define IMAGEVIEWER_SCROLL_SPEED      20
-
 //------------------------------------------------------------------------------
 
 // Supported extensions
@@ -15,17 +13,17 @@ bool ImageViewer::extensionIsSupported(const std::string &p_ext)
 //------------------------------------------------------------------------------
 
 // Constructor
-ImageViewer::ImageViewer(const std::string &p_title):
-   IWindow(true, p_title),
+ImageViewer::ImageViewer(const std::string &p_dir, CFileLister *p_fileLister, const int p_fileIndex):
+   IWindow(true, ""),
    m_image(NULL),
    m_imageW(0),
    m_imageH(0),
-   m_fitToScreen(true)
+   m_fitToScreen(true),
+   m_dir(p_dir),
+   m_fileLister(p_fileLister),
+   m_fileIndex(0)
 {
-   // Load image
-   m_image = SDLUtils::loadTexture(p_title);
-   if (m_image != NULL)
-      SDL_QueryTexture(m_image, NULL, NULL, &m_imageW, &m_imageH);
+   loadImage(p_fileIndex);
 }
 
 //------------------------------------------------------------------------------
@@ -38,6 +36,25 @@ ImageViewer::~ImageViewer(void)
       SDL_DestroyTexture(m_image);
       m_image = NULL;
    }
+}
+
+//------------------------------------------------------------------------------
+
+// Load an image
+void ImageViewer::loadImage(const int p_fileIndex)
+{
+   // Destroy old image
+   if (m_image != NULL)
+   {
+      SDL_DestroyTexture(m_image);
+      m_image = NULL;
+   }
+   // Load new image
+   m_fileIndex = p_fileIndex;
+   m_title = m_dir + (m_dir == "/" ? "" : "/") + (*m_fileLister)[m_fileIndex].m_name;
+   m_image = SDLUtils::loadTexture(m_title);
+   if (m_image != NULL)
+      SDL_QueryTexture(m_image, NULL, NULL, &m_imageW, &m_imageH);
 }
 
 //------------------------------------------------------------------------------
@@ -120,44 +137,80 @@ void ImageViewer::keyPressed(const SDL_Event &event)
 // Move camera
 void ImageViewer::moveCursorUp(const int p_step, bool p_loop)
 {
-   // Previous image
    if (m_fitToScreen)
    {
+      // Previous image
+      int ind = m_fileLister->getPreviousImage(m_fileIndex);
+      if (ind != -1)
+      {
+         loadImage(ind);
+         g_hasChanged = true;
+      }
    }
-   // Scroll image
-   m_camera.y += IMAGEVIEWER_SCROLL_SPEED;
-   g_hasChanged = true;
+   else
+   {
+      // Scroll image
+      m_camera.y += VIEWER_SCROLL_SPEED;
+      g_hasChanged = true;
+   }
 }
 
 void ImageViewer::moveCursorDown(const int p_step, bool p_loop)
 {
-   // Next image
    if (m_fitToScreen)
    {
+      // Next image
+      int ind = m_fileLister->getNextImage(m_fileIndex);
+      if (ind != -1)
+      {
+         loadImage(ind);
+         g_hasChanged = true;
+      }
    }
-   // Scroll image
-   m_camera.y -= IMAGEVIEWER_SCROLL_SPEED;
-   g_hasChanged = true;
+   else
+   {
+      // Scroll image
+      m_camera.y -= VIEWER_SCROLL_SPEED;
+      g_hasChanged = true;
+   }
 }
 
 void ImageViewer::moveCursorLeft(const int p_step, bool p_loop)
 {
-   // Previous image
    if (m_fitToScreen)
    {
+      // Previous image
+      int ind = m_fileLister->getPreviousImage(m_fileIndex);
+      if (ind != -1)
+      {
+         loadImage(ind);
+         g_hasChanged = true;
+      }
    }
-   // Scroll image
-   m_camera.x += IMAGEVIEWER_SCROLL_SPEED;
-   g_hasChanged = true;
+   else
+   {
+      // Scroll image
+      m_camera.x += VIEWER_SCROLL_SPEED;
+      g_hasChanged = true;
+   }
 }
 
 void ImageViewer::moveCursorRight(const int p_step, bool p_loop)
 {
-   // Next image
    if (m_fitToScreen)
    {
+      // Next image
+      int ind = m_fileLister->getNextImage(m_fileIndex);
+      if (ind != -1)
+      {
+         loadImage(ind);
+         g_hasChanged = true;
+      }
    }
-   // Scroll image
-   m_camera.x -= IMAGEVIEWER_SCROLL_SPEED;
-   g_hasChanged = true;
+   else
+   {
+      // Scroll image
+      m_camera.x -= VIEWER_SCROLL_SPEED;
+      g_hasChanged = true;
+   }
 }

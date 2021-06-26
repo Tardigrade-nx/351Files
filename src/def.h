@@ -86,6 +86,9 @@
 // Size of dialog border
 #define DIALOG_BORDER         4
 
+// Scroll speed in file and image viewer
+#define VIEWER_SCROLL_SPEED      20
+
 // Button events
 #if defined(DEVICE_RG351P)
    #define BUTTON_PRESSED_UP              event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_UP

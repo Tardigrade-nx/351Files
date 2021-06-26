@@ -271,7 +271,7 @@ void FileUtils::removeFiles(const std::vector<std::string> &p_files)
    Dialog l_dialog("Question:");
    l_dialog.addLabel(oss.str());
    l_dialog.addOption("Yes", 0, g_iconSelect);
-   l_dialog.addOption("No", 1, g_iconNone);
+   l_dialog.addOption("No", 1, g_iconCancel);
    if (l_dialog.execute() != 0)
       return;
    // Delete files
@@ -304,7 +304,7 @@ void FileUtils::renameFile(const std::string &p_file1, const std::string &p_file
       Dialog l_dialog("Question:");
       l_dialog.addLabel("Overwrite " + getFileName(p_file2) + "?");
       l_dialog.addOption("Yes", 0, g_iconSelect);
-      l_dialog.addOption("No", 1, g_iconNone);
+      l_dialog.addOption("No", 1, g_iconCancel);
       if (l_dialog.execute() != 0)
          return;
    }

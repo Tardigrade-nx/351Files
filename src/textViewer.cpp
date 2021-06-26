@@ -5,7 +5,36 @@
 #include "def.h"
 #include "sdlutils.h"
 
-#define TEXTVIEWER_SCROLL_X_SPEED      20
+namespace {
+
+inline int UTF8CodePointLen(const char* src) {
+  return "\1\1\1\1\1\1\1\1\1\1\1\1\2\2\3\4"[static_cast<unsigned char>(*src)>> 4];
+}
+
+void ReplaceTabs(std::string *line) {
+   constexpr std::size_t kTabWidth = 8;
+   const std::size_t num_tabs = std::count(line->begin(), line->end(), '\t');
+   if (num_tabs == 0) return;
+   std::string result;
+   result.reserve(line->size() + num_tabs * (kTabWidth - 1));
+   std::size_t prev_tab_end = 0;
+   std::size_t column = 0;
+   for (std::size_t i = 0; i < line->size(); i += UTF8CodePointLen(line->data() + i)) {
+      if ((*line)[i] == '\t') {
+         result.append(*line, prev_tab_end, i - prev_tab_end);
+         const std::size_t num_spaces = kTabWidth - (column % kTabWidth);
+         result.append(num_spaces, ' ');
+         prev_tab_end = i + 1;
+         column += num_spaces;
+      } else {
+         ++column;
+      }
+   }
+   result.append(*line, prev_tab_end, std::string::npos);
+   *line = std::move(result);
+}
+
+} // namespace
 
 //------------------------------------------------------------------------------
 
@@ -24,6 +53,7 @@ TextViewer::TextViewer(const std::string &p_title):
    {
       m_lines.emplace_back();
       std::getline(ifs, m_lines.back());
+      ReplaceTabs(&m_lines.back());
    }
    ifs.close();
    // Number of lines
@@ -120,7 +150,7 @@ void TextViewer::moveCursorDown(const int p_step, bool p_loop)
 
 void TextViewer::moveCursorLeft(const int p_step, bool p_loop)
 {
-   m_camera.x -= TEXTVIEWER_SCROLL_X_SPEED;
+   m_camera.x -= VIEWER_SCROLL_SPEED;
    if (m_camera.x < 0)
       m_camera.x = 0;
    g_hasChanged = true;
@@ -128,6 +158,6 @@ void TextViewer::moveCursorLeft(const int p_step, bool p_loop)
 
 void TextViewer::moveCursorRight(const int p_step, bool p_loop)
 {
-   m_camera.x += TEXTVIEWER_SCROLL_X_SPEED;
+   m_camera.x += VIEWER_SCROLL_SPEED;
    g_hasChanged = true;
 }

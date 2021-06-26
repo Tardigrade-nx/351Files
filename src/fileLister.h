@@ -86,6 +86,10 @@ class CFileLister
     // Compute size of all selected dirs
     void computeSelectedDirSize(const std::string &p_path);
 
+    // Get next / previous image
+    int getNextImage(const int p_startIndex);
+    int getPreviousImage(const int p_startIndex);
+
     private:
 
     // Forbidden

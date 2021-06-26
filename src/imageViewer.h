@@ -4,13 +4,14 @@
 #include <string>
 #include <SDL.h>
 #include "window.h"
+#include "fileLister.h"
 
 class ImageViewer : public IWindow
 {
    public:
 
    // Constructor
-   ImageViewer(const std::string &p_title);
+   ImageViewer(const std::string &p_dir, CFileLister *p_fileLister, const int p_fileIndex);
 
    // Destructor
    virtual ~ImageViewer(void);
@@ -36,6 +37,9 @@ class ImageViewer : public IWindow
    virtual void moveCursorLeft(const int p_step, bool p_loop);
    virtual void moveCursorRight(const int p_step, bool p_loop);
 
+   // Load an image
+   void loadImage(const int p_fileIndex);
+
    // The image to view
    SDL_Texture *m_image;
    int m_imageW;
@@ -43,6 +47,15 @@ class ImageViewer : public IWindow
 
    // Resize image to fit the screen
    bool m_fitToScreen;
+
+   // Current directory
+   std::string m_dir;
+
+   // The file lister
+   CFileLister *m_fileLister;
+
+   // Current file index
+   int m_fileIndex;
 };
 
 #endif

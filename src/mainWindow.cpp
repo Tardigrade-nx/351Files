@@ -232,7 +232,7 @@ void MainWindow::openHighlightedFile(void)
    // Case: file is a supported image
    if (ImageViewer::extensionIsSupported(m_fileLister[m_cursor].m_ext))
    {
-      ImageViewer imageViewer(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
+      ImageViewer imageViewer(m_title, &m_fileLister, m_cursor);
       imageViewer.execute();
       return;
    }
