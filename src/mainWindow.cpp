@@ -137,9 +137,23 @@ void MainWindow::keyPressed(const SDL_Event &event)
       }
       else
       {
+         bool view = true;
+         // If the file is > 1M, ask for confirmation
+         if (m_fileLister[m_cursor].m_size > 1024 * 1024)
+         {
+            Dialog l_dialog("Question:");
+            l_dialog.addLabel("The file is big. View anyway?");
+            l_dialog.addOption("Yes", 0, g_iconSelect);
+            l_dialog.addOption("No", 1, g_iconNone);
+            if (l_dialog.execute() != 0)
+               view = false;
+         }
          // View file as text
-         TextViewer textViewer(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
-         textViewer.execute();
+         if (view)
+         {
+            TextViewer textViewer(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
+            textViewer.execute();
+         }
       }
       return;
    }

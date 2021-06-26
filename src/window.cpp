@@ -333,7 +333,7 @@ void IWindow::adjustScrollbar(void)
    }
    // Scrollbar size
    m_scrollbar.w = MARGIN_X;
-   m_scrollbar.h = round((double)(SCREEN_HEIGHT - LINE_HEIGHT) / (m_nbItems - m_nbVisibleLines));
+   m_scrollbar.h = round((double)(SCREEN_HEIGHT - LINE_HEIGHT) / (m_nbItems - m_nbVisibleLines + 1));
    if (m_scrollbar.h < LINE_HEIGHT / 2)
       m_scrollbar.h = LINE_HEIGHT / 2;
    // Scrollbar position
