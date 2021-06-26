@@ -18,14 +18,8 @@ MainWindow::~MainWindow(void)
 
 // Constructor
 MainWindow::MainWindow(const std::string &p_title):
-   IWindow(true, p_title),
-   m_camera(0)
+   IWindow(true, p_title)
 {
-   // Scrollbar
-   m_scrollbar.w = 0;
-   m_scrollbar.h = 0;
-   m_scrollbar.x = SCREEN_WIDTH - MARGIN_X;
-   m_scrollbar.y = LINE_HEIGHT;
    // List files
    if (! m_fileLister.list(m_title))
    {
@@ -65,7 +59,7 @@ void MainWindow::render(const bool p_focus)
    else
       SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_NO_FOCUS, 255);
    rect.x = 0;
-   rect.y = LINE_HEIGHT + (m_cursor - m_camera) * LINE_HEIGHT;
+   rect.y = LINE_HEIGHT + (m_cursor - m_camera.y) * LINE_HEIGHT;
    rect.w = SCREEN_WIDTH - m_scrollbar.w;
    rect.h = LINE_HEIGHT;
    SDL_RenderFillRect(g_renderer, &rect);
@@ -79,7 +73,7 @@ void MainWindow::render(const bool p_focus)
    SDL_Color l_fgColor = {COLOR_TEXT_NORMAL};
    SDL_Color l_bgColor = {COLOR_BODY_BG};
    int sizeW = 0;
-   for (int l_i = m_camera; l_i < m_camera + m_nbVisibleLines && l_i < m_nbItems; ++l_i)
+   for (int l_i = m_camera.y; l_i < m_camera.y + m_nbVisibleLines && l_i < m_nbItems; ++l_i)
    {
       // Colors for the line
       if (m_fileLister[l_i].m_selected)
@@ -408,46 +402,9 @@ void MainWindow::refresh(void)
 void MainWindow::adjustCamera(void)
 {
    if (m_nbItems <= m_nbVisibleLines)
-      m_camera = 0;
-   else if (m_cursor < m_camera)
-      m_camera = m_cursor;
-   else if (m_cursor > m_camera + m_nbVisibleLines - 1)
-      m_camera = m_cursor - m_nbVisibleLines + 1;
-}
-
-//------------------------------------------------------------------------------
-
-// Set scrollbar size and position
-void MainWindow::adjustScrollbar(void)
-{
-   // If all items fit on screen, no scrollbar
-   if (m_nbItems <= m_nbVisibleLines)
-   {
-      m_scrollbar.w = 0;
-      m_scrollbar.h = 0;
-      return;
-   }
-   // Scrollbar size
-   m_scrollbar.w = MARGIN_X;
-   m_scrollbar.h = round((SCREEN_HEIGHT - LINE_HEIGHT) / (m_nbItems - m_nbVisibleLines));
-   // Scrollbar position
-   adjustScrollbarPosition();
-}
-
-//------------------------------------------------------------------------------
-
-// Set scrollbar position
-void MainWindow::adjustScrollbarPosition(void)
-{
-   // Case: no scrollbar
-   if (m_scrollbar.h == 0)
-      return;
-   // Case: last item visible => scroll bar at bottom
-   if (m_camera >= m_nbItems - m_nbVisibleLines)
-   {
-      m_scrollbar.y = SCREEN_HEIGHT - m_scrollbar.h;
-      return;
-   }
-   // General case
-   m_scrollbar.y = LINE_HEIGHT + m_camera * round((SCREEN_HEIGHT - m_scrollbar.h) / (m_nbItems - m_nbVisibleLines));
+      m_camera.y = 0;
+   else if (m_cursor < m_camera.y)
+      m_camera.y = m_cursor;
+   else if (m_cursor > m_camera.y + m_nbVisibleLines - 1)
+      m_camera.y = m_cursor - m_nbVisibleLines + 1;
 }

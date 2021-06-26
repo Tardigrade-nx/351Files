@@ -44,6 +44,10 @@ class IWindow
    // Reset timer for key hold
    void resetTimer(void);
 
+   // Scrollbar
+   void adjustScrollbar(void);
+   void adjustScrollbarPosition(void);
+
    // Window is fullscreen or not
    bool m_fullscreen;
 
@@ -72,6 +76,12 @@ class IWindow
    // Return value of the window
    // -1 => executing
    int m_retVal;
+
+   // Camera
+   SDL_Point m_camera;
+
+   // Vertical scrollbar
+   SDL_Rect m_scrollbar;
 
    private:
 

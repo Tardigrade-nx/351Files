@@ -48,10 +48,6 @@ class MainWindow : public IWindow
    // Adjust camera
    void adjustCamera(void);
 
-   // Scrollbar
-   void adjustScrollbar(void);
-   void adjustScrollbarPosition(void);
-
    // File lister
    CFileLister m_fileLister;
 
@@ -59,12 +55,6 @@ class MainWindow : public IWindow
    // Operation: 'c' = copy, 'm' = move
    std::vector<std::string> m_clipboard;
    char m_clipboardOperation;
-
-   // Index of the first displayed line
-   int m_camera;
-
-   // Vertical scrollbar
-   SDL_Rect m_scrollbar;
 
 };
 

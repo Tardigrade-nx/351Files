@@ -7,45 +7,12 @@
 
 #define TEXTVIEWER_SCROLL_X_SPEED      20
 
-namespace {
-
-inline int UTF8CodePointLen(const char* src) {
-  return "\1\1\1\1\1\1\1\1\1\1\1\1\2\2\3\4"[static_cast<unsigned char>(*src)>> 4];
-}
-
-void ReplaceTabs(std::string *line) {
-    constexpr std::size_t kTabWidth = 8;
-    const std::size_t num_tabs = std::count(line->begin(), line->end(), '\t');
-    if (num_tabs == 0) return;
-    std::string result;
-    result.reserve(line->size() + num_tabs * (kTabWidth - 1));
-    std::size_t prev_tab_end = 0;
-    std::size_t column = 0;
-    for (std::size_t i = 0; i < line->size(); i += UTF8CodePointLen(line->data() + i)) {
-        if ((*line)[i] == '\t') {
-            result.append(*line, prev_tab_end, i - prev_tab_end);
-            const std::size_t num_spaces = kTabWidth - (column % kTabWidth);
-            result.append(num_spaces, ' ');
-            prev_tab_end = i + 1;
-            column += num_spaces;
-        } else {
-            ++column;
-        }
-    }
-    result.append(*line, prev_tab_end, std::string::npos);
-    *line = std::move(result);
-}
-
-} // namespace
-
 //------------------------------------------------------------------------------
 
 // Constructor
 TextViewer::TextViewer(const std::string &p_title):
    IWindow(true, p_title)
 {
-   m_camera.x = 0;
-   m_camera.y = 0;
    // Read file
    std::ifstream ifs(p_title);
    if (! ifs.is_open())
@@ -57,10 +24,12 @@ TextViewer::TextViewer(const std::string &p_title):
    {
       m_lines.emplace_back();
       std::getline(ifs, m_lines.back());
-      ReplaceTabs(&m_lines.back());
    }
    ifs.close();
+   // Number of lines
    m_nbItems = m_lines.size();
+   // Init scrollbar
+   adjustScrollbar();
 }
 
 //------------------------------------------------------------------------------
@@ -89,6 +58,14 @@ void TextViewer::render(const bool p_focus)
    SDLUtils::renderTexture(g_iconFile, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
    SDLUtils::renderText(m_title, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
+   // Render scrollbar
+   if (p_focus)
+      SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_FOCUS, 255);
+   else
+      SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_NO_FOCUS, 255);
+   if (m_scrollbar.h > 0)
+      SDL_RenderFillRect(g_renderer, &m_scrollbar);
+
    // Render lines
    l_y += LINE_HEIGHT;
    SDL_Color l_fgColor = {COLOR_TEXT_NORMAL};
@@ -96,7 +73,7 @@ void TextViewer::render(const bool p_focus)
    for (int l_i = m_camera.y; l_i < m_camera.y + m_nbVisibleLines && l_i < m_nbItems; ++l_i, l_y += LINE_HEIGHT)
    {
       if (! m_lines[l_i].empty())
-         SDLUtils::renderText(m_lines[l_i], MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 2*MARGIN_X, m_camera.x);
+         SDLUtils::renderText(m_lines[l_i], MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 2*MARGIN_X - m_scrollbar.w, m_camera.x);
    }
 }
 
@@ -126,6 +103,7 @@ void TextViewer::moveCursorUp(const int p_step, bool p_loop)
    m_camera.y -= p_step;
    if (m_camera.y < 0)
       m_camera.y = 0;
+   adjustScrollbarPosition();
    g_hasChanged = true;
 }
 
@@ -134,8 +112,9 @@ void TextViewer::moveCursorDown(const int p_step, bool p_loop)
    if (m_nbItems <= m_nbVisibleLines)
       return;
    m_camera.y += p_step;
-   if (m_camera.y > m_nbItems - m_nbVisibleLines - 1)
-      m_camera.y = m_nbItems - m_nbVisibleLines - 1;
+   if (m_camera.y > m_nbItems - m_nbVisibleLines)
+      m_camera.y = m_nbItems - m_nbVisibleLines;
+   adjustScrollbarPosition();
    g_hasChanged = true;
 }
 

@@ -37,6 +37,15 @@ IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
    m_lastPressed(-1),
    m_retVal(-1)
 {
+   // Init camera
+   m_camera.x = 0;
+   m_camera.y = 0;
+   // Init scrollbar
+   m_scrollbar.w = 0;
+   m_scrollbar.h = 0;
+   m_scrollbar.x = SCREEN_WIDTH - MARGIN_X;
+   m_scrollbar.y = LINE_HEIGHT;
+   // Init m_nbVisibleLines
    m_nbVisibleLines = (SCREEN_HEIGHT - LINE_HEIGHT) / LINE_HEIGHT;
    // Add window to the list
    g_windows.push_back(this);
@@ -308,4 +317,43 @@ void IWindow::resetTimer(void)
 {
    m_lastPressed = -1;
    m_timer = 0;
+}
+
+//------------------------------------------------------------------------------
+
+// Set scrollbar size and position
+void IWindow::adjustScrollbar(void)
+{
+   // If all items fit on screen, no scrollbar
+   if (m_nbItems <= m_nbVisibleLines)
+   {
+      m_scrollbar.w = 0;
+      m_scrollbar.h = 0;
+      return;
+   }
+   // Scrollbar size
+   m_scrollbar.w = MARGIN_X;
+   m_scrollbar.h = round((double)(SCREEN_HEIGHT - LINE_HEIGHT) / (m_nbItems - m_nbVisibleLines));
+   if (m_scrollbar.h < LINE_HEIGHT / 2)
+      m_scrollbar.h = LINE_HEIGHT / 2;
+   // Scrollbar position
+   adjustScrollbarPosition();
+}
+
+//------------------------------------------------------------------------------
+
+// Set scrollbar position
+void IWindow::adjustScrollbarPosition(void)
+{
+   // Case: no scrollbar
+   if (m_scrollbar.h == 0)
+      return;
+   // Case: last item visible => scrollbar at bottom
+   if (m_camera.y >= m_nbItems - m_nbVisibleLines)
+   {
+      m_scrollbar.y = SCREEN_HEIGHT - m_scrollbar.h;
+      return;
+   }
+   // General case
+   m_scrollbar.y = LINE_HEIGHT + round(((double)(SCREEN_HEIGHT - LINE_HEIGHT - m_scrollbar.h) / (m_nbItems - m_nbVisibleLines)) * m_camera.y);
 }

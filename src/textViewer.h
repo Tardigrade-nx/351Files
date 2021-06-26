@@ -37,9 +37,6 @@ class TextViewer : public IWindow
    // List of lines
    std::vector<std::string> m_lines;
 
-   // Camera
-   SDL_Point m_camera;
-
 };
 
 
