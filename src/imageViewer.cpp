@@ -66,6 +66,36 @@ void ImageViewer::render(const bool p_focus)
    SDL_SetRenderDrawColor(g_renderer, COLOR_BODY_BG, 255);
    SDL_RenderClear(g_renderer);
 
+   // Display image
+   if (m_image != NULL)
+   {
+      if (m_fitToScreen && (m_imageW > SCREEN_WIDTH || m_imageH > SCREEN_HEIGHT - LINE_HEIGHT))
+      {
+         // Resize image to fit the screen
+         double aspectRatioScreen = static_cast<double>(SCREEN_WIDTH) / (SCREEN_HEIGHT - LINE_HEIGHT);
+         double aspectRatioImage = static_cast<double>(m_imageW) / m_imageH;
+         double resizeFactor = 0.0;
+         if (aspectRatioImage > aspectRatioScreen)
+            resizeFactor = static_cast<double>(m_imageW) / SCREEN_WIDTH;
+         else
+            resizeFactor = static_cast<double>(m_imageH) / (SCREEN_HEIGHT - LINE_HEIGHT);
+         int imageFitW = static_cast<double>(m_imageW) / resizeFactor;
+         int imageFitH = static_cast<double>(m_imageH) / resizeFactor;
+         SDL_Rect destRect = { (SCREEN_WIDTH - imageFitW) / 2, LINE_HEIGHT + ((SCREEN_HEIGHT - LINE_HEIGHT - imageFitH) / 2), imageFitW, imageFitH };
+         SDL_RenderCopy(g_renderer, m_image, NULL, &destRect);
+      }
+      else
+      {
+         // Display image as it is
+         SDLUtils::renderTexture(m_image, (m_imageW > SCREEN_WIDTH ? m_camera.x : 0) + (SCREEN_WIDTH / 2), (m_imageH > SCREEN_HEIGHT - LINE_HEIGHT ? m_camera.y : 0) + ((SCREEN_HEIGHT + LINE_HEIGHT) / 2), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
+      }
+   }
+   else
+   {
+      // Error
+      SDLUtils::renderText("Unable to load image", SCREEN_WIDTH / 2, (SCREEN_HEIGHT + LINE_HEIGHT) / 2, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG}, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
+   }
+
    // Render title background
    SDL_SetRenderDrawColor(g_renderer, COLOR_TITLE_BG, 255);
    SDL_Rect rect { 0, 0, SCREEN_WIDTH, LINE_HEIGHT };
@@ -74,34 +104,6 @@ void ImageViewer::render(const bool p_focus)
    // Render title
    SDLUtils::renderTexture(g_iconFile, MARGIN_X, LINE_HEIGHT / 2, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
    SDLUtils::renderText(m_title, MARGIN_X + ICON_SIZE + MARGIN_X, LINE_HEIGHT / 2, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
-
-   // Error case
-   if (m_image == NULL)
-   {
-      SDLUtils::renderText("Unable to load image", SCREEN_WIDTH / 2, (SCREEN_HEIGHT + LINE_HEIGHT) / 2, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG}, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
-      return;
-   }
-
-   if (m_fitToScreen && (m_imageW > SCREEN_WIDTH || m_imageH > SCREEN_HEIGHT - LINE_HEIGHT))
-   {
-      // Resize image to fit the screen
-      double aspectRatioScreen = static_cast<double>(SCREEN_WIDTH) / (SCREEN_HEIGHT - LINE_HEIGHT);
-      double aspectRatioImage = static_cast<double>(m_imageW) / m_imageH;
-      double resizeFactor = 0.0;
-      if (aspectRatioImage > aspectRatioScreen)
-         resizeFactor = static_cast<double>(m_imageW) / SCREEN_WIDTH;
-      else
-         resizeFactor = static_cast<double>(m_imageH) / (SCREEN_HEIGHT - LINE_HEIGHT);
-      int imageFitW = static_cast<double>(m_imageW) / resizeFactor;
-      int imageFitH = static_cast<double>(m_imageH) / resizeFactor;
-      SDL_Rect destRect = { (SCREEN_WIDTH - imageFitW) / 2, LINE_HEIGHT + ((SCREEN_HEIGHT - LINE_HEIGHT - imageFitH) / 2), imageFitW, imageFitH };
-      SDL_RenderCopy(g_renderer, m_image, NULL, &destRect);
-   }
-   else
-   {
-      // Display image as it is
-      SDLUtils::renderTexture(m_image, (m_imageW > SCREEN_WIDTH ? m_camera.x : 0) + (SCREEN_WIDTH / 2), (m_imageH > SCREEN_HEIGHT - LINE_HEIGHT ? m_camera.y : 0) + ((SCREEN_HEIGHT + LINE_HEIGHT) / 2), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
-   }
 }
 
 //------------------------------------------------------------------------------

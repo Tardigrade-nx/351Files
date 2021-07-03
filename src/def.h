@@ -16,12 +16,6 @@
    #define SCREEN_HEIGHT            320
    #define HARDWARE_ACCELERATION    0
    #define FULLSCREEN               1
-   #ifndef START_PATH
-      #define START_PATH               getenv("PWD")
-   #endif
-   #ifndef RES_PATH
-      #define RES_PATH                 "./res"
-   #endif
    #define FONT_NAME                "NotoSans-Regular.ttf"
    #define FONT_SIZE                14
    #define LINE_HEIGHT              24
@@ -36,12 +30,6 @@
    #define SCREEN_HEIGHT            480
    #define HARDWARE_ACCELERATION    0
    #define FULLSCREEN               1
-   #ifndef START_PATH
-      #define START_PATH               getenv("PWD")
-   #endif
-   #ifndef RES_PATH
-      #define RES_PATH                 "./res"
-   #endif
    #define FONT_NAME                "NotoSans-Regular.ttf"
    #define FONT_SIZE                20
    #define LINE_HEIGHT              32
@@ -56,8 +44,6 @@
    #define SCREEN_HEIGHT            480
    #define HARDWARE_ACCELERATION    1
    #define FULLSCREEN               0
-   #define START_PATH               getenv("PWD")
-   #define RES_PATH                 "./res"
    #define FONT_NAME                "NotoSans-Regular.ttf"
    #define FONT_SIZE                20
    #define LINE_HEIGHT              32
