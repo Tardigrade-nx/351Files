@@ -74,6 +74,8 @@ Image viewer:
 
 # Compilation:
 Define the following variables when executing make:
+* CC
+* SDL2_CONFIG
 * DEVICE: RG351P / RG351V / PC
 * START_PATH
 * RES_PATH
