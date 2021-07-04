@@ -22,9 +22,9 @@ Based on DinguxCommander.
 # Installation on 351ELEC:
 351Files should be integrated in 351ELEC as an alternative file manager, in a future version.
 Until then, you can install it manually with the following procedure:
-* Download the latest release (351Files-vx.x.tgz)
+* Download the latest release for your device (351Files-vx.x_<device>_351ELEC.tgz)
 * Uncompress the .tgz file on your SD card in: /storage/roms/ports
-* Edit file /storage/roms/ports/gamelist.xml, and add entry:
+* Edit file /storage/roms/ports/gamelist.xml, and add:
 
 ```
 	<game>
@@ -41,7 +41,23 @@ Until then, you can install it manually with the following procedure:
 	</game>
 ```
 
-* Restart EmulationStation
+* Restart EmulationStation. '351Files' should now be an entry in the 'ports' menu.
+
+# Installation on ArkOS:
+* Download the latest release for your device (351Files-vx.x_<device>_ArkOS.tgz)
+* Uncompress the .tgz file on your SD card in: /roms/ports
+* Edit file /roms/ports/gamelist.xml, and add:
+
+```
+	<game>
+		<path>./351Files.sh</path>
+		<name>351Files</name>
+		<playcount>0</playcount>
+		<lastplayed></lastplayed>
+	</game>
+```
+
+* Restart EmulationStation. '351Files' should now be an entry in the 'ports' menu.
 
 # Buttons:
 * d-pad: move
