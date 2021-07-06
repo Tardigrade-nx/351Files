@@ -237,6 +237,15 @@ void MainWindow::openHighlightedFile(void)
       return;
    }
 
+   // Ask confirmation for 'view as text'
+   {
+      Dialog l_dialog("Open:");
+      l_dialog.addOption("View as text", 0, g_iconFile);
+      l_dialog.addOption("Cancel", 1, g_iconCancel);
+      if (l_dialog.execute() != 0)
+         return;
+   }
+
    // Case: view file as text
    bool view = true;
    // If the file is > 1M, ask for confirmation

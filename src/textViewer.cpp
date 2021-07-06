@@ -12,7 +12,7 @@ inline int UTF8CodePointLen(const char* src) {
 }
 
 void ReplaceTabs(std::string *line) {
-   constexpr std::size_t kTabWidth = 8;
+   constexpr std::size_t kTabWidth = 4;
    const std::size_t num_tabs = std::count(line->begin(), line->end(), '\t');
    if (num_tabs == 0) return;
    std::string result;
