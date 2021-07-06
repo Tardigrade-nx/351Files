@@ -320,7 +320,7 @@ void FileUtils::renameFile(const std::string &p_file1, const std::string &p_file
 unsigned long long int FileUtils::getDirSize(const std::string &p_path)
 {
    // Execute command 'du'
-   std::string l_line = "du -s " + p_path;
+   std::string l_line = "du -bs " + p_path;
    char l_buffer[256];
    FILE *l_pipe = popen(l_line.c_str(), "r");
    if (l_pipe == NULL)
@@ -339,10 +339,5 @@ unsigned long long int FileUtils::getDirSize(const std::string &p_path)
    unsigned long long int l_result = 0;
    std::istringstream iss(l_line);
    iss >> l_result;
-   // Convert to bytes
-   if (std::getenv("POSIXLY_CORRECT") != NULL)
-      l_result *= 512;
-   else
-      l_result *= 1024;
    return l_result;
 }

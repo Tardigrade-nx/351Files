@@ -204,7 +204,6 @@ int IWindow::execute(void)
 // Render all windows
 void IWindow::renderAll(void)
 {
-   //~ INHIBIT(std::cout << "renderAll - " << g_windows.size() << " windows\n";)
    if (g_windows.empty())
       return;
    // First window to draw is the last that is fullscreen

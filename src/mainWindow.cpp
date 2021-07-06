@@ -313,8 +313,10 @@ void MainWindow::openContextMenu(void)
          l_dialog.addOption("Delete", 3, g_iconTrash);
       if (nbSelected == 1)
          l_dialog.addOption("Rename", 9, g_iconEdit);
+      #ifndef FIRMWARE_351ELEC
       if (m_fileLister.getNbSelected('d') > 0)
          l_dialog.addOption("Size", 4, g_iconDisk);
+      #endif
       l_dialog.addOption("Select all", 5, g_iconSelect);
       l_dialog.addOption("Select none", 6, g_iconNone);
       l_dialog.addOption("New directory", 7, g_iconNewDir);
