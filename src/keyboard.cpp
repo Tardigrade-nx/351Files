@@ -51,7 +51,7 @@ void Keyboard::render(const bool p_focus)
    // Input text
    SDL_Rect rect;
    if (! m_inputText.empty())
-      SDLUtils::renderText(m_inputText, m_key[0].x + KEYBOARD_MARGIN, m_keyboard.y + KEYBOARD_MARGIN + LINE_HEIGHT/2, {COLOR_TEXT_NORMAL}, {COLOR_KEYBOARD_DARK}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, m_keyboard.w - 4*KEYBOARD_MARGIN, SDLUtils::T_ALIGN_RIGHT);
+      SDLUtils::renderText(m_inputText, g_font, m_key[0].x + KEYBOARD_MARGIN, m_keyboard.y + KEYBOARD_MARGIN + LINE_HEIGHT/2, {COLOR_TEXT_NORMAL}, {COLOR_KEYBOARD_DARK}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, m_keyboard.w - 4*KEYBOARD_MARGIN, SDLUtils::T_ALIGN_RIGHT);
    // Cursor
    if (p_focus)
       SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_FOCUS, 255);
@@ -65,7 +65,7 @@ void Keyboard::render(const bool p_focus)
    {
       if (m_keyLabel[m_keyLabelCurrent].substr(ind, 1).empty())
          continue;
-      SDLUtils::renderText(m_keyLabel[m_keyLabelCurrent].substr(ind, 1), m_keyboard.x + m_key[ind].x + m_key[ind].w / 2, m_keyboard.y + m_key[ind].y + m_key[ind].h / 2, {COLOR_TEXT_NORMAL}, getBackgroundColor(ind, p_focus), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
+      SDLUtils::renderText(m_keyLabel[m_keyLabelCurrent].substr(ind, 1), g_font, m_keyboard.x + m_key[ind].x + m_key[ind].w / 2, m_keyboard.y + m_key[ind].y + m_key[ind].h / 2, {COLOR_TEXT_NORMAL}, getBackgroundColor(ind, p_focus), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
    }
    // Backspace
    SDLUtils::renderTexture(m_texBackspace, m_keyboard.x + m_key[10].x + m_key[10].w / 2, m_keyboard.y + m_key[10].y + m_key[10].h / 2, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
@@ -78,7 +78,7 @@ void Keyboard::render(const bool p_focus)
    SDLUtils::renderTexture(m_texArrow, m_keyboard.x + m_key[34].x + m_key[34].w / 2, m_keyboard.y + m_key[34].y + m_key[34].h / 2, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
    SDLUtils::renderTexture(m_texArrow, m_keyboard.x + m_key[35].x + m_key[35].w / 2, m_keyboard.y + m_key[35].y + m_key[35].h / 2, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE, SDL_FLIP_HORIZONTAL);
    // Number / symbols
-   SDLUtils::renderText(m_keyLabelCurrent == 2 ? "abc" : "&123", m_keyboard.x + m_key[32].x + m_key[32].w / 2, m_keyboard.y + m_key[32].y + m_key[32].h / 2, {COLOR_TEXT_NORMAL}, getBackgroundColor(32, p_focus), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
+   SDLUtils::renderText(m_keyLabelCurrent == 2 ? "abc" : "&123", g_font, m_keyboard.x + m_key[32].x + m_key[32].w / 2, m_keyboard.y + m_key[32].y + m_key[32].h / 2, {COLOR_TEXT_NORMAL}, getBackgroundColor(32, p_focus), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
 }
 
 //------------------------------------------------------------------------------

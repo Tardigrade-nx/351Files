@@ -86,7 +86,7 @@ void TextViewer::render(const bool p_focus)
    // Render title
    int l_y = LINE_HEIGHT / 2;
    SDLUtils::renderTexture(g_iconFile, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
-   SDLUtils::renderText(m_title, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+   SDLUtils::renderText(m_title, g_font, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
    // Render scrollbar
    if (p_focus)
@@ -103,7 +103,7 @@ void TextViewer::render(const bool p_focus)
    for (int l_i = m_camera.y; l_i < m_camera.y + m_nbVisibleLines && l_i < m_nbItems; ++l_i, l_y += LINE_HEIGHT)
    {
       if (! m_lines[l_i].empty())
-         SDLUtils::renderText(m_lines[l_i], MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 2*MARGIN_X - m_scrollbar.w, m_camera.x);
+         SDLUtils::renderText(m_lines[l_i], g_font, MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 2*MARGIN_X - m_scrollbar.w, m_camera.x);
    }
 }
 

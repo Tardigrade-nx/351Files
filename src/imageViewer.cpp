@@ -93,7 +93,7 @@ void ImageViewer::render(const bool p_focus)
    else
    {
       // Error
-      SDLUtils::renderText("Unable to load image", SCREEN_WIDTH / 2, (SCREEN_HEIGHT + LINE_HEIGHT) / 2, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG}, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
+      SDLUtils::renderText("Unable to load image", g_font, SCREEN_WIDTH / 2, (SCREEN_HEIGHT + LINE_HEIGHT) / 2, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG}, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
    }
 
    // Render title background
@@ -103,7 +103,7 @@ void ImageViewer::render(const bool p_focus)
 
    // Render title
    SDLUtils::renderTexture(g_iconFile, MARGIN_X, LINE_HEIGHT / 2, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
-   SDLUtils::renderText(m_title, MARGIN_X + ICON_SIZE + MARGIN_X, LINE_HEIGHT / 2, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+   SDLUtils::renderText(m_title, g_font, MARGIN_X + ICON_SIZE + MARGIN_X, LINE_HEIGHT / 2, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 }
 
 //------------------------------------------------------------------------------

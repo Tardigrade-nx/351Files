@@ -27,7 +27,7 @@ void Dialog::render(const bool p_focus)
    int l_w = 0;
 
    // Render title
-   SDL_Texture *l_textureTitle = SDLUtils::renderText(m_title, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG});
+   SDL_Texture *l_textureTitle = SDLUtils::renderText(m_title, g_font, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG});
    SDL_QueryTexture(l_textureTitle, NULL, NULL, &l_dialogDim.w, NULL);
 
    // Render labels
@@ -36,7 +36,7 @@ void Dialog::render(const bool p_focus)
    for (l_it = m_labels.begin(); l_it != m_labels.end(); ++l_it)
    {
       // Render text
-      l_texLabels.push_back(SDLUtils::renderText(*l_it, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG}));
+      l_texLabels.push_back(SDLUtils::renderText(*l_it, g_font, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG}));
       SDL_QueryTexture(l_texLabels.back(), NULL, NULL, &l_w, NULL);
       // Remember largest width
       if (l_w > l_dialogDim.w)
@@ -52,7 +52,7 @@ void Dialog::render(const bool p_focus)
       // Background color for the line
       l_bgColor = getBackgroundColor(l_i++, p_focus);
       // Render text
-      l_texOptions.push_back(SDLUtils::renderText(*l_it, {COLOR_TEXT_NORMAL}, l_bgColor));
+      l_texOptions.push_back(SDLUtils::renderText(*l_it, g_font, {COLOR_TEXT_NORMAL}, l_bgColor));
       SDL_QueryTexture(l_texOptions.back(), NULL, NULL, &l_w, NULL);
       // Remember largest width
       if (l_w > l_dialogDim.w)

@@ -13,8 +13,10 @@ SDL_Window* g_window = NULL;
 SDL_Renderer* g_renderer = NULL;
 SDL_Joystick* g_joystick = NULL;
 TTF_Font *g_font = NULL;
+TTF_Font *g_fontMono = NULL;
 std::vector<IWindow *> g_windows;
 bool IWindow::g_hasChanged = true;
+
 // Textures for icons
 SDL_Texture *g_iconFile = NULL;
 SDL_Texture *g_iconDir = NULL;
@@ -62,10 +64,14 @@ int main(int argc, char* args[])
    g_iconFloppy = SDLUtils::loadTexture(std::string(RES_PATH) + "/floppy.png");
    g_iconImage = SDLUtils::loadTexture(std::string(RES_PATH) + "/image.png");
 
-   // Load font
+   // Load fonts
    g_font = SDLUtils::loadFont(std::string(RES_PATH) + "/" + FONT_NAME, FONT_SIZE);
-   if (g_font == NULL)
+   g_fontMono = SDLUtils::loadFont(std::string(RES_PATH) + "/" + FONT_NAME_MONO, FONT_SIZE);
+   if (g_font == NULL || g_fontMono == NULL)
+   {
+      SDLUtils::close();
       return 1;
+   }
 
    // Execute main window
    {
@@ -76,6 +82,8 @@ int main(int argc, char* args[])
    // Clean up font
    TTF_CloseFont(g_font);
    g_font = NULL;
+   TTF_CloseFont(g_fontMono);
+   g_fontMono = NULL;
 
    // Free textures
    if (g_iconFile != NULL)    { SDL_DestroyTexture(g_iconFile);      g_iconFile = NULL; }
@@ -93,7 +101,7 @@ int main(int argc, char* args[])
    if (g_iconEdit != NULL)    { SDL_DestroyTexture(g_iconEdit);      g_iconEdit = NULL; }
    if (g_iconCancel != NULL)  { SDL_DestroyTexture(g_iconCancel);    g_iconCancel = NULL; }
    if (g_iconFloppy != NULL)  { SDL_DestroyTexture(g_iconFloppy);    g_iconFloppy = NULL; }
-   if (g_iconImage != NULL)   { SDL_DestroyTexture(g_iconImage);    g_iconImage = NULL; }
+   if (g_iconImage != NULL)   { SDL_DestroyTexture(g_iconImage);     g_iconImage = NULL; }
 
    // Quit SDL
    SDLUtils::close();

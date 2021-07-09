@@ -8,6 +8,7 @@
 #include "dialog.h"
 #include "keyboard.h"
 #include "textViewer.h"
+#include "textEditor.h"
 #include "imageViewer.h"
 
 // Destructor
@@ -52,7 +53,7 @@ void MainWindow::render(const bool p_focus)
    // Render title
    int l_y = LINE_HEIGHT / 2;
    SDLUtils::renderTexture(g_iconFloppy, MARGIN_X, l_y, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
-   SDLUtils::renderText(m_title, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+   SDLUtils::renderText(m_title, g_font, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, {COLOR_TEXT_NORMAL}, {COLOR_TITLE_BG}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
    // Render cursor
    if (p_focus)
@@ -97,10 +98,10 @@ void MainWindow::render(const bool p_focus)
       if (m_fileLister[l_i].m_size == ULLONG_MAX)
          sizeW = 0;
       else
-         sizeW = SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), SCREEN_WIDTH - m_scrollbar.w - MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
+         sizeW = SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), g_font, SCREEN_WIDTH - m_scrollbar.w - MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
 
       // File name
-      SDLUtils::renderText(m_fileLister[l_i].m_name, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 4*MARGIN_X - ICON_SIZE - m_scrollbar.w - sizeW);
+      SDLUtils::renderText(m_fileLister[l_i].m_name, g_font, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 4*MARGIN_X - ICON_SIZE - m_scrollbar.w - sizeW);
 
       // Next line
       l_y += LINE_HEIGHT;
@@ -237,32 +238,40 @@ void MainWindow::openHighlightedFile(void)
       return;
    }
 
-   // Ask confirmation for 'view as text'
+   // Dialog 'view as text' / 'edit as text'
+   int action = -1;
    {
       Dialog l_dialog("Open:");
       l_dialog.addOption("View as text", 0, g_iconFile);
-      l_dialog.addOption("Cancel", 1, g_iconCancel);
-      if (l_dialog.execute() != 0)
-         return;
+      l_dialog.addOption("Edit as text", 1, g_iconEdit);
+      l_dialog.addOption("Cancel", 2, g_iconCancel);
+      action = l_dialog.execute();
    }
+   if (action != 0 && action != 1)
+      return;
 
-   // Case: view file as text
-   bool view = true;
    // If the file is > 1M, ask for confirmation
    if (m_fileLister[m_cursor].m_size > 1024 * 1024)
    {
       Dialog l_dialog("Question:");
-      l_dialog.addLabel("The file is big. View anyway?");
+      l_dialog.addLabel("The file is big. Open anyway?");
       l_dialog.addOption("Yes", 0, g_iconSelect);
       l_dialog.addOption("No", 1, g_iconCancel);
       if (l_dialog.execute() != 0)
-         view = false;
+         return;
    }
+
    // View file as text
-   if (view)
+   if (action == 0)
    {
       TextViewer textViewer(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
       textViewer.execute();
+   }
+   // Edit file as text
+   else
+   {
+      TextEditor textEditor(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
+      textEditor.execute();
    }
 }
 

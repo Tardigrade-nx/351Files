@@ -192,9 +192,9 @@ void SDLUtils::renderTexture(SDL_Texture * p_texture, const int p_x, const int p
 //------------------------------------------------------------------------------
 
 // Render text on the screen
-int SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV, const int p_maxWidth, const T_ALIGN_H p_alignHClip)
+int SDLUtils::renderText(const std::string &p_text, TTF_Font *p_font, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV, const int p_maxWidth, const T_ALIGN_H p_alignHClip)
 {
-   SDL_Texture *texture = renderText(p_text, p_fg, p_bg);
+   SDL_Texture *texture = renderText(p_text, p_font, p_fg, p_bg);
    if (texture == NULL)
    {
       std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
@@ -223,9 +223,9 @@ int SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_y
 //------------------------------------------------------------------------------
 
 // Render part of text on the screen
-int SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_V p_alignV, const int p_maxWidth, const int p_clipX)
+int SDLUtils::renderText(const std::string &p_text, TTF_Font *p_font, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_V p_alignV, const int p_maxWidth, const int p_clipX)
 {
-   SDL_Texture *texture = renderText(p_text, p_fg, p_bg);
+   SDL_Texture *texture = renderText(p_text, p_font, p_fg, p_bg);
    if (texture == NULL)
    {
       std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
@@ -246,10 +246,10 @@ int SDLUtils::renderText(const std::string &p_text, const int p_x, const int p_y
 
 //------------------------------------------------------------------------------
 
-SDL_Texture *SDLUtils::renderText(const std::string &p_text, const SDL_Color &p_fg, const SDL_Color &p_bg)
+SDL_Texture *SDLUtils::renderText(const std::string &p_text, TTF_Font *p_font, const SDL_Color &p_fg, const SDL_Color &p_bg)
 {
    // Create surface
-   SDL_Surface *surface = TTF_RenderUTF8_Shaded(g_font, p_text.c_str(), p_fg, p_bg);
+   SDL_Surface *surface = TTF_RenderUTF8_Shaded(p_font, p_text.c_str(), p_fg, p_bg);
    if (surface == NULL)
    {
       std::cerr << "TTF_RenderUTF8_Shaded: " << SDL_GetError() << std::endl;

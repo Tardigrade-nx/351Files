@@ -17,6 +17,7 @@
    #define HARDWARE_ACCELERATION    0
    #define FULLSCREEN               1
    #define FONT_NAME                "NotoSans-Regular.ttf"
+   #define FONT_NAME_MONO           "NotoSansMono-Regular.ttf"
    #define FONT_SIZE                14
    #define LINE_HEIGHT              24
    #define ICON_SIZE                24
@@ -31,6 +32,7 @@
    #define HARDWARE_ACCELERATION    0
    #define FULLSCREEN               1
    #define FONT_NAME                "NotoSans-Regular.ttf"
+   #define FONT_NAME_MONO           "NotoSansMono-Regular.ttf"
    #define FONT_SIZE                20
    #define LINE_HEIGHT              32
    #define ICON_SIZE                24
@@ -45,6 +47,7 @@
    #define HARDWARE_ACCELERATION    1
    #define FULLSCREEN               0
    #define FONT_NAME                "NotoSans-Regular.ttf"
+   #define FONT_NAME_MONO           "NotoSansMono-Regular.ttf"
    #define FONT_SIZE                20
    #define LINE_HEIGHT              32
    #define ICON_SIZE                24
@@ -134,6 +137,7 @@ extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern SDL_Joystick* g_joystick;
 extern TTF_Font *g_font;
+extern TTF_Font *g_fontMono;
 class IWindow;
 extern std::vector<IWindow *> g_windows;
 
