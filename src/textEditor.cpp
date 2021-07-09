@@ -117,13 +117,17 @@ void TextEditor::moveCursorUp(const int p_step, bool p_loop)
    if (m_inputTextCursor.y <= 0)
       return;
    // Previous line
-   --m_inputTextCursor.y;
+   m_inputTextCursor.y -= p_step;
+   if (m_inputTextCursor.y < 0)
+      m_inputTextCursor.y = 0;
    // Adjust x
    m_inputTextCursor.x = m_oldX;
    if (m_inputTextCursor.x > static_cast<int>(m_lines[m_inputTextCursor.y].size()))
       m_inputTextCursor.x = m_lines[m_inputTextCursor.y].size();
    // Camera
    adjustCamera();
+   // Scrollbar
+   adjustScrollbarPosition();
    // Redraw
    g_hasChanged = true;
 }
@@ -132,13 +136,18 @@ void TextEditor::moveCursorDown(const int p_step, bool p_loop)
 {
    if (m_inputTextCursor.y >= static_cast<int>(m_lines.size()) - 1)
       return;
-   ++m_inputTextCursor.y;
+   // Next line
+   m_inputTextCursor.y += p_step;
+   if (m_inputTextCursor.y > m_nbItems - 1)
+      m_inputTextCursor.y = m_nbItems - 1;
    // Adjust x
    m_inputTextCursor.x = m_oldX;
    if (m_inputTextCursor.x > static_cast<int>(m_lines[m_inputTextCursor.y].size()))
       m_inputTextCursor.x = m_lines[m_inputTextCursor.y].size();
    // Camera
    adjustCamera();
+   // Scrollbar
+   adjustScrollbarPosition();
    // Redraw
    g_hasChanged = true;
 }
@@ -160,6 +169,8 @@ void TextEditor::moveCursorLeft(const int p_step, bool p_loop)
    m_oldX = m_inputTextCursor.x;
    // Camera
    adjustCamera();
+   // Scrollbar
+   adjustScrollbarPosition();
    // Redraw
    g_hasChanged = true;
 }
@@ -181,6 +192,8 @@ void TextEditor::moveCursorRight(const int p_step, bool p_loop)
    m_oldX = m_inputTextCursor.x;
    // Camera
    adjustCamera();
+   // Scrollbar
+   adjustScrollbarPosition();
    // Redraw
    g_hasChanged = true;
 }
