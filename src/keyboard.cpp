@@ -249,6 +249,16 @@ void Keyboard::init(void)
 // Move cursor up
 void Keyboard::moveCursorUp(const int p_step, bool p_loop)
 {
+   // Page up => symbol button
+   if (p_step > 1)
+   {
+      if (m_keyLabelCurrent == 2)
+         m_keyLabelCurrent = 0;
+      else
+         m_keyLabelCurrent = 2;
+      g_hasChanged = true;
+      return;
+   }
    // 1st line
    if (m_cursor >= 0 && m_cursor <= 10)
    {
@@ -286,6 +296,16 @@ void Keyboard::moveCursorUp(const int p_step, bool p_loop)
 // Move cursor down
 void Keyboard::moveCursorDown(const int p_step, bool p_loop)
 {
+   // Page down => shift button
+   if (p_step > 1)
+   {
+      if (m_keyLabelCurrent == 1)
+         m_keyLabelCurrent = 0;
+      else
+         m_keyLabelCurrent = 1;
+      g_hasChanged = true;
+      return;
+   }
    // 1st line
    if (m_cursor >= 0 && m_cursor <= 10)
    {
