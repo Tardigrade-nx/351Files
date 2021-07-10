@@ -45,9 +45,6 @@ class TextInput : public IWindow
    // Input text
    std::string m_inputText;
 
-   // Number of visible characters
-   int m_nbVisibleChars;
-
    // Dialog background and body
    SDL_Rect m_dialogBackground;
    SDL_Rect m_dialogBody;

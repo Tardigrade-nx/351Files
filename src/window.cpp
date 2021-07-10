@@ -33,6 +33,7 @@ IWindow::IWindow(const bool p_fullscreen, const std::string &p_title) :
    m_cursorLoop(false),
    m_nbItems(0),
    m_nbVisibleLines(0),
+   m_nbVisibleChars(0),
    m_timer(0),
    m_lastPressed(-1),
    m_retVal(-1)

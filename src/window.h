@@ -73,8 +73,9 @@ class IWindow
    // Number of selectable items
    int m_nbItems;
 
-   // Number of visible lines
+   // Number of visible lines / chars
    int m_nbVisibleLines;
+   int m_nbVisibleChars;
 
    // Timer for key hold
    int m_timer;

@@ -31,6 +31,8 @@ TextEditor::TextEditor(const std::string &p_title):
    m_nbItems = m_lines.size();
    // Init scrollbar
    adjustScrollbar();
+   // Number of visible chars
+   m_nbVisibleChars = round(static_cast<double>(SCREEN_WIDTH - 2*MARGIN_X - m_scrollbar.w) / g_charW);
 }
 
 //------------------------------------------------------------------------------
@@ -72,10 +74,8 @@ void TextEditor::render(const bool p_focus)
    SDL_Color l_fgColor = {COLOR_TEXT_NORMAL};
    SDL_Color l_bgColor = {COLOR_BODY_BG};
    for (int l_i = m_camera.y; l_i < m_camera.y + m_nbVisibleLines && l_i < m_nbItems; ++l_i, l_y += LINE_HEIGHT)
-   {
-      if (! m_lines[l_i].empty())
-         SDLUtils::renderText(m_lines[l_i], g_fontMono, MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 2*MARGIN_X - m_scrollbar.w, m_camera.x * g_charW);
-   }
+      if (m_camera.x < static_cast<int>(m_lines[l_i].size()))
+         SDLUtils::renderText(m_lines[l_i].substr(m_camera.x, m_nbVisibleChars), g_fontMono, MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
 
    // Render cursor
    SDL_SetRenderDrawColor(g_renderer, COLOR_TEXT_NORMAL, 255);

@@ -222,30 +222,6 @@ int SDLUtils::renderText(const std::string &p_text, TTF_Font *p_font, const int 
 
 //------------------------------------------------------------------------------
 
-// Render part of text on the screen
-int SDLUtils::renderText(const std::string &p_text, TTF_Font *p_font, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_V p_alignV, const int p_maxWidth, const int p_clipX)
-{
-   SDL_Texture *texture = renderText(p_text, p_font, p_fg, p_bg);
-   if (texture == NULL)
-   {
-      std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
-      return 0;
-   }
-   // Source rectangle
-   int w = 0, h = 0;
-   SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-   w -= p_clipX;
-   if (w > p_maxWidth)
-      w = p_maxWidth;
-   SDL_Rect srcRect = { p_clipX, 0, w, h };
-   renderTexture(texture, p_x, p_y, T_ALIGN_LEFT, p_alignV, SDL_FLIP_NONE, &srcRect);
-   // Free texture
-   SDL_DestroyTexture(texture);
-   return w;
-}
-
-//------------------------------------------------------------------------------
-
 SDL_Texture *SDLUtils::renderText(const std::string &p_text, TTF_Font *p_font, const SDL_Color &p_fg, const SDL_Color &p_bg)
 {
    // Create surface

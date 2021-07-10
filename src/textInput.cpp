@@ -8,8 +8,7 @@
 TextInput::TextInput(const std::string &p_title, SDL_Texture *p_icon, const std::string p_inputText):
    IWindow(false, p_title),
    m_icon(p_icon),
-   m_inputText(p_inputText),
-   m_nbVisibleChars(0)
+   m_inputText(p_inputText)
 {
    // Cursor at the end of the text
    m_cursor = m_inputText.size();
@@ -24,7 +23,7 @@ TextInput::TextInput(const std::string &p_title, SDL_Texture *p_icon, const std:
    m_dialogBody.w = m_dialogBackground.w - 2*DIALOG_BORDER;
    m_dialogBody.h = m_dialogBackground.h - LINE_HEIGHT - DIALOG_BORDER;
    // Number of visible characters
-   m_nbVisibleChars = (m_dialogBody.w - 2*MARGIN_X) / g_charW;
+   m_nbVisibleChars = round(static_cast<double>(m_dialogBody.w - 2*MARGIN_X) / g_charW);
 }
 
 //------------------------------------------------------------------------------
