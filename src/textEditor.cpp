@@ -9,7 +9,6 @@
 // Constructor
 TextEditor::TextEditor(const std::string &p_title):
    IWindow(true, p_title),
-   m_charW(SDLUtils::getCharWidthMono()),
    m_oldX(0)
 {
    // Init cursor
@@ -75,14 +74,14 @@ void TextEditor::render(const bool p_focus)
    for (int l_i = m_camera.y; l_i < m_camera.y + m_nbVisibleLines && l_i < m_nbItems; ++l_i, l_y += LINE_HEIGHT)
    {
       if (! m_lines[l_i].empty())
-         SDLUtils::renderText(m_lines[l_i], g_fontMono, MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 2*MARGIN_X - m_scrollbar.w, m_camera.x * m_charW);
+         SDLUtils::renderText(m_lines[l_i], g_fontMono, MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 2*MARGIN_X - m_scrollbar.w, m_camera.x * g_charW);
    }
 
    // Render cursor
    SDL_SetRenderDrawColor(g_renderer, COLOR_TEXT_NORMAL, 255);
    rect.w = 1;
    rect.h = LINE_HEIGHT;
-   rect.x = MARGIN_X + (m_inputTextCursor.x - m_camera.x) * m_charW;
+   rect.x = MARGIN_X + (m_inputTextCursor.x - m_camera.x) * g_charW;
    rect.y = LINE_HEIGHT + (m_inputTextCursor.y - m_camera.y) * LINE_HEIGHT;
    SDL_RenderFillRect(g_renderer, &rect);
 }
@@ -205,8 +204,8 @@ void TextEditor::adjustCamera(void)
       m_camera.y = m_inputTextCursor.y - m_nbVisibleLines + 1;
 
    // Adjust camera X
-   if (MARGIN_X + (m_inputTextCursor.x - m_camera.x) * m_charW > SCREEN_WIDTH - m_scrollbar.w - MARGIN_X)
-      m_camera.x = m_inputTextCursor.x - ((SCREEN_WIDTH - m_scrollbar.w - 2*MARGIN_X) / m_charW);
-   else if ((m_inputTextCursor.x - m_camera.x) * m_charW < 0)
+   if (MARGIN_X + (m_inputTextCursor.x - m_camera.x) * g_charW > SCREEN_WIDTH - m_scrollbar.w - MARGIN_X)
+      m_camera.x = m_inputTextCursor.x - ((SCREEN_WIDTH - m_scrollbar.w - 2*MARGIN_X) / g_charW);
+   else if ((m_inputTextCursor.x - m_camera.x) * g_charW < 0)
       m_camera.x = m_inputTextCursor.x;
 }

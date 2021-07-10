@@ -43,9 +43,6 @@ class TextEditor : public IWindow
    // Input cursor
    SDL_Point m_inputTextCursor;
 
-   // Width of one character (monospace font)
-   int m_charW;
-
    // X saved from previous line
    int m_oldX;
 };

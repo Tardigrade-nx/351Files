@@ -14,6 +14,7 @@ SDL_Renderer* g_renderer = NULL;
 SDL_Joystick* g_joystick = NULL;
 TTF_Font *g_font = NULL;
 TTF_Font *g_fontMono = NULL;
+int g_charW = 0;
 std::vector<IWindow *> g_windows;
 bool IWindow::g_hasChanged = true;
 
@@ -72,6 +73,9 @@ int main(int argc, char* args[])
       SDLUtils::close();
       return 1;
    }
+
+   // Width of one character in monospace font
+   g_charW = SDLUtils::getCharWidthMono();
 
    // Execute main window
    {

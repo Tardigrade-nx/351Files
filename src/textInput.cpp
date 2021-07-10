@@ -9,23 +9,22 @@ TextInput::TextInput(const std::string &p_title, SDL_Texture *p_icon, const std:
    IWindow(false, p_title),
    m_icon(p_icon),
    m_inputText(p_inputText),
-   m_charW(SDLUtils::getCharWidthMono()),
    m_nbVisibleChars(0)
 {
    // Cursor at the end of the text
    m_cursor = m_inputText.size();
    // Dialog background
-   m_dialogBackground.w = SCREEN_WIDTH - 2*DIALOG_BORDER;
+   m_dialogBackground.w = SCREEN_WIDTH;
    m_dialogBackground.h = 2*LINE_HEIGHT + DIALOG_BORDER;
    m_dialogBackground.x = (SCREEN_WIDTH - m_dialogBackground.w) / 2;
-   m_dialogBackground.y = SCREEN_HEIGHT - Keyboard::getKeyboardH() - m_dialogBackground.h - DIALOG_BORDER;
+   m_dialogBackground.y = SCREEN_HEIGHT - Keyboard::getKeyboardH() - m_dialogBackground.h + DIALOG_BORDER;
    // Dialog body
    m_dialogBody.x = m_dialogBackground.x + DIALOG_BORDER;
    m_dialogBody.y = m_dialogBackground.y + LINE_HEIGHT;
    m_dialogBody.w = m_dialogBackground.w - 2*DIALOG_BORDER;
    m_dialogBody.h = m_dialogBackground.h - LINE_HEIGHT - DIALOG_BORDER;
    // Number of visible characters
-   m_nbVisibleChars = (m_dialogBody.w - 2*MARGIN_X) / m_charW;
+   m_nbVisibleChars = (m_dialogBody.w - 2*MARGIN_X) / g_charW;
 }
 
 //------------------------------------------------------------------------------
@@ -60,7 +59,7 @@ void TextInput::render(const bool p_focus)
 
    // Cursor
    SDL_SetRenderDrawColor(g_renderer, COLOR_TEXT_NORMAL, 255);
-   SDL_Rect rect = { m_dialogBody.x + MARGIN_X + (m_cursor - m_camera.x) * m_charW, m_dialogBody.y + 3, 1, LINE_HEIGHT - 6 };
+   SDL_Rect rect = { m_dialogBody.x + MARGIN_X + (m_cursor - m_camera.x) * g_charW, m_dialogBody.y + 3, 1, LINE_HEIGHT - 6 };
    SDL_RenderFillRect(g_renderer, &rect);
 }
 

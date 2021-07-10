@@ -136,8 +136,9 @@
 extern SDL_Window* g_window;
 extern SDL_Renderer* g_renderer;
 extern SDL_Joystick* g_joystick;
-extern TTF_Font *g_font;
-extern TTF_Font *g_fontMono;
+extern TTF_Font *g_font;                     // Variable size font
+extern TTF_Font *g_fontMono;                 // Mono size font
+extern int g_charW;                          // Width of one character in monospace font
 class IWindow;
 extern std::vector<IWindow *> g_windows;
 

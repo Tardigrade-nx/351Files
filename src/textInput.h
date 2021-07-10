@@ -45,9 +45,6 @@ class TextInput : public IWindow
    // Input text
    std::string m_inputText;
 
-   // Width of one character (monospace font)
-   int m_charW;
-
    // Number of visible characters
    int m_nbVisibleChars;
 
