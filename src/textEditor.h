@@ -28,7 +28,7 @@ class TextEditor : public IWindow
    // Key pressed
    virtual void keyPressed(const SDL_Event &event);
 
-   // Move camera
+   // Move cursor
    virtual void moveCursorUp(const int p_step, bool p_loop);
    virtual void moveCursorDown(const int p_step, bool p_loop);
    virtual void moveCursorLeft(const int p_step, bool p_loop);

@@ -6,7 +6,7 @@
 #include "sdlutils.h"
 #include "fileUtils.h"
 #include "dialog.h"
-#include "keyboard.h"
+#include "textInput.h"
 #include "textViewer.h"
 #include "textEditor.h"
 #include "imageViewer.h"
@@ -391,10 +391,10 @@ void MainWindow::openContextMenu(void)
       // New directory
       case 7:
       {
-         Keyboard keyboard;
-         if (keyboard.execute() != -2 && ! keyboard.getInputText().empty())
+         TextInput textInput("New directory", g_iconNewDir);
+         if (textInput.execute() != -2 && ! textInput.getInputText().empty())
          {
-            FileUtils::makeDirectory(m_title + (m_title == "/" ? "" : "/") + keyboard.getInputText());
+            FileUtils::makeDirectory(m_title + (m_title == "/" ? "" : "/") + textInput.getInputText());
             refresh();
          }
       }
@@ -403,10 +403,10 @@ void MainWindow::openContextMenu(void)
       case 9:
       {
          std::string fileSrc = m_fileLister.getSelectFirst();
-         Keyboard keyboard(fileSrc);
-         if (keyboard.execute() != -2 && ! keyboard.getInputText().empty())
+         TextInput textInput("Rename", g_iconEdit, fileSrc);
+         if (textInput.execute() != -2 && ! textInput.getInputText().empty())
          {
-            FileUtils::renameFile(m_title + (m_title == "/" ? "" : "/") + fileSrc, m_title + (m_title == "/" ? "" : "/") + keyboard.getInputText());
+            FileUtils::renameFile(m_title + (m_title == "/" ? "" : "/") + fileSrc, m_title + (m_title == "/" ? "" : "/") + textInput.getInputText());
             refresh();
          }
       }

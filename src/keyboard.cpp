@@ -4,8 +4,9 @@
 #include "sdlutils.h"
 
 // Constructor
-Keyboard::Keyboard(const std::string &p_text):
+Keyboard::Keyboard(IWindow *p_parent, const bool p_quitOnEnter):
    IWindow(false, ""),
+   m_parent(p_parent),
    m_background(NULL),
    m_keyLabelCurrent(0),
    m_texShiftEmpty(NULL),
@@ -13,8 +14,7 @@ Keyboard::Keyboard(const std::string &p_text):
    m_texEnter(NULL),
    m_texArrow(NULL),
    m_texBackspace(NULL),
-   m_inputText(p_text),
-   m_inputTextCursor(0)
+   m_quitOnEnter(p_quitOnEnter)
 {
    m_cursorLoop = true;
    m_keyLabel[0] = "qwertyuiop asdfghjkl  zxcvbnm_.";
@@ -48,16 +48,12 @@ void Keyboard::render(const bool p_focus)
 {
    // Keyboard background
    SDL_RenderCopy(g_renderer, m_background, NULL, &m_keyboard);
-   // Input text
-   SDL_Rect rect;
-   if (! m_inputText.empty())
-      SDLUtils::renderText(m_inputText, g_font, m_key[0].x + KEYBOARD_MARGIN, m_keyboard.y + KEYBOARD_MARGIN + LINE_HEIGHT/2, {COLOR_TEXT_NORMAL}, {COLOR_KEYBOARD_DARK}, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, m_keyboard.w - 4*KEYBOARD_MARGIN, SDLUtils::T_ALIGN_RIGHT);
    // Cursor
    if (p_focus)
       SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_FOCUS, 255);
    else
       SDL_SetRenderDrawColor(g_renderer, COLOR_CURSOR_NO_FOCUS, 255);
-   rect = m_key[m_cursor];
+   SDL_Rect rect = m_key[m_cursor];
    rect.y += m_keyboard.y;
    SDL_RenderFillRect(g_renderer, &rect);
    // Draw key labels
@@ -94,26 +90,29 @@ void Keyboard::keyPressed(const SDL_Event &event)
       // Character key
       if ((m_cursor >= 0 && m_cursor <= 9) || (m_cursor >= 11 && m_cursor <= 19) || (m_cursor >= 22 && m_cursor <= 30))
       {
-         m_inputText.append(m_keyLabel[m_keyLabelCurrent].substr(m_cursor, 1));
-         g_hasChanged = true;
+         // Call parent callback
+         m_parent->keyboardInputChar(m_keyLabel[m_keyLabelCurrent].substr(m_cursor, 1));
       }
       // Backspace
       else if (m_cursor == 10)
       {
-         if (! m_inputText.empty())
-         {
-            m_inputText.pop_back();
-            g_hasChanged = true;
-         }
+         // Call parent callback
+         m_parent->keyboardBackspace();
       }
       // Enter
       else if (m_cursor == 20)
-         m_retVal = 0;
+      {
+         if (m_quitOnEnter)
+            m_retVal = 0;
+         else
+            // Call parent callback
+            m_parent->keyboardInputEnter();
+      }
       // Space
       else if (m_cursor == 33)
       {
-         m_inputText.append(" ");
-         g_hasChanged = true;
+         // Call parent callback
+         m_parent->keyboardInputChar(" ");
       }
       // Shift
       else if (m_cursor == 21 || m_cursor == 31)
@@ -132,6 +131,18 @@ void Keyboard::keyPressed(const SDL_Event &event)
          else
             m_keyLabelCurrent = 2;
          g_hasChanged = true;
+      }
+      // Left arrow
+      else if (m_cursor == 34)
+      {
+         // Call parent callback
+         m_parent->keyboardMoveLeft();
+      }
+      // Right arrow
+      else if (m_cursor == 35)
+      {
+         // Call parent callback
+         m_parent->keyboardMoveRight();
       }
       return;
    }
@@ -155,10 +166,10 @@ void Keyboard::init(void)
       return;
 
    // Size and coordinates of the first key
-   m_key[0].w = round((SCREEN_WIDTH - 2*KEYBOARD_MARGIN - 10*KEYBOARD_KEY_SPACING) / 11);
-   m_key[0].h = round(m_key[0].w / 1.2);
+   m_key[0].w = getKeyW();
+   m_key[0].h = getKeyH();
    m_key[0].x = round((SCREEN_WIDTH - (11*m_key[0].w + 10*KEYBOARD_KEY_SPACING)) / 2);
-   m_key[0].y = 2*KEYBOARD_MARGIN + LINE_HEIGHT;
+   m_key[0].y = KEYBOARD_MARGIN;
 
    // Height of all the keys
    int indKey = 1;
@@ -166,8 +177,8 @@ void Keyboard::init(void)
       m_key[indKey].h = m_key[0].h;
 
    // Size and coordinates of the keyboard
-   m_keyboard.w = SCREEN_WIDTH;
-   m_keyboard.h = 3*KEYBOARD_MARGIN + 3*KEYBOARD_KEY_SPACING + 4*m_key[0].h + LINE_HEIGHT;
+   m_keyboard.w = getKeyboardW();
+   m_keyboard.h = getKeyboardH();
    m_keyboard.x = 0;
    m_keyboard.y = SCREEN_HEIGHT - m_keyboard.h;
 
@@ -224,11 +235,6 @@ void Keyboard::init(void)
    SDL_SetRenderTarget(g_renderer, m_background);
    SDL_SetRenderDrawColor(g_renderer, COLOR_TITLE_BG, 255);
    SDL_RenderClear(g_renderer);
-
-   // Text field
-   SDL_SetRenderDrawColor(g_renderer, COLOR_KEYBOARD_DARK, 255);
-   SDL_Rect rect = { m_key[0].x, KEYBOARD_MARGIN, 11*m_key[0].w + 10*KEYBOARD_KEY_SPACING, LINE_HEIGHT };
-   SDL_RenderFillRect(g_renderer, &rect);
 
    // Draw keys
    for (indKey = 0; indKey < 36; ++indKey)
@@ -386,8 +392,25 @@ SDL_Color Keyboard::getBackgroundColor(const int p_i, const bool p_focus) const
    return {COLOR_BODY_BG};
 }
 
-// Get input text
-const std::string &Keyboard::getInputText(void) const
+//------------------------------------------------------------------------------
+
+// Key and keyboard size
+int Keyboard::getKeyW(void)
 {
-   return m_inputText;
+   return round((SCREEN_WIDTH - 2*KEYBOARD_MARGIN - 10*KEYBOARD_KEY_SPACING) / 11);
+}
+
+int Keyboard::getKeyH(void)
+{
+   return round(getKeyW() / 1.2);
+}
+
+int Keyboard::getKeyboardW(void)
+{
+   return SCREEN_WIDTH;
+}
+
+int Keyboard::getKeyboardH(void)
+{
+   return 2*KEYBOARD_MARGIN + 3*KEYBOARD_KEY_SPACING + 4*getKeyH();
 }

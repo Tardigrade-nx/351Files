@@ -10,17 +10,20 @@ class Keyboard : public IWindow
 
    public:
 
+   // Constructor
+   Keyboard(IWindow *p_parent, const bool p_quitOnEnter);
+
    // Destructor
    virtual ~Keyboard(void);
-
-   // Constructor
-   Keyboard(const std::string &p_text = "");
 
    // Draw window
    virtual void render(const bool p_focus);
 
-   // Get input text
-   const std::string &getInputText(void) const;
+   // Key and keyboard size
+   static int getKeyW(void);
+   static int getKeyH(void);
+   static int getKeyboardW(void);
+   static int getKeyboardH(void);
 
    private:
 
@@ -43,6 +46,9 @@ class Keyboard : public IWindow
    // Get background color for the item at the given index
    virtual SDL_Color getBackgroundColor(const int p_i, const bool p_focus) const;
 
+   // Parent window
+   IWindow *m_parent;
+
    // Background image for the keyboard
    SDL_Texture *m_background;
 
@@ -63,9 +69,8 @@ class Keyboard : public IWindow
    SDL_Texture *m_texArrow;
    SDL_Texture *m_texBackspace;
 
-   // Input text
-   std::string m_inputText;
-   int m_inputTextCursor;
+   // Behavior for the Enter key
+   bool m_quitOnEnter;
 
 };
 

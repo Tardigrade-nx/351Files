@@ -27,6 +27,13 @@ class IWindow
    // Is window full screen?
    bool isFullScreen(void) const;
 
+   // Callbacks for virtual keyboard
+   virtual void keyboardInputChar(const std::string &p_string) {};
+   virtual void keyboardInputEnter(void) {};
+   virtual void keyboardBackspace(void) {};
+   virtual void keyboardMoveLeft(void) {};
+   virtual void keyboardMoveRight(void) {};
+
    protected:
 
    // Move cursor
