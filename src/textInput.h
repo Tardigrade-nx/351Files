@@ -36,11 +36,24 @@ class TextInput : public IWindow
    virtual void keyboardMoveLeft(void);
    virtual void keyboardMoveRight(void);
 
+   // Adjust camera
+   void adjustCamera(void);
+
    // Icon
    SDL_Texture *m_icon;
 
    // Input text
    std::string m_inputText;
+
+   // Width of one character (monospace font)
+   int m_charW;
+
+   // Number of visible characters
+   int m_nbVisibleChars;
+
+   // Dialog background and body
+   SDL_Rect m_dialogBackground;
+   SDL_Rect m_dialogBody;
 };
 
 #endif

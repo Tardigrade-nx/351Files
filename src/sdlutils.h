@@ -49,6 +49,9 @@ namespace SDLUtils
    // Render text and return the texture
    SDL_Texture *renderText(const std::string &p_text, TTF_Font *p_font, const SDL_Color &p_fg, const SDL_Color &p_bg);
 
+   // Width of one character in monospace font
+   int getCharWidthMono(void);
+
 }
 
 #endif

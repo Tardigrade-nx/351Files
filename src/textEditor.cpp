@@ -9,17 +9,12 @@
 // Constructor
 TextEditor::TextEditor(const std::string &p_title):
    IWindow(true, p_title),
-   m_charW(0),
+   m_charW(SDLUtils::getCharWidthMono()),
    m_oldX(0)
 {
    // Init cursor
    m_inputTextCursor.x = 0;
    m_inputTextCursor.y = 0;
-   // Width of one character (monospace font)
-   SDL_Texture *tex = SDLUtils::renderText("a", g_fontMono, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG});
-   SDL_QueryTexture(tex, NULL, NULL, &m_charW, NULL);
-   SDL_DestroyTexture(tex);
-   tex = NULL;
    // Read file
    std::ifstream ifs(p_title);
    if (! ifs.is_open())

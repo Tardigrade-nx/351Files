@@ -265,3 +265,15 @@ SDL_Texture *SDLUtils::renderText(const std::string &p_text, TTF_Font *p_font, c
    }
    return texture;
 }
+
+//------------------------------------------------------------------------------
+
+// Width of one character in monospace font
+int SDLUtils::getCharWidthMono(void)
+{
+   int w(0);
+   SDL_Texture *tex = SDLUtils::renderText("a", g_fontMono, {COLOR_TEXT_NORMAL}, {COLOR_BODY_BG});
+   SDL_QueryTexture(tex, NULL, NULL, &w, NULL);
+   SDL_DestroyTexture(tex);
+   return w;
+}
