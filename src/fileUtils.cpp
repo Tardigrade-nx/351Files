@@ -320,7 +320,7 @@ void FileUtils::renameFile(const std::string &p_file1, const std::string &p_file
 unsigned long long int FileUtils::getDirSize(const std::string &p_path)
 {
    // Execute command 'du -bs'
-   std::string line = "du -bs " + p_path + " 2>/dev/null";
+   std::string line = "du -bs \"" + p_path + "\" 2>/dev/null";
    bool sizeInK = false;
    char buffer[256];
    FILE *pipe = popen(line.c_str(), "r");
@@ -333,7 +333,7 @@ unsigned long long int FileUtils::getDirSize(const std::string &p_path)
    if (WEXITSTATUS(pclose(pipe)) != 0)
    {
       // 'du -bs' failed, try again with 'du -ks'
-      line = "du -ks " + p_path  + " 2>/dev/null";
+      line = "du -ks \"" + p_path  + "\" 2>/dev/null";
       pipe = popen(line.c_str(), "r");
       if (pipe == NULL)
       {
@@ -357,4 +357,23 @@ unsigned long long int FileUtils::getDirSize(const std::string &p_path)
    if (sizeInK)
       result *= 1024;
    return result;
+}
+
+//------------------------------------------------------------------------------
+
+// File is text
+bool FileUtils::fileIsText(const std::string &p_path)
+{
+   std::string line = "file -bi \"" + p_path + "\"";
+   char buffer[256];
+   FILE *pipe = popen(line.c_str(), "r");
+   if (pipe == NULL)
+   {
+      std::cerr << "getDirSize: Error popen\n";
+      return 0;
+   }
+   while (fgets(buffer, sizeof(buffer), pipe) != NULL);
+   pclose(pipe);
+   line = buffer;
+   return line.substr(0, 4) == "text";
 }

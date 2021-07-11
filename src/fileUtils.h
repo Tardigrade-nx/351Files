@@ -48,6 +48,9 @@ namespace FileUtils
    // Dir size
    unsigned long long int getDirSize(const std::string &p_path);
 
+   // File is text
+   bool fileIsText(const std::string &p_path);
+
 }
 
 #endif

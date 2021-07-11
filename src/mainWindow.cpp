@@ -238,6 +238,11 @@ void MainWindow::openHighlightedFile(void)
       return;
    }
 
+   // If the file is binary, do nothing
+   std::string filePath = m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name;
+   if (! FileUtils::fileIsText(filePath))
+      return;
+
    // Dialog 'view as text' / 'edit as text'
    int action = -1;
    {
@@ -264,14 +269,15 @@ void MainWindow::openHighlightedFile(void)
    // View file as text
    if (action == 0)
    {
-      TextViewer textViewer(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
+      TextViewer textViewer(filePath);
       textViewer.execute();
    }
    // Edit file as text
    else
    {
-      TextEditor textEditor(m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name);
+      TextEditor textEditor(filePath);
       textEditor.execute();
+      refresh();
    }
 }
 
