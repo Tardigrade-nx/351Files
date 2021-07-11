@@ -3,6 +3,7 @@
 #include "textEditor.h"
 #include "def.h"
 #include "sdlutils.h"
+#include "keyboard.h"
 
 //------------------------------------------------------------------------------
 
@@ -91,6 +92,16 @@ void TextEditor::render(const bool p_focus)
 // Key pressed
 void TextEditor::keyPressed(const SDL_Event &event)
 {
+   // Button validate => open keyboard
+   if (BUTTON_PRESSED_VALIDATE)
+   {
+      // Reset timer
+      resetTimer();
+      // Open keyboard
+      Keyboard keyboard(this, false);
+      keyboard.execute();
+      return;
+   }
    // Button Back
    if (BUTTON_PRESSED_BACK)
    {
@@ -208,4 +219,72 @@ void TextEditor::adjustCamera(void)
       m_camera.x = m_inputTextCursor.x - ((SCREEN_WIDTH - m_scrollbar.w - 2*MARGIN_X) / g_charW);
    else if ((m_inputTextCursor.x - m_camera.x) * g_charW < 0)
       m_camera.x = m_inputTextCursor.x;
+}
+
+//------------------------------------------------------------------------------
+
+// Callbacks for virtual keyboard
+void TextEditor::keyboardInputChar(const std::string &p_string)
+{
+   m_lines[m_inputTextCursor.y].insert(m_inputTextCursor.x, p_string);
+   ++m_inputTextCursor.x;
+   m_oldX = m_inputTextCursor.x;
+   adjustCamera();
+   g_hasChanged = true;
+}
+
+void TextEditor::keyboardInputEnter(void)
+{
+   // Insert new line
+   m_lines.insert(m_lines.begin() + m_inputTextCursor.y + 1, m_lines[m_inputTextCursor.y].substr(m_inputTextCursor.x));
+   // Cut current line
+   m_lines[m_inputTextCursor.y].erase(m_inputTextCursor.x);
+   // Number of lines
+   m_nbItems = m_lines.size();
+   // Init scrollbar
+   adjustScrollbar();
+   // Cursor
+   ++m_inputTextCursor.y;
+   m_inputTextCursor.x = 0;
+   m_oldX = m_inputTextCursor.x;
+   adjustCamera();
+   g_hasChanged = true;
+}
+
+void TextEditor::keyboardBackspace(void)
+{
+   if (m_inputTextCursor.x <= 0)
+   {
+      if (m_inputTextCursor.y <= 0)
+         return;
+      // Move cursor
+      --m_inputTextCursor.y;
+      m_inputTextCursor.x = m_lines[m_inputTextCursor.y].size();
+      m_oldX = m_inputTextCursor.x;
+      // Append current line to the previous one
+      m_lines[m_inputTextCursor.y].append(m_lines[m_inputTextCursor.y + 1]);
+      // Remove current line
+      m_lines.erase(m_lines.begin() + m_inputTextCursor.y + 1);
+      m_nbItems = m_lines.size();
+      adjustScrollbar();
+   }
+   else
+   {
+      // Remove previous character in the line
+      m_lines[m_inputTextCursor.y].erase(m_inputTextCursor.x - 1, 1);
+      --m_inputTextCursor.x;
+      m_oldX = m_inputTextCursor.x;
+   }
+   adjustCamera();
+   g_hasChanged = true;
+}
+
+void TextEditor::keyboardMoveLeft(void)
+{
+   moveCursorLeft(1, false);
+}
+
+void TextEditor::keyboardMoveRight(void)
+{
+   moveCursorRight(1, false);
 }

@@ -28,6 +28,13 @@ class TextEditor : public IWindow
    // Key pressed
    virtual void keyPressed(const SDL_Event &event);
 
+   // Callbacks for virtual keyboard
+   virtual void keyboardInputChar(const std::string &p_string);
+   virtual void keyboardInputEnter(void);
+   virtual void keyboardBackspace(void);
+   virtual void keyboardMoveLeft(void);
+   virtual void keyboardMoveRight(void);
+
    // Move cursor
    virtual void moveCursorUp(const int p_step, bool p_loop);
    virtual void moveCursorDown(const int p_step, bool p_loop);
