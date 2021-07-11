@@ -15,7 +15,7 @@ build351Files() {
    START_PATH="$3"
    RES_PATH="$4"
    make clean
-   make CC="$TOOLCHAIN_DIR"/bin/aarch64-libreelec-linux-gnueabi-g++ DEVICE="$DEVICE" SDL2_CONFIG="$TOOLCHAIN_DIR"/aarch64-libreelec-linux-gnueabi/sysroot/usr/bin/sdl2-config START_PATH="$START_PATH" RES_PATH="$RES_PATH" FIRMWARE="$FIRMWARE"
+   make CC="$TOOLCHAIN_DIR"/bin/aarch64-libreelec-linux-gnueabi-g++ DEVICE="$DEVICE" SDL2_CONFIG="$TOOLCHAIN_DIR"/aarch64-libreelec-linux-gnueabi/sysroot/usr/bin/sdl2-config START_PATH="$START_PATH" RES_PATH="$RES_PATH"
    mkdir -p build/351Files
    cp -r 351Files README.md res build/351Files
    cp launchers/"$FIRMWARE"/351Files.sh build

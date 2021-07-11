@@ -319,25 +319,42 @@ void FileUtils::renameFile(const std::string &p_file1, const std::string &p_file
 // Dir size
 unsigned long long int FileUtils::getDirSize(const std::string &p_path)
 {
-   // Execute command 'du'
-   std::string l_line = "du -bs " + p_path;
-   char l_buffer[256];
-   FILE *l_pipe = popen(l_line.c_str(), "r");
-   if (l_pipe == NULL)
+   // Execute command 'du -bs'
+   std::string line = "du -bs " + p_path + " 2>/dev/null";
+   bool sizeInK = false;
+   char buffer[256];
+   FILE *pipe = popen(line.c_str(), "r");
+   if (pipe == NULL)
    {
       std::cerr << "getDirSize: Error popen\n";
       return 0;
    }
-   while (fgets(l_buffer, sizeof(l_buffer), l_pipe) != NULL);
-   l_line = l_buffer;
-   pclose(l_pipe);
+   while (fgets(buffer, sizeof(buffer), pipe) != NULL);
+   if (WEXITSTATUS(pclose(pipe)) != 0)
+   {
+      // 'du -bs' failed, try again with 'du -ks'
+      line = "du -ks " + p_path  + " 2>/dev/null";
+      pipe = popen(line.c_str(), "r");
+      if (pipe == NULL)
+      {
+         std::cerr << "getDirSize: Error popen\n";
+         return 0;
+      }
+      while (fgets(buffer, sizeof(buffer), pipe) != NULL);
+      if (WEXITSTATUS(pclose(pipe)) != 0)
+         return 0;
+      sizeInK = true;
+   }
    // Keep the number only
-   size_t l_pos = l_line.find(" ");
-   if (l_pos != std::string::npos)
-      l_line = l_line.erase(l_pos);
+   line = buffer;
+   size_t pos = line.find(" ");
+   if (pos != std::string::npos)
+      line = line.erase(pos);
    // Convert to int
-   unsigned long long int l_result = 0;
-   std::istringstream iss(l_line);
-   iss >> l_result;
-   return l_result;
+   unsigned long long int result = 0;
+   std::istringstream iss(line);
+   iss >> result;
+   if (sizeInK)
+      result *= 1024;
+   return result;
 }
