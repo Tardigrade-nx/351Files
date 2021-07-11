@@ -97,6 +97,12 @@ void TextEditor::keyPressed(const SDL_Event &event)
    {
       // Reset timer
       resetTimer();
+      // If the keyboard hides the cursor, move the camera to make it visible
+      if ((m_inputTextCursor.y - m_camera.y + 2) * LINE_HEIGHT > SCREEN_HEIGHT - Keyboard::getKeyboardH())
+      {
+         m_camera.y = m_inputTextCursor.y - 2;
+         adjustScrollbarPosition();
+      }
       // Open keyboard
       Keyboard keyboard(this, false);
       keyboard.execute();
