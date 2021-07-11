@@ -4,13 +4,15 @@
 #include "def.h"
 #include "sdlutils.h"
 #include "keyboard.h"
+#include "dialog.h"
 
 //------------------------------------------------------------------------------
 
 // Constructor
 TextEditor::TextEditor(const std::string &p_title):
    IWindow(true, p_title),
-   m_oldX(0)
+   m_oldX(0),
+   m_hasModifications(false)
 {
    // Init cursor
    m_inputTextCursor.x = 0;
@@ -108,13 +110,30 @@ void TextEditor::keyPressed(const SDL_Event &event)
       keyboard.execute();
       return;
    }
+   // Button context menu
+   if (BUTTON_PRESSED_MENU_CONTEXT)
+   {
+      // Reset timer
+      resetTimer();
+      // Open action menu
+      Dialog dialog("Actions:");
+      dialog.addOption("Save", 0, g_iconFloppy);
+      dialog.addOption("Quit", 1, g_iconQuit);
+      switch (dialog.execute())
+      {
+         case 0:  save(); break;
+         case 1:  quit(); break;
+         default: return;
+      }
+      return;
+   }
    // Button Back
    if (BUTTON_PRESSED_BACK)
    {
       // Reset timer
       resetTimer();
-      // Close window with no return value
-      m_retVal = -2;
+      // Quit
+      quit();
       return;
    }
 }
@@ -235,6 +254,7 @@ void TextEditor::keyboardInputChar(const std::string &p_string)
    m_lines[m_inputTextCursor.y].insert(m_inputTextCursor.x, p_string);
    ++m_inputTextCursor.x;
    m_oldX = m_inputTextCursor.x;
+   m_hasModifications = true;
    adjustCamera();
    g_hasChanged = true;
 }
@@ -253,6 +273,7 @@ void TextEditor::keyboardInputEnter(void)
    ++m_inputTextCursor.y;
    m_inputTextCursor.x = 0;
    m_oldX = m_inputTextCursor.x;
+   m_hasModifications = true;
    adjustCamera();
    g_hasChanged = true;
 }
@@ -273,6 +294,7 @@ void TextEditor::keyboardBackspace(void)
       m_lines.erase(m_lines.begin() + m_inputTextCursor.y + 1);
       m_nbItems = m_lines.size();
       adjustScrollbar();
+      m_hasModifications = true;
    }
    else
    {
@@ -280,6 +302,7 @@ void TextEditor::keyboardBackspace(void)
       m_lines[m_inputTextCursor.y].erase(m_inputTextCursor.x - 1, 1);
       --m_inputTextCursor.x;
       m_oldX = m_inputTextCursor.x;
+      m_hasModifications = true;
    }
    adjustCamera();
    g_hasChanged = true;
@@ -293,4 +316,50 @@ void TextEditor::keyboardMoveLeft(void)
 void TextEditor::keyboardMoveRight(void)
 {
    moveCursorRight(1, false);
+}
+
+//------------------------------------------------------------------------------
+
+// Save file
+void TextEditor::save(void)
+{
+   INHIBIT(std::cout << "Saving file '" << m_title << "'...\n";)
+   // Open file
+   std::ofstream ofs(m_title);
+   if (! ofs.is_open())
+   {
+      Dialog dialog("Error");
+      dialog.addLabel("Unable to write file.");
+      dialog.addOption("OK", 0, g_iconSelect);
+      return;
+   }
+   // Write new file
+   for (auto it = m_lines.begin(); it != m_lines.end(); ++it)
+      if (! (it == m_lines.end() - 1 && it->empty()))
+         ofs << *it << '\n';
+   ofs.close();
+   m_hasModifications = false;
+}
+
+//------------------------------------------------------------------------------
+
+// Quit, with a warning if unsaved modifications
+void TextEditor::quit(void)
+{
+   if (m_hasModifications)
+   {
+      Dialog dialog("Warning:");
+      dialog.addLabel("The file is not saved.");
+      dialog.addOption("Save", 0, g_iconFloppy);
+      dialog.addOption("Don't save", 1, g_iconNone);
+      dialog.addOption("Cancel", 2, g_iconCancel);
+      switch (dialog.execute())
+      {
+         case 0: save(); break;
+         case 1: break;
+         default: return;
+      }
+   }
+   // Close window with no return value
+   m_retVal = -2;
 }

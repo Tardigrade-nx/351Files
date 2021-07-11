@@ -44,6 +44,12 @@ class TextEditor : public IWindow
    // Adjust camera
    void adjustCamera(void);
 
+   // Save file
+   void save(void);
+
+   // Quit, with a warning if unsaved modifications
+   void quit(void);
+
    // List of lines
    std::vector<std::string> m_lines;
 
@@ -52,6 +58,9 @@ class TextEditor : public IWindow
 
    // X saved from previous line
    int m_oldX;
+
+   // Has modifications
+   bool m_hasModifications;
 };
 
 #endif

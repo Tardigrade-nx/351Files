@@ -56,6 +56,8 @@ TextViewer::TextViewer(const std::string &p_title):
       ReplaceTabs(&m_lines.back());
    }
    ifs.close();
+   if (m_lines.back().empty())
+      m_lines.pop_back();
    // Number of lines
    m_nbItems = m_lines.size();
    // Init scrollbar
