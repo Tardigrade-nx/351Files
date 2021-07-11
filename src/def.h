@@ -159,5 +159,6 @@ extern SDL_Texture *g_iconEdit;
 extern SDL_Texture *g_iconCancel;
 extern SDL_Texture *g_iconFloppy;
 extern SDL_Texture *g_iconImage;
+extern SDL_Texture *g_iconFileText;
 
 #endif

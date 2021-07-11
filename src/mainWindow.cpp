@@ -242,7 +242,7 @@ void MainWindow::openHighlightedFile(void)
    int action = -1;
    {
       Dialog l_dialog("Open:");
-      l_dialog.addOption("View as text", 0, g_iconFile);
+      l_dialog.addOption("View as text", 0, g_iconFileText);
       l_dialog.addOption("Edit as text", 1, g_iconEdit);
       l_dialog.addOption("Cancel", 2, g_iconCancel);
       action = l_dialog.execute();
