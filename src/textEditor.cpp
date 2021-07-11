@@ -118,11 +118,15 @@ void TextEditor::keyPressed(const SDL_Event &event)
       // Open action menu
       Dialog dialog("Actions:");
       dialog.addOption("Save", 0, g_iconFloppy);
-      dialog.addOption("Quit", 1, g_iconQuit);
+      dialog.addOption("Delete line", 1, g_iconTrash);
+      dialog.addOption("Duplicate line", 2, g_iconCopy);
+      dialog.addOption("Quit", 3, g_iconQuit);
       switch (dialog.execute())
       {
          case 0:  save(); break;
-         case 1:  quit(); break;
+         case 1:  deleteLine(); break;
+         case 2:  duplicateLine(); break;
+         case 3:  quit(); break;
          default: return;
       }
       return;
@@ -362,4 +366,30 @@ void TextEditor::quit(void)
    }
    // Close window with no return value
    m_retVal = -2;
+}
+
+//------------------------------------------------------------------------------
+
+// Delete current line
+void TextEditor::deleteLine(void)
+{
+   m_lines.erase(m_lines.begin() + m_inputTextCursor.y);
+   m_nbItems = m_lines.size();
+   adjustScrollbar();
+   adjustCamera();
+   m_hasModifications = true;
+   g_hasChanged = true;
+}
+
+//------------------------------------------------------------------------------
+
+// Duplicate current line
+void TextEditor::duplicateLine(void)
+{
+   m_lines.insert(m_lines.begin() + m_inputTextCursor.y + 1, m_lines[m_inputTextCursor.y]);
+   m_nbItems = m_lines.size();
+   adjustScrollbar();
+   adjustCamera();
+   m_hasModifications = true;
+   g_hasChanged = true;
 }

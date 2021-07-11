@@ -50,6 +50,12 @@ class TextEditor : public IWindow
    // Quit, with a warning if unsaved modifications
    void quit(void);
 
+   // Delete current line
+   void deleteLine(void);
+
+   // Duplicate current line
+   void duplicateLine(void);
+
    // List of lines
    std::vector<std::string> m_lines;
 
