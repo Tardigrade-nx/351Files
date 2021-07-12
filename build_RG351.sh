@@ -1,7 +1,7 @@
 #!/bin/env bash
 
 TOOLCHAIN_DIR="$HOME"/Dev/351ELEC/build.351ELEC-RG351V.aarch64/toolchain
-VERSION="v1.1"
+VERSION="$1"
 
 set -eE
 
