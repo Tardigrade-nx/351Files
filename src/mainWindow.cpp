@@ -240,7 +240,7 @@ void MainWindow::openHighlightedFile(void)
 
    // If the file is binary, do nothing
    std::string filePath = m_title + (m_title == "/" ? "" : "/") + m_fileLister[m_cursor].m_name;
-   if (! FileUtils::fileIsText(filePath))
+   if (! (FileUtils::fileIsText(filePath) || m_fileLister[m_cursor].m_size == 0))
       return;
 
    // Dialog 'view as text' / 'edit as text'

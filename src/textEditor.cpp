@@ -339,8 +339,11 @@ void TextEditor::save(void)
    }
    // Write new file
    for (auto it = m_lines.begin(); it != m_lines.end(); ++it)
-      if (! (it == m_lines.end() - 1 && it->empty()))
-         ofs << *it << '\n';
+   {
+      if (it != m_lines.begin())
+         ofs << '\n';
+      ofs << *it;
+   }
    ofs.close();
    m_hasModifications = false;
 }
