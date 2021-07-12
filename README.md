@@ -17,6 +17,7 @@ Based on DinguxCommander.
 * Copy, move, rename, delete, create directories and files.
 * Display file size, compute directory size
 * Text file viewer
+* Text file editor
 * Image viewer (original size or fit screen, next / previous image)
 
 # Installation on 351ELEC:
@@ -72,8 +73,16 @@ Image viewer:
 * d-pad: next / previous image, or scroll image
 * A: switch original size / fit screen
 
+Text editor:
+* d-pad: move
+* A: open virtual keyboard / validate
+* B: cancel / back
+* X: open context menu
+* R1/R2: page down
+* L1/L2 : page up
+
 # Compilation:
-Define the following variables when executing make:
+Define the following variables when executing 'make':
 * CC
 * SDL2_CONFIG
 * DEVICE: RG351P / RG351V / PC
