@@ -81,10 +81,40 @@ Text editor:
 * R1/R2: page down
 * L1/L2 : page up
 
+# Building
+package requirements: SDL2 SDL2_image SDL2_ttf SDL2-dev SDL2_image-dev SDL2_ttf-dev
+
+git clone https://github.com/christianhaitian/351Files.git
+cd 351Files
+
+## For 351V and 351ELEC
+build351Files RG351V 351ELEC /storage/roms ./res
+
+## For 351P and 351ELEC
+build351Files RG351P 351ELEC /storage/roms ./res
+
+## For 351V and ArkOS
+build351Files RG351V ArkOS /roms ./res
+
+## For 351P and ArkOS
+build351Files RG351P ArkOS /roms ./res
+
+## For RGB10/OGA 1.1 (BE) and ArkOS
+build351Files RGB10 ArkOS /roms ./res
+
+## For RK2020/OGA 1.0 and ArkOS
+build351Files RK2020 ArkOS /roms ./res
+
+## For CHI and ArkOS
+build351Files CHI ArkOS /roms ./res
+
+Copy the res folder to your preferred folder location along with the 351Files executable. \
+You can also just grab the generated .tgz file and do as instructed in the installation section above in this readme.
+
 # Compilation:
 Define the following variables when executing 'make':
 * CC
 * SDL2_CONFIG
-* DEVICE: RG351P / RG351V / PC
+* DEVICE: CHI / RG351P / RG351V / RGB10 / RK2020 / PC
 * START_PATH
 * RES_PATH
