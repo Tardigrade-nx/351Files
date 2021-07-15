@@ -18,8 +18,9 @@ Keyboard::Keyboard(IWindow *p_parent, const bool p_quitOnEnter):
 {
    m_cursorLoop = true;
    m_keyLabel[0] = "qwertyuiop asdfghjkl  zxcvbnm_.";
-   m_keyLabel[1] = "QWERTYUIOP ASDFGHJKL  ZXCVBNM_.";
-   m_keyLabel[2] = "1234567890 @#%&*-+='  ()[]<>;:,";
+   m_keyLabel[1] = "QWERTYUIOP ASDFGHJKL  ZXCVBNM-,";
+   m_keyLabel[2] = "1234567890 .,:!?/\\\"'  ()[]<>_;$";
+   m_keyLabel[3] = "1234567890 ()[]{}~|^  @#%&*-+=`";
    m_texShiftEmpty = SDLUtils::loadTexture(std::string(RES_PATH) + "/keyboard_shift_empty.png");
    m_texShiftFull = SDLUtils::loadTexture(std::string(RES_PATH) + "/keyboard_shift_full.png");
    m_texEnter = SDLUtils::loadTexture(std::string(RES_PATH) + "/keyboard_enter.png");
@@ -74,7 +75,7 @@ void Keyboard::render(const bool p_focus)
    SDLUtils::renderTexture(m_texArrow, m_keyboard.x + m_key[34].x + m_key[34].w / 2, m_keyboard.y + m_key[34].y + m_key[34].h / 2, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
    SDLUtils::renderTexture(m_texArrow, m_keyboard.x + m_key[35].x + m_key[35].w / 2, m_keyboard.y + m_key[35].y + m_key[35].h / 2, SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE, SDL_FLIP_HORIZONTAL);
    // Number / symbols
-   SDLUtils::renderText(m_keyLabelCurrent == 2 ? "abc" : "&123", g_font, m_keyboard.x + m_key[32].x + m_key[32].w / 2, m_keyboard.y + m_key[32].y + m_key[32].h / 2, {COLOR_TEXT_NORMAL}, getBackgroundColor(32, p_focus), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
+   SDLUtils::renderText(m_keyLabelCurrent == 3 ? "abc" : "&123", g_font, m_keyboard.x + m_key[32].x + m_key[32].w / 2, m_keyboard.y + m_key[32].y + m_key[32].h / 2, {COLOR_TEXT_NORMAL}, getBackgroundColor(32, p_focus), SDLUtils::T_ALIGN_CENTER, SDLUtils::T_ALIGN_MIDDLE);
 }
 
 //------------------------------------------------------------------------------
@@ -117,20 +118,12 @@ void Keyboard::keyPressed(const SDL_Event &event)
       // Shift
       else if (m_cursor == 21 || m_cursor == 31)
       {
-         if (m_keyLabelCurrent == 1)
-            m_keyLabelCurrent = 0;
-         else
-            m_keyLabelCurrent = 1;
-         g_hasChanged = true;
+         keyPressedShift();
       }
       // Symbol
       else if (m_cursor == 32)
       {
-         if (m_keyLabelCurrent == 2)
-            m_keyLabelCurrent = 0;
-         else
-            m_keyLabelCurrent = 2;
-         g_hasChanged = true;
+         keyPressedSymbol();
       }
       // Left arrow
       else if (m_cursor == 34)
@@ -258,11 +251,7 @@ void Keyboard::moveCursorUp(const int p_step, bool p_loop)
    // Page up => symbol button
    if (p_step > 1)
    {
-      if (m_keyLabelCurrent == 2)
-         m_keyLabelCurrent = 0;
-      else
-         m_keyLabelCurrent = 2;
-      g_hasChanged = true;
+      keyPressedSymbol();
       return;
    }
    // 1st line
@@ -305,11 +294,7 @@ void Keyboard::moveCursorDown(const int p_step, bool p_loop)
    // Page down => shift button
    if (p_step > 1)
    {
-      if (m_keyLabelCurrent == 1)
-         m_keyLabelCurrent = 0;
-      else
-         m_keyLabelCurrent = 1;
-      g_hasChanged = true;
+      keyPressedShift();
       return;
    }
    // 1st line
@@ -413,4 +398,30 @@ int Keyboard::getKeyboardW(void)
 int Keyboard::getKeyboardH(void)
 {
    return 2*KEYBOARD_MARGIN + 3*KEYBOARD_KEY_SPACING + 4*getKeyH();
+}
+
+//------------------------------------------------------------------------------
+
+// Press symbol button
+void Keyboard::keyPressedSymbol(void)
+{
+   switch (m_keyLabelCurrent)
+   {
+      case 2:  m_keyLabelCurrent = 3; break;
+      case 3:  m_keyLabelCurrent = 0; break;
+      default: m_keyLabelCurrent = 2; break;
+   }
+   g_hasChanged = true;
+}
+
+//------------------------------------------------------------------------------
+
+// Press shift button
+void Keyboard::keyPressedShift(void)
+{
+   if (m_keyLabelCurrent == 1)
+      m_keyLabelCurrent = 0;
+   else
+      m_keyLabelCurrent = 1;
+   g_hasChanged = true;
 }

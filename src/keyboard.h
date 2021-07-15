@@ -46,6 +46,12 @@ class Keyboard : public IWindow
    // Get background color for the item at the given index
    virtual SDL_Color getBackgroundColor(const int p_i, const bool p_focus) const;
 
+   // Press symbol button
+   void keyPressedSymbol(void);
+
+   // Press shift button
+   void keyPressedShift(void);
+
    // Parent window
    IWindow *m_parent;
 
@@ -56,7 +62,7 @@ class Keyboard : public IWindow
    SDL_Rect m_key[36];
 
    // Labels for the keys
-   std::string m_keyLabel[3];
+   std::string m_keyLabel[4];
    int m_keyLabelCurrent;
 
    // Size and coordinates of the keyboard
