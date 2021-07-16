@@ -58,7 +58,7 @@ void TextInput::render(const bool p_focus)
 
    // Cursor
    SDL_SetRenderDrawColor(g_renderer, COLOR_TEXT_NORMAL, 255);
-   SDL_Rect rect = { m_dialogBody.x + MARGIN_X + (m_cursor - m_camera.x) * g_charW, m_dialogBody.y + 3, 1, LINE_HEIGHT - 6 };
+   SDL_Rect rect = { m_dialogBody.x + MARGIN_X + (m_cursor - m_camera.x) * g_charW, m_dialogBody.y + 2, 1, LINE_HEIGHT - 4 };
    SDL_RenderFillRect(g_renderer, &rect);
 }
 

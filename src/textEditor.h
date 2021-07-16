@@ -44,6 +44,12 @@ class TextEditor : public IWindow
    // Adjust camera
    void adjustCamera(void);
 
+   // For a line, get the number of unselected and selected chars
+   void getNbSelectedChars(const int p_lineIndex, const int p_lineSize, int &p_nbUnselected, int &p_nbSelected);
+
+   // Remove text selection
+   void unselectText(void);
+
    // Save file
    void save(void);
 
@@ -67,6 +73,10 @@ class TextEditor : public IWindow
 
    // Has modifications
    bool m_hasModifications;
+
+   // Start and end for text selection
+   SDL_Point m_textSelectionStart;
+   SDL_Point m_textSelectionEnd;
 };
 
 #endif

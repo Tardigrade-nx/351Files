@@ -17,6 +17,8 @@ TextEditor::TextEditor(const std::string &p_title):
    // Init cursor
    m_inputTextCursor.x = 0;
    m_inputTextCursor.y = 0;
+   // Text selection
+   unselectText();
    // Read file
    std::ifstream ifs(p_title);
    if (! ifs.is_open())
@@ -76,16 +78,42 @@ void TextEditor::render(const bool p_focus)
    l_y += LINE_HEIGHT;
    SDL_Color l_fgColor = {COLOR_TEXT_NORMAL};
    SDL_Color l_bgColor = {COLOR_BODY_BG};
+   SDL_Color l_bgColorSelect = {COLOR_CURSOR_FOCUS};
+   std::string subLine = "";
+   int nbCharPart1 = 0, nbCharPart2 = 0, nbCharPart3 = 0;
    for (int l_i = m_camera.y; l_i < m_camera.y + m_nbVisibleLines && l_i < m_nbItems; ++l_i, l_y += LINE_HEIGHT)
-      if (m_camera.x < static_cast<int>(m_lines[l_i].size()))
+   {
+      // Case : nothing visible on this line
+      if (m_camera.x >= static_cast<int>(m_lines[l_i].size()))
+         continue;
+      // Case: no text selection
+      if (m_textSelectionStart.y == -1 || m_textSelectionEnd.y == -1)
+      {
          SDLUtils::renderText(m_lines[l_i].substr(m_camera.x, m_nbVisibleChars), g_fontMono, MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+         continue;
+      }
+      // Case: text selection
+      subLine = m_lines[l_i].substr(m_camera.x, m_nbVisibleChars);
+      nbCharPart1 = 0;
+      nbCharPart2 = 0;
+      nbCharPart3 = 0;
+      getNbSelectedChars(l_i, subLine.size(), nbCharPart1, nbCharPart2);
+      nbCharPart3 = subLine.size() - nbCharPart1 - nbCharPart2;
+      // Render line in 3 parts : unselected / selected / unselected
+      if (nbCharPart1 > 0)
+         SDLUtils::renderText(subLine.substr(0, nbCharPart1), g_fontMono, MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+      if (nbCharPart2 > 0 && ! subLine.substr(nbCharPart1, nbCharPart2).empty())
+         SDLUtils::renderText(subLine.substr(nbCharPart1, nbCharPart2), g_fontMono, MARGIN_X + nbCharPart1 * g_charW, l_y, l_fgColor, l_bgColorSelect, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+      if (nbCharPart3 > 0 && ! subLine.substr(nbCharPart1 + nbCharPart2, nbCharPart3).empty())
+         SDLUtils::renderText(subLine.substr(nbCharPart1 + nbCharPart2, nbCharPart3), g_fontMono, MARGIN_X + (nbCharPart1 + nbCharPart2) * g_charW, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE);
+   }
 
    // Render cursor
    SDL_SetRenderDrawColor(g_renderer, COLOR_TEXT_NORMAL, 255);
    rect.w = 1;
-   rect.h = LINE_HEIGHT;
+   rect.h = LINE_HEIGHT - 4;
    rect.x = MARGIN_X + (m_inputTextCursor.x - m_camera.x) * g_charW;
-   rect.y = LINE_HEIGHT + (m_inputTextCursor.y - m_camera.y) * LINE_HEIGHT;
+   rect.y = LINE_HEIGHT + 2 +(m_inputTextCursor.y - m_camera.y) * LINE_HEIGHT;
    SDL_RenderFillRect(g_renderer, &rect);
 }
 
@@ -123,11 +151,11 @@ void TextEditor::keyPressed(const SDL_Event &event)
       dialog.addOption("Quit", 3, g_iconQuit);
       switch (dialog.execute())
       {
-         case 0:  save(); break;
-         case 1:  deleteLine(); break;
-         case 2:  duplicateLine(); break;
-         case 3:  quit(); break;
-         default: return;
+         case 0: save(); break;
+         case 1: deleteLine(); break;
+         case 2: duplicateLine(); break;
+         case 3: quit(); break;
+         default: break;
       }
       return;
    }
@@ -140,6 +168,15 @@ void TextEditor::keyPressed(const SDL_Event &event)
       quit();
       return;
    }
+   // Button select
+   if (BUTTON_PRESSED_SELECT)
+   {
+      resetTimer();
+      unselectText();
+      m_textSelectionStart = m_inputTextCursor;
+      g_hasChanged = true;
+      return;
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -148,6 +185,10 @@ void TextEditor::keyPressed(const SDL_Event &event)
 
 void TextEditor::moveCursorUp(const int p_step, bool p_loop)
 {
+   // Selection = none
+   if (! BUTTON_HELD_SELECT)
+      unselectText();
+   g_hasChanged = true;
    if (m_inputTextCursor.y <= 0)
       return;
    // Previous line
@@ -158,16 +199,21 @@ void TextEditor::moveCursorUp(const int p_step, bool p_loop)
    m_inputTextCursor.x = m_oldX;
    if (m_inputTextCursor.x > static_cast<int>(m_lines[m_inputTextCursor.y].size()))
       m_inputTextCursor.x = m_lines[m_inputTextCursor.y].size();
+   // Text selection
+   if (BUTTON_HELD_SELECT)
+      m_textSelectionEnd = m_inputTextCursor;
    // Camera
    adjustCamera();
    // Scrollbar
    adjustScrollbarPosition();
-   // Redraw
-   g_hasChanged = true;
 }
 
 void TextEditor::moveCursorDown(const int p_step, bool p_loop)
 {
+   // Selection = none
+   if (! BUTTON_HELD_SELECT)
+      unselectText();
+   g_hasChanged = true;
    if (m_inputTextCursor.y >= static_cast<int>(m_lines.size()) - 1)
       return;
    // Next line
@@ -178,16 +224,21 @@ void TextEditor::moveCursorDown(const int p_step, bool p_loop)
    m_inputTextCursor.x = m_oldX;
    if (m_inputTextCursor.x > static_cast<int>(m_lines[m_inputTextCursor.y].size()))
       m_inputTextCursor.x = m_lines[m_inputTextCursor.y].size();
+   // Text selection
+   if (BUTTON_HELD_SELECT)
+      m_textSelectionEnd = m_inputTextCursor;
    // Camera
    adjustCamera();
    // Scrollbar
    adjustScrollbarPosition();
-   // Redraw
-   g_hasChanged = true;
 }
 
 void TextEditor::moveCursorLeft(const int p_step, bool p_loop)
 {
+   // Selection = none
+   if (! BUTTON_HELD_SELECT)
+      unselectText();
+   g_hasChanged = true;
    if (m_inputTextCursor.x <= 0)
    {
       if (m_inputTextCursor.y <= 0)
@@ -201,16 +252,21 @@ void TextEditor::moveCursorLeft(const int p_step, bool p_loop)
       --m_inputTextCursor.x;
    }
    m_oldX = m_inputTextCursor.x;
+   // Text selection
+   if (BUTTON_HELD_SELECT)
+      m_textSelectionEnd = m_inputTextCursor;
    // Camera
    adjustCamera();
    // Scrollbar
    adjustScrollbarPosition();
-   // Redraw
-   g_hasChanged = true;
 }
 
 void TextEditor::moveCursorRight(const int p_step, bool p_loop)
 {
+   // Selection = none
+   if (! BUTTON_HELD_SELECT)
+      unselectText();
+   g_hasChanged = true;
    if (m_inputTextCursor.x >= static_cast<int>(m_lines[m_inputTextCursor.y].size()))
    {
       // Go to the start of next line
@@ -224,12 +280,13 @@ void TextEditor::moveCursorRight(const int p_step, bool p_loop)
       ++m_inputTextCursor.x;
    }
    m_oldX = m_inputTextCursor.x;
+   // Text selection
+   if (BUTTON_HELD_SELECT)
+      m_textSelectionEnd = m_inputTextCursor;
    // Camera
    adjustCamera();
    // Scrollbar
    adjustScrollbarPosition();
-   // Redraw
-   g_hasChanged = true;
 }
 
 //------------------------------------------------------------------------------
@@ -255,6 +312,9 @@ void TextEditor::adjustCamera(void)
 // Callbacks for virtual keyboard
 void TextEditor::keyboardInputChar(const std::string &p_string)
 {
+   // Selection = none
+   unselectText();
+   // Insert character
    m_lines[m_inputTextCursor.y].insert(m_inputTextCursor.x, p_string);
    ++m_inputTextCursor.x;
    m_oldX = m_inputTextCursor.x;
@@ -265,6 +325,8 @@ void TextEditor::keyboardInputChar(const std::string &p_string)
 
 void TextEditor::keyboardInputEnter(void)
 {
+   // Selection = none
+   unselectText();
    // Insert new line
    m_lines.insert(m_lines.begin() + m_inputTextCursor.y + 1, m_lines[m_inputTextCursor.y].substr(m_inputTextCursor.x));
    // Cut current line
@@ -284,6 +346,9 @@ void TextEditor::keyboardInputEnter(void)
 
 void TextEditor::keyboardBackspace(void)
 {
+   // Selection = none
+   unselectText();
+   g_hasChanged = true;
    if (m_inputTextCursor.x <= 0)
    {
       if (m_inputTextCursor.y <= 0)
@@ -291,25 +356,22 @@ void TextEditor::keyboardBackspace(void)
       // Move cursor
       --m_inputTextCursor.y;
       m_inputTextCursor.x = m_lines[m_inputTextCursor.y].size();
-      m_oldX = m_inputTextCursor.x;
       // Append current line to the previous one
       m_lines[m_inputTextCursor.y].append(m_lines[m_inputTextCursor.y + 1]);
       // Remove current line
       m_lines.erase(m_lines.begin() + m_inputTextCursor.y + 1);
       m_nbItems = m_lines.size();
       adjustScrollbar();
-      m_hasModifications = true;
    }
    else
    {
       // Remove previous character in the line
       m_lines[m_inputTextCursor.y].erase(m_inputTextCursor.x - 1, 1);
       --m_inputTextCursor.x;
-      m_oldX = m_inputTextCursor.x;
-      m_hasModifications = true;
    }
+   m_oldX = m_inputTextCursor.x;
+   m_hasModifications = true;
    adjustCamera();
-   g_hasChanged = true;
 }
 
 void TextEditor::keyboardMoveLeft(void)
@@ -376,6 +438,7 @@ void TextEditor::quit(void)
 // Delete current line
 void TextEditor::deleteLine(void)
 {
+   unselectText();
    m_lines.erase(m_lines.begin() + m_inputTextCursor.y);
    m_nbItems = m_lines.size();
    adjustScrollbar();
@@ -389,10 +452,87 @@ void TextEditor::deleteLine(void)
 // Duplicate current line
 void TextEditor::duplicateLine(void)
 {
+   unselectText();
    m_lines.insert(m_lines.begin() + m_inputTextCursor.y + 1, m_lines[m_inputTextCursor.y]);
    m_nbItems = m_lines.size();
    adjustScrollbar();
    adjustCamera();
    m_hasModifications = true;
    g_hasChanged = true;
+}
+
+//------------------------------------------------------------------------------
+
+// For a line, get the number of unselected and selected chars
+void TextEditor::getNbSelectedChars(const int p_lineIndex, const int p_lineSize, int &p_nbUnselected, int &p_nbSelected)
+{
+   // If start point is after end point, flip them
+   SDL_Point textSelectionStart, textSelectionEnd;
+   if (m_textSelectionStart.y > m_textSelectionEnd.y || (m_textSelectionStart.y == m_textSelectionEnd.y && m_textSelectionStart.x > m_textSelectionEnd.x))
+   {
+      // Flip start and end
+      textSelectionStart = m_textSelectionEnd;
+      textSelectionEnd = m_textSelectionStart;
+   }
+   else
+   {
+      textSelectionStart = m_textSelectionStart;
+      textSelectionEnd = m_textSelectionEnd;
+   }
+   // Case: selection starts after or ends before the line
+   if (textSelectionStart.y > p_lineIndex || textSelectionEnd.y < p_lineIndex)
+   {
+      p_nbUnselected = p_lineSize;
+      p_nbSelected = 0;
+      return;
+   }
+   // Case: selection starts before the line and ends after the line
+   if (textSelectionStart.y < p_lineIndex && textSelectionEnd.y > p_lineIndex)
+   {
+      p_nbUnselected = 0;
+      p_nbSelected = p_lineSize;
+      return;
+   }
+   // Case: selection starts at the line and ends after the line
+   if (textSelectionStart.y == p_lineIndex && textSelectionEnd.y > p_lineIndex)
+   {
+      p_nbUnselected = textSelectionStart.x - m_camera.x;
+      if (p_nbUnselected < 0) p_nbUnselected = 0;
+      else if (p_nbUnselected > p_lineSize) p_nbUnselected = p_lineSize;
+      p_nbSelected = p_lineSize - p_nbUnselected;
+      return;
+   }
+   // Case: selection starts before the line and ends at the line
+   if (textSelectionStart.y < p_lineIndex && textSelectionEnd.y == p_lineIndex)
+   {
+      p_nbUnselected = 0;
+      p_nbSelected = textSelectionEnd.x - m_camera.x;
+      if (p_nbSelected < 0) p_nbSelected = 0;
+      else if (p_nbSelected > p_lineSize) p_nbSelected = p_lineSize;
+      return;
+   }
+   // Case: selection starts and ends at the line
+   if (textSelectionStart.y == p_lineIndex && textSelectionEnd.y == p_lineIndex)
+   {
+      p_nbUnselected = textSelectionStart.x - m_camera.x;
+      if (p_nbUnselected < 0) p_nbUnselected = 0;
+      else if (p_nbUnselected > p_lineSize) p_nbUnselected = p_lineSize;
+      p_nbSelected = textSelectionEnd.x - textSelectionStart.x;
+      if (textSelectionStart.x < m_camera.x)
+         p_nbSelected -= m_camera.x - textSelectionStart.x;
+      if (p_nbSelected < 0) p_nbSelected = 0;
+      else if (p_nbSelected > p_lineSize) p_nbSelected = p_lineSize;
+      return;
+   }
+}
+
+//------------------------------------------------------------------------------
+
+// Unselect text
+void TextEditor::unselectText(void)
+{
+   m_textSelectionStart.x = -1;
+   m_textSelectionStart.y = -1;
+   m_textSelectionEnd.x = -1;
+   m_textSelectionEnd.y = -1;
 }

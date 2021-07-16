@@ -75,7 +75,7 @@
 // Size of dialog border
 #define DIALOG_BORDER         4
 
-// Scroll speed in file and image viewer
+// Scroll speed in image viewer
 #define VIEWER_SCROLL_SPEED      20
 
 // Button events
@@ -96,6 +96,7 @@
    #define BUTTON_HELD_RIGHT              SDL_JoystickGetHat(g_joystick, 0) == SDL_HAT_RIGHT
    #define BUTTON_HELD_PAGEUP             SDL_JoystickGetButton(g_joystick, 4) || SDL_JoystickGetButton(g_joystick, 10)
    #define BUTTON_HELD_PAGEDOWN           SDL_JoystickGetButton(g_joystick, 5) || SDL_JoystickGetButton(g_joystick, 11)
+   #define BUTTON_HELD_SELECT             SDL_JoystickGetButton(g_joystick, 3)
 #elif defined(DEVICE_RG351V)
    #define BUTTON_PRESSED_UP              event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_UP
    #define BUTTON_PRESSED_DOWN            event.type == SDL_JOYHATMOTION && event.jhat.value == SDL_HAT_DOWN
@@ -113,6 +114,7 @@
    #define BUTTON_HELD_RIGHT              SDL_JoystickGetHat(g_joystick, 0) == SDL_HAT_RIGHT
    #define BUTTON_HELD_PAGEUP             SDL_JoystickGetButton(g_joystick, 4) || SDL_JoystickGetButton(g_joystick, 10)
    #define BUTTON_HELD_PAGEDOWN           SDL_JoystickGetButton(g_joystick, 5) || SDL_JoystickGetButton(g_joystick, 11)
+   #define BUTTON_HELD_SELECT             SDL_JoystickGetButton(g_joystick, 3)
 #else
    #define BUTTON_PRESSED_UP              event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_UP
    #define BUTTON_PRESSED_DOWN            event.type == SDL_KEYDOWN && event.key.repeat == 0 && event.key.keysym.sym == SDLK_DOWN
@@ -130,6 +132,7 @@
    #define BUTTON_HELD_RIGHT              SDL_GetKeyboardState(NULL)[SDL_SCANCODE_RIGHT]
    #define BUTTON_HELD_PAGEUP             SDL_GetKeyboardState(NULL)[SDL_SCANCODE_PAGEUP]
    #define BUTTON_HELD_PAGEDOWN           SDL_GetKeyboardState(NULL)[SDL_SCANCODE_PAGEDOWN]
+   #define BUTTON_HELD_SELECT             SDL_GetKeyboardState(NULL)[SDL_SCANCODE_INSERT]
 #endif
 
 // Globals
