@@ -346,7 +346,12 @@ void TextEditor::keyboardInputEnter(void)
 
 void TextEditor::keyboardBackspace(void)
 {
-   // Selection = none
+   // Remove selected text if any
+   if (m_textSelectionStart.y != -1 && m_textSelectionEnd.y != -1 && (m_textSelectionStart.x != m_textSelectionEnd.x || m_textSelectionStart.y != m_textSelectionEnd.y))
+   {
+      removeSelectedText();
+      return;
+   }
    unselectText();
    g_hasChanged = true;
    if (m_inputTextCursor.x <= 0)
@@ -361,7 +366,6 @@ void TextEditor::keyboardBackspace(void)
       // Remove current line
       m_lines.erase(m_lines.begin() + m_inputTextCursor.y + 1);
       m_nbItems = m_lines.size();
-      adjustScrollbar();
    }
    else
    {
@@ -371,6 +375,7 @@ void TextEditor::keyboardBackspace(void)
    }
    m_oldX = m_inputTextCursor.x;
    m_hasModifications = true;
+   adjustScrollbar();
    adjustCamera();
 }
 
@@ -466,60 +471,50 @@ void TextEditor::duplicateLine(void)
 // For a line, get the number of unselected and selected chars
 void TextEditor::getNbSelectedChars(const int p_lineIndex, const int p_lineSize, int &p_nbUnselected, int &p_nbSelected)
 {
-   // If start point is after end point, flip them
-   SDL_Point textSelectionStart, textSelectionEnd;
-   if (m_textSelectionStart.y > m_textSelectionEnd.y || (m_textSelectionStart.y == m_textSelectionEnd.y && m_textSelectionStart.x > m_textSelectionEnd.x))
-   {
-      // Flip start and end
-      textSelectionStart = m_textSelectionEnd;
-      textSelectionEnd = m_textSelectionStart;
-   }
-   else
-   {
-      textSelectionStart = m_textSelectionStart;
-      textSelectionEnd = m_textSelectionEnd;
-   }
+   // If start point is after end point, swap them
+   SDL_Point start, end;
+   getSortedSelectionPoints(start, end);
    // Case: selection starts after or ends before the line
-   if (textSelectionStart.y > p_lineIndex || textSelectionEnd.y < p_lineIndex)
+   if (start.y > p_lineIndex || end.y < p_lineIndex)
    {
       p_nbUnselected = p_lineSize;
       p_nbSelected = 0;
       return;
    }
    // Case: selection starts before the line and ends after the line
-   if (textSelectionStart.y < p_lineIndex && textSelectionEnd.y > p_lineIndex)
+   if (start.y < p_lineIndex && end.y > p_lineIndex)
    {
       p_nbUnselected = 0;
       p_nbSelected = p_lineSize;
       return;
    }
    // Case: selection starts at the line and ends after the line
-   if (textSelectionStart.y == p_lineIndex && textSelectionEnd.y > p_lineIndex)
+   if (start.y == p_lineIndex && end.y > p_lineIndex)
    {
-      p_nbUnselected = textSelectionStart.x - m_camera.x;
+      p_nbUnselected = start.x - m_camera.x;
       if (p_nbUnselected < 0) p_nbUnselected = 0;
       else if (p_nbUnselected > p_lineSize) p_nbUnselected = p_lineSize;
       p_nbSelected = p_lineSize - p_nbUnselected;
       return;
    }
    // Case: selection starts before the line and ends at the line
-   if (textSelectionStart.y < p_lineIndex && textSelectionEnd.y == p_lineIndex)
+   if (start.y < p_lineIndex && end.y == p_lineIndex)
    {
       p_nbUnselected = 0;
-      p_nbSelected = textSelectionEnd.x - m_camera.x;
+      p_nbSelected = end.x - m_camera.x;
       if (p_nbSelected < 0) p_nbSelected = 0;
       else if (p_nbSelected > p_lineSize) p_nbSelected = p_lineSize;
       return;
    }
    // Case: selection starts and ends at the line
-   if (textSelectionStart.y == p_lineIndex && textSelectionEnd.y == p_lineIndex)
+   if (start.y == p_lineIndex && end.y == p_lineIndex)
    {
-      p_nbUnselected = textSelectionStart.x - m_camera.x;
+      p_nbUnselected = start.x - m_camera.x;
       if (p_nbUnselected < 0) p_nbUnselected = 0;
       else if (p_nbUnselected > p_lineSize) p_nbUnselected = p_lineSize;
-      p_nbSelected = textSelectionEnd.x - textSelectionStart.x;
-      if (textSelectionStart.x < m_camera.x)
-         p_nbSelected -= m_camera.x - textSelectionStart.x;
+      p_nbSelected = end.x - start.x;
+      if (start.x < m_camera.x)
+         p_nbSelected -= m_camera.x - start.x;
       if (p_nbSelected < 0) p_nbSelected = 0;
       else if (p_nbSelected > p_lineSize) p_nbSelected = p_lineSize;
       return;
@@ -535,4 +530,75 @@ void TextEditor::unselectText(void)
    m_textSelectionStart.y = -1;
    m_textSelectionEnd.x = -1;
    m_textSelectionEnd.y = -1;
+}
+
+//------------------------------------------------------------------------------
+
+// Remove selected text, if any
+void TextEditor::removeSelectedText(void)
+{
+   // If start point is after end point, swap them
+   SDL_Point start, end;
+   getSortedSelectionPoints(start, end);
+   // Remove selected text
+   for (int indLine = start.y, nbErased = 0; indLine <= end.y; ++indLine)
+   {
+      // Case: remove line completely
+      if ((start.y < indLine || (start.y == indLine && start.x == 0)) && end.y > indLine)
+      {
+         m_lines.erase(m_lines.begin() + indLine - nbErased);
+         ++nbErased;
+         continue;
+      }
+      // Case: remove a part of the line
+      if (start.y == indLine && end.y == indLine)
+      {
+         // Remove only part of the line
+         m_lines[indLine - nbErased].erase(start.x, end.x - start.x);
+         continue;
+      }
+      // Case: remove end of line
+      if (start.y == indLine)
+         m_lines[indLine - nbErased].erase(start.x);
+      // Case: remove beginning of line
+      if (end.y == indLine)
+      {
+         m_lines[indLine - nbErased].erase(0, end.x);
+         if (start.y < indLine - nbErased)
+         {
+            // Append the rest of the line to the previous line
+            m_lines[indLine - nbErased - 1].append(m_lines[indLine - nbErased]);
+            // Remove line
+            m_lines.erase(m_lines.begin() + indLine - nbErased);
+            ++nbErased;
+         }
+      }
+   }
+   // Update everything
+   m_inputTextCursor = m_textSelectionStart;
+   m_oldX = m_inputTextCursor.x;
+   unselectText();
+   m_nbItems = m_lines.size();
+   m_hasModifications = true;
+   g_hasChanged = true;
+   adjustScrollbar();
+   adjustCamera();
+}
+
+//------------------------------------------------------------------------------
+
+// Get start and end points, with start < end
+void TextEditor::getSortedSelectionPoints(SDL_Point &p_start, SDL_Point &p_end)
+{
+   if (m_textSelectionStart.y > m_textSelectionEnd.y || (m_textSelectionStart.y == m_textSelectionEnd.y && m_textSelectionStart.x > m_textSelectionEnd.x))
+   {
+      // Flip start and end
+      p_start = m_textSelectionEnd;
+      p_end = m_textSelectionStart;
+   }
+   else
+   {
+      p_start = m_textSelectionStart;
+      p_end = m_textSelectionEnd;
+   }
 }

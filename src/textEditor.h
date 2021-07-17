@@ -47,8 +47,10 @@ class TextEditor : public IWindow
    // For a line, get the number of unselected and selected chars
    void getNbSelectedChars(const int p_lineIndex, const int p_lineSize, int &p_nbUnselected, int &p_nbSelected);
 
-   // Remove text selection
+   // Text selection
    void unselectText(void);
+   void removeSelectedText(void);
+   void getSortedSelectionPoints(SDL_Point &p_start, SDL_Point &p_end);
 
    // Save file
    void save(void);
