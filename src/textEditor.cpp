@@ -664,7 +664,7 @@ void TextEditor::removeSelectedText(void)
       }
    }
    // Update everything
-   m_inputTextCursor = m_textSelectionStart;
+   m_inputTextCursor = start;
    m_oldX = m_inputTextCursor.x;
    unselectText();
    m_nbItems = m_lines.size();
