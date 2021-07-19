@@ -58,6 +58,15 @@ class TextEditor : public IWindow
    // Quit, with a warning if unsaved modifications
    void quit(void);
 
+   // Copy selected text in clipboard
+   void copy(void);
+
+   // Cut selected text in clipboard
+   void cut(void);
+
+   // Paste clipboard into text
+   void paste(void);
+
    // Delete current line
    void deleteLine(void);
 
@@ -79,6 +88,9 @@ class TextEditor : public IWindow
    // Start and end for text selection
    SDL_Point m_textSelectionStart;
    SDL_Point m_textSelectionEnd;
+
+   // Clipboard containing lines, for copying or moving
+   std::vector<std::string> m_clipboard;
 };
 
 #endif

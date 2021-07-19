@@ -146,8 +146,15 @@ void TextEditor::keyPressed(const SDL_Event &event)
       // Open action menu
       Dialog dialog("Actions:");
       dialog.addOption("Save", 0, g_iconFloppy);
+      if (m_textSelectionStart.y != -1 && m_textSelectionEnd.y != -1 && (m_textSelectionStart.x != m_textSelectionEnd.x || m_textSelectionStart.y != m_textSelectionEnd.y))
+      {
+         dialog.addOption("Copy", 4, g_iconCopy);
+         dialog.addOption("Cut", 5, g_iconCut);
+      }
+      if (! m_clipboard.empty())
+         dialog.addOption("Paste", 6, g_iconPaste);
       dialog.addOption("Delete line", 1, g_iconTrash);
-      dialog.addOption("Duplicate line", 2, g_iconCopy);
+      dialog.addOption("Duplicate line", 2, g_iconPlus);
       dialog.addOption("Quit", 3, g_iconQuit);
       switch (dialog.execute())
       {
@@ -155,6 +162,9 @@ void TextEditor::keyPressed(const SDL_Event &event)
          case 1: deleteLine(); break;
          case 2: duplicateLine(); break;
          case 3: quit(); break;
+         case 4: copy(); break;
+         case 5: cut(); break;
+         case 6: paste(); break;
          default: break;
       }
       return;
@@ -312,6 +322,9 @@ void TextEditor::adjustCamera(void)
 // Callbacks for virtual keyboard
 void TextEditor::keyboardInputChar(const std::string &p_string)
 {
+   // Remove selected text if any
+   if (m_textSelectionStart.y != -1 && m_textSelectionEnd.y != -1 && (m_textSelectionStart.x != m_textSelectionEnd.x || m_textSelectionStart.y != m_textSelectionEnd.y))
+      removeSelectedText();
    // Selection = none
    unselectText();
    // Insert character
@@ -325,6 +338,9 @@ void TextEditor::keyboardInputChar(const std::string &p_string)
 
 void TextEditor::keyboardInputEnter(void)
 {
+   // Remove selected text if any
+   if (m_textSelectionStart.y != -1 && m_textSelectionEnd.y != -1 && (m_textSelectionStart.x != m_textSelectionEnd.x || m_textSelectionStart.y != m_textSelectionEnd.y))
+      removeSelectedText();
    // Selection = none
    unselectText();
    // Insert new line
@@ -436,6 +452,79 @@ void TextEditor::quit(void)
    }
    // Close window with no return value
    m_retVal = -2;
+}
+
+//------------------------------------------------------------------------------
+
+// Copy selected text in clipboard
+void TextEditor::copy(void)
+{
+   // If start point is after end point, swap them
+   SDL_Point start, end;
+   getSortedSelectionPoints(start, end);
+   // Copy selected text to clipboard
+   m_clipboard.clear();
+   for (int indLine = start.y; indLine <= end.y; ++indLine)
+   {
+      if (start.y == indLine && end.y == indLine)
+         m_clipboard.push_back(m_lines[indLine].substr(start.x, end.x - start.x));
+      else if (start.y == indLine)
+         m_clipboard.push_back(m_lines[indLine].substr(start.x));
+      else if (end.y == indLine)
+         m_clipboard.push_back(m_lines[indLine].substr(0, end.x));
+      else
+         m_clipboard.push_back(m_lines[indLine]);
+   }
+}
+
+//------------------------------------------------------------------------------
+
+// Cut selected text in clipboard
+void TextEditor::cut(void)
+{
+   // Cut = copy then remove
+   copy();
+   removeSelectedText();
+}
+
+//------------------------------------------------------------------------------
+
+// Paste clipboard into text
+void TextEditor::paste(void)
+{
+   // Remove selected text if any
+   if (m_textSelectionStart.y != -1 && m_textSelectionEnd.y != -1 && (m_textSelectionStart.x != m_textSelectionEnd.x || m_textSelectionStart.y != m_textSelectionEnd.y))
+      removeSelectedText();
+   // Rest of the line after insertion
+   std::string rest = m_lines[m_inputTextCursor.y].substr(m_inputTextCursor.x);
+   m_lines[m_inputTextCursor.y].erase(m_inputTextCursor.x);
+   // Insert clipboard lines into text
+   int indLine = m_inputTextCursor.y;
+   for (auto it = m_clipboard.begin(); it != m_clipboard.end(); ++it)
+   {
+      if (it == m_clipboard.begin())
+      {
+         m_lines[indLine].append(*it);
+      }
+      else
+      {
+         ++indLine;
+         m_lines.insert(m_lines.begin() + indLine, *it);
+      }
+   }
+   // Move cursor to the end of the pasted part
+   m_inputTextCursor.y = indLine;
+   m_inputTextCursor.x = m_lines[indLine].size();
+   m_oldX = m_inputTextCursor.x;
+   // Restore end of first line
+   m_lines[indLine].append(rest);
+   // Update everything
+   unselectText();
+   m_nbItems = m_lines.size();
+   adjustScrollbar();
+   adjustCamera();
+   m_hasModifications = true;
+   g_hasChanged = true;
 }
 
 //------------------------------------------------------------------------------
@@ -575,14 +664,14 @@ void TextEditor::removeSelectedText(void)
       }
    }
    // Update everything
-   m_inputTextCursor = m_textSelectionStart;
+   m_inputTextCursor = start;
    m_oldX = m_inputTextCursor.x;
    unselectText();
    m_nbItems = m_lines.size();
-   m_hasModifications = true;
-   g_hasChanged = true;
    adjustScrollbar();
    adjustCamera();
+   m_hasModifications = true;
+   g_hasChanged = true;
 }
 
 //------------------------------------------------------------------------------
