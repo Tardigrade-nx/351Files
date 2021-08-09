@@ -11,11 +11,9 @@ namespace FileUtils
    // File operations
 //------------------------------------------------------------------------------
 
-   // Copy files to dest dir
-   void copyFiles(const std::vector<std::string> &p_src, const std::string &p_dest);
-
-   // Move files to dest dir
-   void moveFiles(const std::vector<std::string> &p_src, const std::string &p_dest);
+   // Copy or move a list of files to dest dir.
+   // p_action: 'c' = copy, 'm' = move.
+   void copyOrMoveFiles(const char p_action, const std::vector<std::string> &p_src, const std::string &p_dest);
 
    // Remove files
    void removeFiles(const std::vector<std::string> &p_files);

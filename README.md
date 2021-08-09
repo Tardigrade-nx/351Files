@@ -45,22 +45,7 @@ Until then, you can install it manually with the following procedure:
 * Restart EmulationStation. '351Files' should now be an entry in the 'ports' menu.
 
 # Installation on ArkOS:
-351Files should be integrated in ArkOS, in a future version.
-Until then, you can install it manually with the following procedure:
-* Download the latest release for your device (351Files-vx.x_&lt;device&gt;_ArkOS.tgz)
-* Uncompress the .tgz file on your SD card in: /roms/ports
-* Edit file /roms/ports/gamelist.xml, and add:
-
-```
-	<game>
-		<path>./351Files.sh</path>
-		<name>351Files</name>
-		<playcount>0</playcount>
-		<lastplayed></lastplayed>
-	</game>
-```
-
-* Restart EmulationStation. '351Files' should now be an entry in the 'ports' menu.
+351Files is now integrated in ArkOS by default.
 
 # Buttons:
 * d-pad: move
@@ -69,7 +54,7 @@ Until then, you can install it manually with the following procedure:
 * X: open context menu
 * Y: select / unselect item
 * R1/R2: page down
-* L1/L2 : page up
+* L1/L2: page up
 
 Image viewer:
 * d-pad: next / previous image, or scroll image
@@ -82,7 +67,7 @@ Text editor:
 * X: open context menu
 * Y + d-pad: select text
 * R1/R2: page down
-* L1/L2 : page up
+* L1/L2: page up
 
 # Compilation:
 Define the following variables when executing 'make':

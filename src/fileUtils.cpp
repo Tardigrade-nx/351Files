@@ -169,11 +169,12 @@ std::string FileUtils::getDirName(const std::string &p_path)
 //------------------------------------------------------------------------------
 
 // Copy files to dest dir
-void FileUtils::copyFiles(const std::vector<std::string> &p_src, const std::string &p_dest)
+void FileUtils::copyOrMoveFiles(const char p_action, const std::vector<std::string> &p_src, const std::string &p_dest)
 {
    std::string l_destFile;
    std::string l_fileName;
-   bool l_confirm(true);
+   bool l_yesToAll(false);
+   bool l_noToAll(false);
    bool l_execute(true);
    for (auto l_it = p_src.begin(); l_it != p_src.end(); ++l_it)
    {
@@ -182,80 +183,55 @@ void FileUtils::copyFiles(const std::vector<std::string> &p_src, const std::stri
       l_destFile = p_dest + (p_dest.at(p_dest.size() - 1) == '/' ? "" : "/") + l_fileName;
 
       // Check if destination files already exists
-      if (l_confirm && fileExists(l_destFile))
+      if (fileExists(l_destFile))
       {
-         INHIBIT(std::cout << "File " << l_destFile << " already exists => ask for confirmation" << std::endl;)
-         Dialog l_dialog("Question:");
-         l_dialog.addLabel("Overwrite " + l_fileName + "?");
-         l_dialog.addOption("Yes", 0, g_iconSelect);
-         l_dialog.addOption("Yes to all", 1, g_iconSelect);
-         l_dialog.addOption("No", 2, g_iconNone);
-         l_dialog.addOption("Cancel", 3, g_iconCancel);
-         switch (l_dialog.execute())
+         INHIBIT(std::cout << "File " << l_destFile << " already exists\n";)
+         // If 'no to all', go to next file
+         if (l_noToAll)
+            continue;
+         if (!l_yesToAll)
          {
-            // Yes
-            case 0: break;
-            // Yes to all
-            case 1: l_confirm = false; break;
-            // No
-            case 2: l_execute = false; break;
-            // Cancel
-            default: return;
-         }
-      }
-      if (l_execute)
-      {
-         INHIBIT(std::cout << "Copy " << *l_it << " to " << p_dest << "\n";)
-         Run("cp", "-r", *l_it, p_dest);
-         Run("sync", l_destFile);
-      }
-   }
-}
-
-//------------------------------------------------------------------------------
-
-// Move files to dest dir
-void FileUtils::moveFiles(const std::vector<std::string> &p_src, const std::string &p_dest)
-{
-   std::string l_destFile;
-   std::string l_fileName;
-   bool l_confirm(true);
-   bool l_execute(true);
-   for (auto l_it = p_src.begin(); l_it != p_src.end(); ++l_it)
-   {
-      l_execute = true;
-      // Check if destination files already exists
-      if (l_confirm)
-      {
-         l_fileName = getFileName(*l_it);
-         l_destFile = p_dest + (p_dest.at(p_dest.size() - 1) == '/' ? "" : "/") + l_fileName;
-         if (fileExists(l_destFile))
-         {
-            INHIBIT(std::cout << "File " << l_destFile << " already exists => ask for confirmation" << std::endl;)
+            // Ask for confirmation
             Dialog l_dialog("Question:");
             l_dialog.addLabel("Overwrite " + l_fileName + "?");
             l_dialog.addOption("Yes", 0, g_iconSelect);
             l_dialog.addOption("Yes to all", 1, g_iconSelect);
             l_dialog.addOption("No", 2, g_iconNone);
-            l_dialog.addOption("Cancel", 3, g_iconCancel);
+            l_dialog.addOption("No to all", 3, g_iconNone);
+            l_dialog.addOption("Cancel", 4, g_iconCancel);
             switch (l_dialog.execute())
             {
                // Yes
                case 0: break;
                // Yes to all
-               case 1: l_confirm = false; break;
+               case 1: l_yesToAll = true; break;
                // No
                case 2: l_execute = false; break;
+               // No to all
+               case 3: l_execute = false; l_noToAll = true; break;
                // Cancel
                default: return;
             }
          }
       }
+
+      // Execute command
       if (l_execute)
       {
-         INHIBIT(std::cout << "Move " << *l_it << " to " << p_dest << "\n";)
-         Run("mv", *l_it, p_dest);
-         Run("sync", p_dest);
+         switch(p_action)
+         {
+            case 'c':
+               INHIBIT(std::cout << "Copy " << *l_it << " to " << p_dest << "\n";)
+               Run("cp", "-r", *l_it, p_dest);
+               break;
+            case 'm':
+               INHIBIT(std::cout << "Move " << *l_it << " to " << p_dest << "\n";)
+               Run("mv", *l_it, p_dest);
+               break;
+            default:
+               return;
+         }
+         Run("sync", l_destFile);
       }
    }
 }

@@ -352,10 +352,7 @@ void MainWindow::openContextMenu(void)
          break;
       // Paste
       case 2:
-         if (m_clipboardOperation == 'c')
-            FileUtils::copyFiles(m_clipboard, m_title);
-         else if (m_clipboardOperation == 'm')
-            FileUtils::moveFiles(m_clipboard, m_title);
+         FileUtils::copyOrMoveFiles(m_clipboardOperation, m_clipboard, m_title);
          refresh();
          break;
       // Delete
