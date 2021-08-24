@@ -110,7 +110,7 @@
 #define COLOR_CURSOR_FOCUS       21,  83,  158
 #define COLOR_CURSOR_NO_FOCUS    80,  80,  80
 
-// Framerate = 30fps
+// Framerate = 60fps
 #define MS_PER_FRAME          16
 
 // Timer for key holds

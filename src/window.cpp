@@ -193,9 +193,9 @@ int IWindow::execute(void)
       }
 
       // Cap the framerate
-      l_time = MS_PER_FRAME - (SDL_GetTicks() - l_time);
-      if (l_time <= MS_PER_FRAME)
-         SDL_Delay(l_time);
+      l_time = SDL_GetTicks() - l_time;
+      if (l_time < MS_PER_FRAME)
+         SDL_Delay(MS_PER_FRAME - l_time);
    }
    return m_retVal;
 }
