@@ -2,8 +2,7 @@
 A single panel file Manager tailored for Anbernic 351 devices: RG351V and RG351P. Can be easily adapted to any Linux-based device.
 
 Based on DinguxCommander.
-* Original page: http://beyondds.free.fr/index.php?Dingoo-dinguxcommander
-* Up-to-date project: https://github.com/EmuELEC/rs97-commander-sdl2
+* Original page: https://tardigrade-nx.github.io/2011/dinguxcommander
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Tardigrade-nx/351Files/master/screenshots/01.png" alt="Screenshot 1"><br /><br />
