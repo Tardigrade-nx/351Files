@@ -21,28 +21,7 @@ Based on DinguxCommander.
 * Image viewer (original size or fit screen, next / previous image)
 
 # Installation on 351ELEC:
-351Files should be integrated in 351ELEC as an alternative file manager, in a future version.
-Until then, you can install it manually with the following procedure:
-* Download the latest release for your device (351Files-vx.x_&lt;device&gt;_351ELEC.tgz)
-* Uncompress the .tgz file on your SD card in: /storage/roms/ports
-* Edit file /storage/roms/ports/gamelist.xml, and add:
-
-```
-	<game>
-		<path>./351Files.sh</path>
-		<name>351Files</name>
-		<desc>Single panel file manager</desc>
-		<image>/storage/.config/distribution/modules/downloaded_images/filemanager.png</image>
-		<thumbnail>/storage/.config/distribution/modules/downloaded_images/filemanager-thumb.png</thumbnail>
-		<video></video>
-		<rating>1.0</rating>
-		<releasedate>20210703T000000</releasedate>
-		<developer>Tardigrade</developer>
-		<publisher>non-commercial</publisher>
-	</game>
-```
-
-* Restart EmulationStation. '351Files' should now be an entry in the 'ports' menu.
+351Files is now integrated in 351ELEC by default.
 
 # Installation on ArkOS:
 351Files is now integrated in ArkOS by default.
