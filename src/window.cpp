@@ -3,18 +3,6 @@
 #include "sdlutils.h"
 #include <iostream>
 
-// Buttons with timer
-enum {
-   BUTTON_UP = 0,
-   BUTTON_PAGEUP,
-   BUTTON_DOWN,
-   BUTTON_PAGEDOWN,
-   BUTTON_LEFT,
-   BUTTON_RIGHT
-};
-
-//------------------------------------------------------------------------------
-
 // Destructor
 IWindow::~IWindow(void)
 {
@@ -174,6 +162,10 @@ int IWindow::execute(void)
             moveCursorRight(1, false);
             m_timer = KEYHOLD_TIMER;
          }
+      }
+      else if (keyHeld())
+      {
+         // Action is done in specific class
       }
       else
       {

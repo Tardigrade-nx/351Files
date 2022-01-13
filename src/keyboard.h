@@ -31,8 +31,9 @@ class Keyboard : public IWindow
    Keyboard(const Keyboard &p_source);
    const Keyboard &operator =(const Keyboard &p_source);
 
-   // Key pressed
+   // Key pressed / held
    virtual void keyPressed(const SDL_Event &event);
+   virtual bool keyHeld(void);
 
    // Create background image and init the keyboard
    void init(void);
@@ -51,6 +52,9 @@ class Keyboard : public IWindow
 
    // Press shift button
    void keyPressedShift(void);
+
+   // Input key
+   void input(void);
 
    // Parent window
    IWindow *m_parent;

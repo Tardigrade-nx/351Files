@@ -86,57 +86,10 @@ void Keyboard::keyPressed(const SDL_Event &event)
    // Button Validate
    if (BUTTON_PRESSED_VALIDATE)
    {
-      // Reset timer
-      resetTimer();
-      // Character key
-      if ((m_cursor >= 0 && m_cursor <= 9) || (m_cursor >= 11 && m_cursor <= 19) || (m_cursor >= 22 && m_cursor <= 30))
-      {
-         // Call parent callback
-         m_parent->keyboardInputChar(m_keyLabel[m_keyLabelCurrent].substr(m_cursor, 1));
-      }
-      // Backspace
-      else if (m_cursor == 10)
-      {
-         // Call parent callback
-         m_parent->keyboardBackspace();
-      }
-      // Enter
-      else if (m_cursor == 20)
-      {
-         if (m_quitOnEnter)
-            m_retVal = 0;
-         else
-            // Call parent callback
-            m_parent->keyboardInputEnter();
-      }
-      // Space
-      else if (m_cursor == 33)
-      {
-         // Call parent callback
-         m_parent->keyboardInputChar(" ");
-      }
-      // Shift
-      else if (m_cursor == 21 || m_cursor == 31)
-      {
-         keyPressedShift();
-      }
-      // Symbol
-      else if (m_cursor == 32)
-      {
-         keyPressedSymbol();
-      }
-      // Left arrow
-      else if (m_cursor == 34)
-      {
-         // Call parent callback
-         m_parent->keyboardMoveLeft();
-      }
-      // Right arrow
-      else if (m_cursor == 35)
-      {
-         // Call parent callback
-         m_parent->keyboardMoveRight();
-      }
+      // Input key
+      input();
+      m_lastPressed = BUTTON_VALIDATE;
+      m_timer = KEYHOLD_TIMER_FIRST;
       return;
    }
    // Button Back
@@ -147,6 +100,79 @@ void Keyboard::keyPressed(const SDL_Event &event)
       // Close window with no return value
       m_retVal = -2;
       return;
+   }
+}
+
+//------------------------------------------------------------------------------
+
+// Specific key held
+bool Keyboard::keyHeld(void)
+{
+   if (BUTTON_HELD_VALIDATE)
+   {
+      if (m_lastPressed == BUTTON_VALIDATE && m_timer > 0 && --m_timer == 0)
+      {
+         input();
+         m_timer = KEYHOLD_TIMER;
+      }
+      return true;
+   }
+   return false;
+}
+
+//------------------------------------------------------------------------------
+
+// Input key
+void Keyboard::input(void)
+{
+   // Character key
+   if ((m_cursor >= 0 && m_cursor <= 9) || (m_cursor >= 11 && m_cursor <= 19) || (m_cursor >= 22 && m_cursor <= 30))
+   {
+      // Call parent callback
+      m_parent->keyboardInputChar(m_keyLabel[m_keyLabelCurrent].substr(m_cursor, 1));
+   }
+   // Backspace
+   else if (m_cursor == 10)
+   {
+      // Call parent callback
+      m_parent->keyboardBackspace();
+   }
+   // Enter
+   else if (m_cursor == 20)
+   {
+      if (m_quitOnEnter)
+         m_retVal = 0;
+      else
+         // Call parent callback
+         m_parent->keyboardInputEnter();
+   }
+   // Space
+   else if (m_cursor == 33)
+   {
+      // Call parent callback
+      m_parent->keyboardInputChar(" ");
+   }
+   // Shift
+   else if (m_cursor == 21 || m_cursor == 31)
+   {
+      keyPressedShift();
+   }
+   // Symbol
+   else if (m_cursor == 32)
+   {
+      keyPressedSymbol();
+   }
+   // Left arrow
+   else if (m_cursor == 34)
+   {
+      // Call parent callback
+      m_parent->keyboardMoveLeft();
+   }
+   // Right arrow
+   else if (m_cursor == 35)
+   {
+      // Call parent callback
+      m_parent->keyboardMoveRight();
    }
 }
 

@@ -4,6 +4,19 @@
 #include <string>
 #include <SDL.h>
 
+// Buttons with timer
+enum {
+   BUTTON_UP = 0,
+   BUTTON_PAGEUP,
+   BUTTON_DOWN,
+   BUTTON_PAGEDOWN,
+   BUTTON_LEFT,
+   BUTTON_RIGHT,
+   BUTTON_VALIDATE
+};
+
+//------------------------------------------------------------------------------
+
 class IWindow
 {
    public:
@@ -42,8 +55,9 @@ class IWindow
    virtual void moveCursorLeft(const int p_step, bool p_loop);
    virtual void moveCursorRight(const int p_step, bool p_loop);
 
-   // Key pressed
+   // Specific key pressed / held
    virtual void keyPressed(const SDL_Event &event) {};
+   virtual bool keyHeld(void) { return false; };
 
    // Get background color for the item at the given index
    virtual SDL_Color getBackgroundColor(const int p_i, const bool p_focus) const;
