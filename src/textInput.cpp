@@ -24,6 +24,8 @@ TextInput::TextInput(const std::string &p_title, SDL_Texture *p_icon, const std:
    m_dialogBody.h = m_dialogBackground.h - LINE_HEIGHT - DIALOG_BORDER;
    // Number of visible characters
    m_nbVisibleChars = round(static_cast<double>(m_dialogBody.w - 2*MARGIN_X) / g_charW);
+   // Adjust camera
+   adjustCamera();
 }
 
 //------------------------------------------------------------------------------
