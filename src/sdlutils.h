@@ -42,6 +42,10 @@ namespace SDLUtils
    // Return: width of the texture
    int renderText(const std::string &p_text, TTF_Font *p_font, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH = T_ALIGN_LEFT, const T_ALIGN_V p_alignV = T_ALIGN_TOP, const int p_maxWidth = -1, const T_ALIGN_H p_alignHClip = T_ALIGN_LEFT);
 
+   // Render text on the screen, with clip scrolling
+   // Return: width of the texture
+   int renderTextScrolling(const std::string &p_text, TTF_Font *p_font, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV, const int p_maxWidth, const int p_clipX);
+
    // Render text and return the texture
    SDL_Texture *renderText(const std::string &p_text, TTF_Font *p_font, const SDL_Color &p_fg, const SDL_Color &p_bg);
 

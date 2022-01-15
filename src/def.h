@@ -117,6 +117,10 @@
 #define KEYHOLD_TIMER_FIRST   16
 #define KEYHOLD_TIMER         4
 
+// Timer for long file name scrolling
+#define LONG_NAME_TIMER_FIRST   16
+#define LONG_NAME_TIMER         1
+
 // Size of dialog border
 #define DIALOG_BORDER         4
 

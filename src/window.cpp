@@ -179,9 +179,9 @@ int IWindow::execute(void)
       // Render windows if necessary
       if (g_hasChanged)
       {
+         g_hasChanged = false;
          renderAll();
          renderPresent();
-         g_hasChanged = false;
       }
 
       // Cap the framerate

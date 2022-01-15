@@ -244,6 +244,38 @@ SDL_Texture *SDLUtils::renderText(const std::string &p_text, TTF_Font *p_font, c
 
 //------------------------------------------------------------------------------
 
+// Render text on the screen, with clip scrolling
+// Return: width of the texture
+int SDLUtils::renderTextScrolling(const std::string &p_text, TTF_Font *p_font, const int p_x, const int p_y, const SDL_Color &p_fg, const SDL_Color &p_bg, const T_ALIGN_H p_alignH, const T_ALIGN_V p_alignV, const int p_maxWidth, const int p_clipX)
+{
+   SDL_Texture *texture = renderText(p_text, p_font, p_fg, p_bg);
+   if (texture == NULL)
+   {
+      std::cerr << "Unable to create texture from surface. SDL_Error: " << SDL_GetError() << std::endl;
+      return 0;
+   }
+   int w = 0, h = 0;
+   SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+   // Check size
+   if (w > p_maxWidth)
+   {
+      // Clip texture width
+      SDL_Rect rect = { p_clipX, 0, p_maxWidth, h};
+      if (p_clipX + p_maxWidth > w)
+         rect.w = w - p_clipX;
+      renderTexture(texture, p_x, p_y, p_alignH, p_alignV, SDL_FLIP_NONE, &rect);
+   }
+   else
+   {
+      renderTexture(texture, p_x, p_y, p_alignH, p_alignV);
+   }
+   // Free texture
+   SDL_DestroyTexture(texture);
+   return w;
+}
+
+//------------------------------------------------------------------------------
+
 // Width of one character in monospace font
 int SDLUtils::getCharWidthMono(void)
 {

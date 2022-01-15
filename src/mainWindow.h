@@ -57,6 +57,12 @@ class MainWindow : public IWindow
    std::vector<std::string> m_clipboard;
    char m_clipboardOperation;
 
+   // Scrolling long file names
+   bool m_scrollFileNameActive;
+   int m_scrollFileNameX;
+   int m_scrollFileNameTimer;
+   int m_scrollFileNameDir;
+
 };
 
 #endif

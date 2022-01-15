@@ -20,7 +20,11 @@ MainWindow::~MainWindow(void)
 
 // Constructor
 MainWindow::MainWindow(const std::string &p_title):
-   IWindow(true, p_title)
+   IWindow(true, p_title),
+   m_scrollFileNameActive(false),
+   m_scrollFileNameX(0),
+   m_scrollFileNameTimer(0),
+   m_scrollFileNameDir(1)
 {
    // List files
    if (! m_fileLister.list(m_title))
@@ -74,7 +78,7 @@ void MainWindow::render(const bool p_focus)
    l_y += LINE_HEIGHT;
    SDL_Color l_fgColor = {COLOR_TEXT_NORMAL};
    SDL_Color l_bgColor = {COLOR_BODY_BG};
-   int sizeW = 0;
+   int sizeW = 0, fileNameMaxWidth = 0, fileNameTextureWidth = 0;
    for (int l_i = m_camera.y; l_i < m_camera.y + m_nbVisibleLines && l_i < m_nbItems; ++l_i)
    {
       // Colors for the line
@@ -101,7 +105,54 @@ void MainWindow::render(const bool p_focus)
          sizeW = SDLUtils::renderText(FileUtils::formatSize(m_fileLister[l_i].m_size), g_font, SCREEN_WIDTH - m_scrollbar.w - MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_RIGHT, SDLUtils::T_ALIGN_MIDDLE);
 
       // File name
-      SDLUtils::renderText(m_fileLister[l_i].m_name, g_font, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, SCREEN_WIDTH - 4*MARGIN_X - ICON_SIZE - m_scrollbar.w - sizeW);
+      fileNameMaxWidth = SCREEN_WIDTH - 4 * MARGIN_X - ICON_SIZE - m_scrollbar.w - sizeW;
+      if (m_cursor == l_i)
+      {
+         if (m_scrollFileNameActive)
+         {
+            // Render file name with scrolling
+            fileNameTextureWidth = SDLUtils::renderTextScrolling(m_fileLister[l_i].m_name, g_font, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, fileNameMaxWidth, m_scrollFileNameX);
+            --m_scrollFileNameTimer;
+            if (m_scrollFileNameTimer <= 0)
+            {
+               m_scrollFileNameX += m_scrollFileNameDir;
+               if (m_scrollFileNameX > fileNameTextureWidth - fileNameMaxWidth)
+               {
+                  m_scrollFileNameX = fileNameTextureWidth - fileNameMaxWidth;
+                  m_scrollFileNameTimer = LONG_NAME_TIMER_FIRST * 2;
+                  m_scrollFileNameDir = -1;
+               }
+               else if (m_scrollFileNameX < 0)
+               {
+                  m_scrollFileNameX = 0;
+                  m_scrollFileNameTimer = LONG_NAME_TIMER_FIRST * 2;
+                  m_scrollFileNameDir = 1;
+               }
+               else
+               {
+                  m_scrollFileNameTimer = LONG_NAME_TIMER;
+               }
+            }
+            g_hasChanged = true;
+         }
+         else
+         {
+            fileNameTextureWidth = SDLUtils::renderText(m_fileLister[l_i].m_name, g_font, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, fileNameMaxWidth);
+            // Activate scrolling if file name is too long
+            if (! m_scrollFileNameActive && fileNameTextureWidth > fileNameMaxWidth)
+            {
+               m_scrollFileNameActive = true;
+               m_scrollFileNameX = 0;
+               m_scrollFileNameTimer = LONG_NAME_TIMER_FIRST;
+               m_scrollFileNameDir = 1;
+               g_hasChanged = true;
+            }
+         }
+      }
+      else
+      {
+         SDLUtils::renderText(m_fileLister[l_i].m_name, g_font, MARGIN_X + ICON_SIZE + MARGIN_X, l_y, l_fgColor, l_bgColor, SDLUtils::T_ALIGN_LEFT, SDLUtils::T_ALIGN_MIDDLE, fileNameMaxWidth);
+      }
 
       // Next line
       l_y += LINE_HEIGHT;
@@ -117,6 +168,7 @@ void MainWindow::moveCursorUp(const int p_step, bool p_loop)
    IWindow::moveCursorUp(p_step, p_loop);
    adjustCamera();
    adjustScrollbarPosition();
+   m_scrollFileNameActive = false;
 }
 
 void MainWindow::moveCursorDown(const int p_step, bool p_loop)
@@ -124,6 +176,7 @@ void MainWindow::moveCursorDown(const int p_step, bool p_loop)
    IWindow::moveCursorDown(p_step, p_loop);
    adjustCamera();
    adjustScrollbarPosition();
+   m_scrollFileNameActive = false;
 }
 
 //------------------------------------------------------------------------------
@@ -141,6 +194,7 @@ void MainWindow::keyPressed(const SDL_Event &event)
          openHighlightedDir();
       else
          openHighlightedFile();
+      m_scrollFileNameActive = false;
       return;
    }
    // Button Back
@@ -154,6 +208,7 @@ void MainWindow::keyPressed(const SDL_Event &event)
       // Select and open ".."
       m_cursor = 0;
       openHighlightedDir();
+      m_scrollFileNameActive = false;
       return;
    }
    // Button context menu
