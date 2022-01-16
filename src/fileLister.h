@@ -21,10 +21,10 @@ struct T_FILE
     // Constructor
     T_FILE(const std::string &p_name, const unsigned long long int &p_size):
         m_name(p_name),
-        m_ext(FileUtils::getLowercaseFileExtension(p_name)),
+        m_ext(FileUtils::getFileExtension(p_name)),
         m_size(p_size),
         m_selected(false)
-    {}
+    { FileUtils::toLower(m_ext); }
 
     // Copy constructor
     T_FILE(const T_FILE &p_source) = default;

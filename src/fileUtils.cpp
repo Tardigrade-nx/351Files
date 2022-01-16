@@ -119,24 +119,22 @@ std::string FileUtils::formatSize(const unsigned long long int &p_size)
 
 //------------------------------------------------------------------------------
 
-// To lower case
-static void AsciiToLower(std::string *s)
+// String to lower case
+void FileUtils::toLower(std::string &s)
 {
-   for (char &c : *s)
+   for (char &c : s)
       if (c >= 'A' && c <= 'Z')
          c -= ('Z' - 'z');
 }
 
 //------------------------------------------------------------------------------
 
-// Lower case file extension
-std::string FileUtils::getLowercaseFileExtension(const std::string &p_name) {
-   const auto dot_pos = p_name.rfind('.');
-   if (dot_pos == std::string::npos)
+// File extension
+std::string FileUtils::getFileExtension(const std::string &p_name) {
+   const auto l_pos = p_name.rfind('.');
+   if (l_pos == std::string::npos)
       return "";
-   std::string ext = p_name.substr(dot_pos + 1);
-   AsciiToLower(&ext);
-   return ext;
+   return p_name.substr(l_pos + 1);
 }
 
 //------------------------------------------------------------------------------
@@ -154,6 +152,8 @@ bool FileUtils::fileExists(const std::string &p_path)
 std::string FileUtils::getFileName(const std::string &p_path)
 {
    size_t l_pos = p_path.rfind('/');
+   if (l_pos == std::string::npos)
+      return p_path;
    return p_path.substr(l_pos + 1);
 }
 
@@ -163,6 +163,19 @@ std::string FileUtils::getFileName(const std::string &p_path)
 std::string FileUtils::getDirName(const std::string &p_path)
 {
    size_t l_pos = p_path.rfind('/');
+   if (l_pos == std::string::npos)
+      return p_path;
+   return p_path.substr(0, l_pos);
+}
+
+//------------------------------------------------------------------------------
+
+// Extract file name without extension
+std::string FileUtils::getRootName(const std::string &p_path)
+{
+   const auto l_pos = p_path.rfind('.');
+   if (l_pos == std::string::npos)
+      return p_path;
    return p_path.substr(0, l_pos);
 }
 
@@ -182,7 +195,23 @@ void FileUtils::copyOrMoveFiles(const char p_action, const std::vector<std::stri
       l_fileName = getFileName(*l_it);
       l_destFile = p_dest + (p_dest.at(p_dest.size() - 1) == '/' ? "" : "/") + l_fileName;
 
-      // Check if destination files already exists
+      // Case: source file and destination file are the same
+      if (*l_it == l_destFile)
+      {
+         // Copy => duplicate 'file.ext' as 'file_copy.ext'
+         if (p_action == 'c')
+         {
+            std::string ext = getFileExtension(l_destFile);
+            l_destFile = getRootName(l_destFile) + "_copy" + (ext.empty() ? "" : ".")  + ext;
+         }
+         // Move => do nothing
+         else if (p_action == 'm')
+         {
+            continue;
+         }
+      }
+
+      // Check if destination file already exists
       if (fileExists(l_destFile))
       {
          INHIBIT(std::cout << "File " << l_destFile << " already exists\n";)
@@ -193,7 +222,7 @@ void FileUtils::copyOrMoveFiles(const char p_action, const std::vector<std::stri
          {
             // Ask for confirmation
             Dialog l_dialog("Question:");
-            l_dialog.addLabel("Overwrite " + l_fileName + "?");
+            l_dialog.addLabel("Overwrite " + getFileName(l_destFile) + "?");
             l_dialog.addOption("Yes", 0, g_iconSelect);
             l_dialog.addOption("Yes to all", 1, g_iconSelect);
             l_dialog.addOption("No", 2, g_iconNone);
@@ -221,12 +250,12 @@ void FileUtils::copyOrMoveFiles(const char p_action, const std::vector<std::stri
          switch(p_action)
          {
             case 'c':
-               INHIBIT(std::cout << "Copy " << *l_it << " to " << p_dest << "\n";)
-               Run("cp", "-r", *l_it, p_dest);
+               INHIBIT(std::cout << "Copy " << *l_it << " to " << l_destFile << "\n";)
+               Run("cp", "-r", *l_it, l_destFile);
                break;
             case 'm':
-               INHIBIT(std::cout << "Move " << *l_it << " to " << p_dest << "\n";)
-               Run("mv", *l_it, p_dest);
+               INHIBIT(std::cout << "Move " << *l_it << " to " << l_destFile << "\n";)
+               Run("mv", *l_it, l_destFile);
                break;
             default:
                return;
