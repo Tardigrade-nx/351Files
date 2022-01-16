@@ -181,7 +181,7 @@
    #define BUTTON_HELD_PAGEDOWN           SDL_JoystickGetButton(g_joystick, 5) || SDL_JoystickGetButton(g_joystick, 11)
    #define BUTTON_HELD_SELECT             SDL_JoystickGetButton(g_joystick, 3)
    #define BUTTON_HELD_VALIDATE           SDL_JoystickGetButton(g_joystick, 0)
-#if defined(DEVICE_RG351MP)
+#elif defined(DEVICE_RG351MP)
    #define BUTTON_PRESSED_UP              event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 8
    #define BUTTON_PRESSED_DOWN            event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 9
    #define BUTTON_PRESSED_LEFT            event.type == SDL_JOYBUTTONDOWN && event.jbutton.button == 10
