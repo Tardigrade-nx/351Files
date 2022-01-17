@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <sstream>
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include "def.h"
@@ -50,24 +51,26 @@ int main(int argc, char* args[])
    }
 
    // Load icon textures
-   g_iconFile = SDLUtils::loadTexture(std::string(RES_PATH) + "/file.png");
-   g_iconDir = SDLUtils::loadTexture(std::string(RES_PATH) + "/folder.png");
-   g_iconUp = SDLUtils::loadTexture(std::string(RES_PATH) + "/up.png");
-   g_iconCopy = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit-copy.png");
-   g_iconCut = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit-cut.png");
-   g_iconPaste = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit-paste.png");
-   g_iconTrash = SDLUtils::loadTexture(std::string(RES_PATH) + "/trash.png");
-   g_iconDisk = SDLUtils::loadTexture(std::string(RES_PATH) + "/disk.png");
-   g_iconSelect = SDLUtils::loadTexture(std::string(RES_PATH) + "/select.png");
-   g_iconNone = SDLUtils::loadTexture(std::string(RES_PATH) + "/none.png");
-   g_iconNewDir = SDLUtils::loadTexture(std::string(RES_PATH) + "/folder-new.png");
-   g_iconQuit = SDLUtils::loadTexture(std::string(RES_PATH) + "/quit.png");
-   g_iconEdit = SDLUtils::loadTexture(std::string(RES_PATH) + "/edit.png");
-   g_iconCancel = SDLUtils::loadTexture(std::string(RES_PATH) + "/cancel.png");
-   g_iconFloppy = SDLUtils::loadTexture(std::string(RES_PATH) + "/floppy.png");
-   g_iconImage = SDLUtils::loadTexture(std::string(RES_PATH) + "/image.png");
-   g_iconFileText = SDLUtils::loadTexture(std::string(RES_PATH) + "/file-text.png");
-   g_iconPlus = SDLUtils::loadTexture(std::string(RES_PATH) + "/plus.png");
+   std::ostringstream oss;
+   oss << '/' << ICON_SIZE;
+   g_iconFile =      SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/file.png");
+   g_iconDir =       SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/folder.png");
+   g_iconUp =        SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/up.png");
+   g_iconCopy =      SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/edit-copy.png");
+   g_iconCut =       SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/edit-cut.png");
+   g_iconPaste =     SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/edit-paste.png");
+   g_iconTrash =     SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/trash.png");
+   g_iconDisk =      SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/disk.png");
+   g_iconSelect =    SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/select.png");
+   g_iconNone =      SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/none.png");
+   g_iconNewDir =    SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/folder-new.png");
+   g_iconQuit =      SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/quit.png");
+   g_iconEdit =      SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/edit.png");
+   g_iconCancel =    SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/cancel.png");
+   g_iconFloppy =    SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/floppy.png");
+   g_iconImage =     SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/image.png");
+   g_iconFileText =  SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/file-text.png");
+   g_iconPlus =      SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/plus.png");
 
    // Load fonts
    g_font = SDLUtils::loadFont(std::string(RES_PATH) + "/" + FONT_NAME, FONT_SIZE);

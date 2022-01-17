@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include "keyboard.h"
 #include "def.h"
 #include "sdlutils.h"
@@ -21,11 +22,13 @@ Keyboard::Keyboard(IWindow *p_parent, const bool p_quitOnEnter):
    m_keyLabel[1] = "QWERTYUIOP ASDFGHJKL  ZXCVBNM-,";
    m_keyLabel[2] = "1234567890 .,:!?/\\\"'  ()[]<>_;$";
    m_keyLabel[3] = "1234567890 ()[]{}~|^  @#%&*-+=`";
-   m_texShiftEmpty = SDLUtils::loadTexture(std::string(RES_PATH) + "/keyboard_shift_empty.png");
-   m_texShiftFull = SDLUtils::loadTexture(std::string(RES_PATH) + "/keyboard_shift_full.png");
-   m_texEnter = SDLUtils::loadTexture(std::string(RES_PATH) + "/keyboard_enter.png");
-   m_texArrow = SDLUtils::loadTexture(std::string(RES_PATH) + "/keyboard_arrow.png");
-   m_texBackspace = SDLUtils::loadTexture(std::string(RES_PATH) + "/keyboard_backspace.png");
+   std::ostringstream oss;
+   oss << '/' << ICON_SIZE;
+   m_texShiftEmpty =    SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/keyboard_shift_empty.png");
+   m_texShiftFull =     SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/keyboard_shift_full.png");
+   m_texEnter =         SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/keyboard_enter.png");
+   m_texArrow =         SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/keyboard_arrow.png");
+   m_texBackspace =     SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/keyboard_backspace.png");
    init();
 }
 
