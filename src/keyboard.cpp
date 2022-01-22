@@ -23,7 +23,7 @@ Keyboard::Keyboard(IWindow *p_parent, const bool p_quitOnEnter):
    m_keyLabel[2] = "1234567890 .,:!?/\\\"'  ()[]<>_;$";
    m_keyLabel[3] = "1234567890 ()[]{}~|^  @#%&*-+=`";
    std::ostringstream oss;
-   oss << '/' << ICON_SIZE;
+   oss << '/' << KEYBOARD_SYMBOL_SIZE;
    m_texShiftEmpty =    SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/keyboard_shift_empty.png");
    m_texShiftFull =     SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/keyboard_shift_full.png");
    m_texEnter =         SDLUtils::loadTexture(std::string(RES_PATH) + oss.str() + "/keyboard_enter.png");

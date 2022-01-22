@@ -24,6 +24,7 @@
    #define MARGIN_X                 8
    #define KEYBOARD_MARGIN          3
    #define KEYBOARD_KEY_SPACING     3
+   #define KEYBOARD_SYMBOL_SIZE     24
 
 // Parameters for RG351V
 #elif defined(DEVICE_RG351V)
@@ -39,6 +40,7 @@
    #define MARGIN_X                 10
    #define KEYBOARD_MARGIN          8
    #define KEYBOARD_KEY_SPACING     4
+   #define KEYBOARD_SYMBOL_SIZE     24
 
 // Parameters for RG351MP
 #elif defined(DEVICE_RG351MP)
@@ -54,6 +56,7 @@
    #define MARGIN_X                 10
    #define KEYBOARD_MARGIN          8
    #define KEYBOARD_KEY_SPACING     4
+   #define KEYBOARD_SYMBOL_SIZE     24
 
 // Parameters for RGB10
 #elif defined(DEVICE_RGB10)
@@ -69,6 +72,7 @@
    #define MARGIN_X                 8
    #define KEYBOARD_MARGIN          3
    #define KEYBOARD_KEY_SPACING     3
+   #define KEYBOARD_SYMBOL_SIZE     24
 
 // Parameters for RK2020
 #elif defined(DEVICE_RK2020)
@@ -84,6 +88,7 @@
    #define MARGIN_X                 8
    #define KEYBOARD_MARGIN          3
    #define KEYBOARD_KEY_SPACING     3
+   #define KEYBOARD_SYMBOL_SIZE     24
 
 // Parameters for CHI
 #elif defined(DEVICE_CHI)
@@ -99,6 +104,7 @@
    #define MARGIN_X                 10
    #define KEYBOARD_MARGIN          8
    #define KEYBOARD_KEY_SPACING     4
+   #define KEYBOARD_SYMBOL_SIZE     24
 
 // Paramaters for desktop PC
 #else
@@ -114,6 +120,7 @@
    #define MARGIN_X                 10
    #define KEYBOARD_MARGIN          8
    #define KEYBOARD_KEY_SPACING     4
+   #define KEYBOARD_SYMBOL_SIZE     24
 #endif
 
 // Colors
